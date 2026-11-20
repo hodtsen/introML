@@ -1,0 +1,855 @@
+# Oppgaver til kapittel 6: Uveiledet læring
+
+# ---------------------------------------------------------------- 6.1 k-means
+- id: "6.1-01"
+  del: "6.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvilken størrelse forsøker k-means å minimere?
+  alternativer:
+    - tekst: 'Summen av kvadrerte avstander fra hvert punkt til sentroiden i sin egen klynge (inertia)'
+      riktig: true
+      forklaring: '$\sum_c \sum_{\mathbf{x} \in C_c}\lVert\mathbf{x} - \boldsymbol{\mu}_c\rVert^2$.'
+    - tekst: 'Avstanden mellom sentroidene'
+      forklaring: 'k-means ser ikke direkte på avstanden mellom sentroidene.'
+    - tekst: 'Silhouette-verdien'
+      forklaring: 'Silhouette er en evalueringsmetrikk, og høy silhouette er bra. k-means optimerer den ikke.'
+    - tekst: 'Antall punkter per klynge'
+      forklaring: 'k-means kan gi klynger av svært ulik størrelse.'
+  forklaring: |
+    Begge stegene i k-means (tildel til nærmeste sentroide, flytt sentroiden til snittet) kan bare senke inertia.
+  husk: 'k-means minimerer inertia: kvadrert avstand fra punkt til egen sentroide.'
+
+- id: "6.1-02"
+  del: "6.1"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Seks punkter på en linje: $1, 2, 4, 8, 9, 10$. k-means med $k = 2$ starter med sentroidene $2$ og $9$. Gjør ett fullt steg (tildel, så flytt).
+  deler:
+    - sporsmal: 'Ny posisjon for den første sentroiden (tre desimaler)'
+      svar: 2.333
+      toleranse: 0.002
+    - sporsmal: 'Ny posisjon for den andre sentroiden'
+      svar: 9
+      toleranse: 0.001
+    - sporsmal: 'Inertia etter flyttingen (tre desimaler)'
+      svar: 6.667
+      toleranse: 0.005
+  losning: |
+    Tildeling: $1, 2, 4$ er nærmest $2$, og $8, 9, 10$ er nærmest $9$.
+
+    Flytting: $\mu_1 = (1 + 2 + 4)/3 = 2{,}333$ og $\mu_2 = (8 + 9 + 10)/3 = 9$.
+
+    Inertia $= (1 - 2{,}333)^2 + (2 - 2{,}333)^2 + (4 - 2{,}333)^2 + 1 + 0 + 1 = 1{,}778 + 0{,}111 + 2{,}778 + 2 = 6{,}667$.
+
+    Neste tildeling gir de samme klyngene, så algoritmen har konvergert.
+  husk: 'k-means: tildel til nærmeste sentroide, flytt sentroiden til snittet, gjenta til ingen bytter.'
+
+- id: "6.1-03"
+  del: "6.1"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    k-means++ har valgt én sentroide. Tre andre punkter har avstand 1, 2 og 3 til den. Hva er sannsynligheten for at punktet med avstand 3 blir neste sentroide (blant disse tre)?
+  alternativer:
+    - tekst: '$9/14 \approx 0{,}64$'
+      riktig: true
+      forklaring: 'Sannsynligheten er proporsjonal med kvadrert avstand: $9/(1 + 4 + 9)$.'
+    - tekst: '$3/6 = 0{,}5$'
+      forklaring: 'Sannsynligheten er proporsjonal med *kvadrert* avstand, ikke avstanden.'
+    - tekst: '1, fordi det ligger lengst unna'
+      forklaring: 'Å alltid ta punktet lengst unna er den deterministiske varianten, som er følsom for outliers.'
+    - tekst: '$1/3$, fordi alle er like sannsynlige'
+      forklaring: 'Det ville vært tilfeldig initialisering.'
+  forklaring: |
+    $P(\mathbf{x}) = D(\mathbf{x})^2/\sum_{\mathbf{x}'} D(\mathbf{x}')^2$. Fjerne punkter er mest sannsynlige, men tilfeldigheten gjør at en enkelt outlier ikke alltid blir valgt.
+  husk: 'k-means++: trekk neste sentroide med sannsynlighet ∝ kvadrert avstand til nærmeste valgte.'
+
+- id: "6.1-04"
+  del: "6.1"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Dataene har $k$ like store, godt adskilte klynger. Vi velger $k$ startsentroider tilfeldig blant datapunktene. Sannsynligheten for at hver klynge får nøyaktig én sentroide er $k!/k^k$.
+  deler:
+    - sporsmal: 'Sannsynligheten for $k = 4$ (fire desimaler)'
+      svar: 0.0938
+      toleranse: 0.0005
+    - sporsmal: 'Sannsynligheten for $k = 5$ (fire desimaler)'
+      svar: 0.0384
+      toleranse: 0.0005
+  losning: |
+    - $k = 4$: $4!/4^4 = 24/256 = 0{,}0938$
+    - $k = 5$: $5!/5^5 = 120/3125 = 0{,}0384$
+
+    Sannsynligheten synker eksponentielt med $k$ (omtrent $\sqrt{2\pi k}\,e^{-k}$). Derfor brukes k-means++ eller mange tilfeldige starter.
+  husk: 'k!/k^k synker raskt. Tilfeldig start feiler ofte, så bruk k-means++.'
+
+- id: "6.1-05"
+  del: "6.1"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** En sentroide i k-means er alltid et av datapunktene.
+  riktig: false
+  forklaring: |
+    Sentroiden er gjennomsnittet av punktene i klyngen og ligger som regel mellom dem. Den kan starte som et datapunkt (ved initialisering), men flyttes til snittet etter første iterasjon.
+  husk: 'Sentroide = gjennomsnitt, ikke et datapunkt.'
+
+- id: "6.1-06"
+  del: "6.1"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar hvorfor k-means++ er bedre enn både helt tilfeldig initialisering og å alltid velge punktet som ligger lengst unna de valgte sentroidene.
+  eksempelsvar: |
+    Med tilfeldig initialisering havner ofte flere startsentroider i samme klynge, og sannsynligheten for én per klynge, $k!/k^k$, synker raskt med $k$. Da kan k-means bli sittende i et dårlig lokalt minimum. Å alltid ta punktet lengst unna sprer sentroidene, men er deterministisk og velger gjerne outliers som sentroider. k-means++ trekker neste sentroide med sannsynlighet proporsjonal med kvadrert avstand til nærmeste valgte sentroide. Det sprer sentroidene, men tilfeldigheten gjør at enkeltpunkter langt unna ikke alltid velges, så metoden er robust mot outliers.
+  punkter:
+    - tekst: 'Tilfeldig: flere sentroider i samme klynge, dårlig lokalt minimum.'
+      stikkord: ['samme klynge', 'lokalt minimum', 'k!/k^k', 'dårlig start']
+    - tekst: 'Lengst unna: velger outliers.'
+      stikkord: ['outlier', 'uteligger', 'avvik']
+    - tekst: 'k-means++: trekker med sannsynlighet proporsjonal med kvadrert avstand.'
+      stikkord: ['kvadrert', 'proporsjonal', 'd^2', 'd²']
+    - tekst: 'Kombinerer spredning og tilfeldighet.'
+      stikkord: ['spre', 'tilfeldig', 'robust']
+  husk: 'k-means++: spredning (fjerne punkter favoriseres) + tilfeldighet (robust mot outliers).'
+
+# ---------------------------------------------------------------- 6.2 Velge k
+- id: "6.2-01"
+  del: "6.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor kan vi ikke bare velge den $k$ som gir lavest inertia?
+  alternativer:
+    - tekst: 'Fordi inertia alltid synker når $k$ øker, og blir 0 når hvert punkt er sin egen klynge'
+      riktig: true
+      forklaring: 'Lavest inertia ville alltid gitt $k = n$.'
+    - tekst: 'Fordi inertia er beregningstung'
+      forklaring: 'Den er billig. Problemet er at den favoriserer stor $k$.'
+    - tekst: 'Fordi inertia bare kan brukes med $k = 2$'
+      forklaring: 'Inertia kan regnes for alle $k$.'
+    - tekst: 'Fordi inertia øker med $k$'
+      forklaring: 'Den synker med $k$.'
+  forklaring: |
+    I albuemetoden ser vi etter $k$ der inertia slutter å synke raskt. Silhouette og Calinski–Harabasz tar også hensyn til avstanden mellom klyngene.
+  husk: 'Inertia synker alltid med k. Se etter albuen, eller bruk silhouette/CH.'
+
+- id: "6.2-02"
+  del: "6.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    For et punkt er snittavstanden til punktene i egen klynge $a(i) = 2$, og snittavstanden til punktene i nærmeste andre klynge $b(i) = 5$. Hva er silhouette-verdien?
+  alternativer:
+    - tekst: '0,6'
+      riktig: true
+      forklaring: '$(5 - 2)/\max(2, 5) = 3/5$.'
+    - tekst: '1,5'
+      forklaring: 'Silhouette deles på $\max(a, b)$ og ligger i $[-1, 1]$.'
+    - tekst: '−0,6'
+      forklaring: 'Fortegnet er positivt fordi punktet ligger nærmere egen klynge.'
+    - tekst: '0,4'
+      forklaring: 'Det er $a/b$, ikke silhouette.'
+  forklaring: |
+    $s(i) = \frac{b(i) - a(i)}{\max(a(i), b(i))}$. Nær 1: godt plassert. Nær 0: på grensen. Negativ: trolig i feil klynge.
+  husk: 'Silhouette = (b − a)/max(a, b). Høyt er bra.'
+
+- id: "6.2-03"
+  del: "6.2"
+  niva: middels
+  type: enkeltvalg
+  figur:
+    type: linje
+    tittel: Inertia for ulike k
+    xlabel: antall klynger k
+    ylabel: inertia
+    x: [1, 2, 3, 4, 5, 6, 7, 8]
+    serier:
+      - navn: Inertia
+        y: [1800, 920, 380, 330, 290, 260, 235, 215]
+  sporsmal: |
+    Figuren viser inertia for k-means med ulike $k$. Hvilken $k$ foreslår albuemetoden?
+  alternativer:
+    - tekst: '$k = 3$'
+      riktig: true
+      forklaring: 'Inertia faller bratt fram til $k = 3$ og flater deretter ut.'
+    - tekst: '$k = 8$'
+      forklaring: 'Lavest inertia er ikke målet. Den synker alltid med $k$.'
+    - tekst: '$k = 1$'
+      forklaring: 'Med én klynge er inertia høyest.'
+    - tekst: '$k = 5$'
+      forklaring: 'Etter $k = 3$ gir hver ny klynge bare liten forbedring.'
+  forklaring: |
+    Albuen er punktet der gevinsten av flere klynger blir liten. Bekreft gjerne med silhouette eller Calinski–Harabasz, fordi albuen ikke alltid er tydelig.
+  husk: 'Albuemetoden: velg k der kurven knekker, ikke der inertia er lavest.'
+
+- id: "6.2-04"
+  del: "6.2"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om k-means og valg av $k$ stemmer?
+  alternativer:
+    - tekst: 'k-means antar implisitt at klyngene er omtrent runde (konvekse) og av lignende størrelse.'
+      riktig: true
+      forklaring: 'Tildeling til nærmeste sentroide gir konvekse regioner.'
+    - tekst: 'Ulike metrikker kan foreslå ulik $k$ for samme data.'
+      riktig: true
+      forklaring: 'Det finnes ofte ingen fasit.'
+    - tekst: 'Høy Calinski–Harabasz betyr godt adskilte, kompakte klynger.'
+      riktig: true
+      forklaring: 'CH er forholdet mellom spredning mellom og innad i klynger.'
+    - tekst: 'Den optimale $k$ er alltid lik antall klasser i dataene.'
+      forklaring: 'Klyngene trenger ikke svare til klasser, og klassene er ofte ukjente.'
+  forklaring: |
+    $k$ må velges før treningen. Det er ett av hovedproblemene med k-means.
+  husk: 'k-means: k velges på forhånd, antar runde klynger. Bruk flere metrikker.'
+
+- id: "6.2-05"
+  del: "6.2"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** En negativ silhouette-verdi for et punkt tyder på at punktet ligger nærmere en annen klynge enn sin egen.
+  riktig: true
+  forklaring: |
+    $s(i) < 0$ betyr $b(i) < a(i)$: snittavstanden til nærmeste andre klynge er mindre enn til egen klynge. Punktet er trolig plassert i feil klynge.
+  husk: 'Silhouette < 0: punktet passer bedre i en annen klynge.'
+
+- id: "6.2-06"
+  del: "6.2"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    To klynger er formet som to lange, parallelle bånd tett ved siden av hverandre. Forklar hvorfor k-means med $k = 2$ kan dele dataene feil, selv om $k$ er riktig.
+  eksempelsvar: |
+    k-means tildeler hvert punkt til nærmeste sentroide og minimerer kvadrert avstand til sentroiden. Det gir konvekse, omtrent runde klynger. Når båndene er lange og ligger tett, er avstanden innad i et bånd (fra ende til ende) større enn avstanden mellom båndene. Da gir det lavere inertia å kutte på tvers av båndene, slik at hver klynge får halvparten av begge båndene. Den implisitte antakelsen om runde klynger er brutt. En tetthetsbasert metode som DBSCAN kan følge båndene.
+  punkter:
+    - tekst: 'k-means antar runde/konvekse klynger (nærmeste sentroide).'
+      stikkord: ['rund', 'konveks', 'sfær', 'nærmeste sentroide', 'antakelse']
+    - tekst: 'Avstanden innad i klyngen er større enn mellom klyngene.'
+      stikkord: ['innad', 'mellom', 'lang', 'større avstand']
+    - tekst: 'Lavere inertia ved å kutte på tvers.'
+      stikkord: ['inertia', 'på tvers', 'kutte', 'dele']
+    - tekst: 'Foreslår alternativ som DBSCAN.'
+      stikkord: ['dbscan', 'tetthet']
+  husk: 'Riktig k hjelper ikke når klyngene ikke er runde. Avstand innad > mellom → k-means feiler.'
+
+# ---------------------------------------------------------------- 6.3 DBSCAN
+- id: "6.3-01"
+  del: "6.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I DBSCAN, hva er et kjernepunkt?
+  alternativer:
+    - tekst: 'Et punkt som har minst `min_samples` punkter (seg selv medregnet) innenfor avstand $\varepsilon$'
+      riktig: true
+      forklaring: 'Kjernepunkter er de eneste som kan utvide en klynge.'
+    - tekst: 'Punktet nærmest sentrum av klyngen'
+      forklaring: 'DBSCAN har ingen sentroider.'
+    - tekst: 'Et punkt som ikke tilhører noen klynge'
+      forklaring: 'Det er en outlier (label $-1$).'
+    - tekst: 'Det første punktet algoritmen besøker'
+      forklaring: 'Rekkefølgen avgjør ikke om et punkt er kjernepunkt.'
+  forklaring: |
+    Tre typer punkter: kjernepunkter (tett nabolag), ikke-kjernepunkter (i nabolaget til et kjernepunkt, men med for få naboer selv) og outliers (ingen av delene).
+  husk: 'Kjernepunkt: ≥ min_samples punkter innen ε. Bare kjernepunkter utvider klynger.'
+
+- id: "6.3-02"
+  del: "6.3"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    DBSCAN kjøres på punktene $1;\ 1{,}4;\ 1{,}8;\ 2{,}25;\ 5;\ 8;\ 8{,}4;\ 8{,}8$ på en linje, med $\varepsilon = 0{,}5$ og `min_samples` $= 3$ (punktet selv telles med).
+  deler:
+    - sporsmal: 'Hvor mange kjernepunkter er det?'
+      svar: 3
+      toleranse: 0
+    - sporsmal: 'Hvor mange klynger finner DBSCAN?'
+      svar: 2
+      toleranse: 0
+    - sporsmal: 'Hvor mange outliers er det?'
+      svar: 1
+      toleranse: 0
+  losning: |
+    Nabolag (innen 0,5):
+
+    - $1{,}4$: $\{1;\ 1{,}4;\ 1{,}8\}$, 3 punkter, kjernepunkt
+    - $1{,}8$: $\{1{,}4;\ 1{,}8;\ 2{,}25\}$, kjernepunkt
+    - $8{,}4$: $\{8;\ 8{,}4;\ 8{,}8\}$, kjernepunkt
+    - $1$, $2{,}25$, $8$ og $8{,}8$ har bare 2 punkter, men ligger i nabolaget til et kjernepunkt: ikke-kjernepunkter
+    - $5$ har ingen naboer: outlier
+
+    Klynger: $\{1;\ 1{,}4;\ 1{,}8;\ 2{,}25\}$ og $\{8;\ 8{,}4;\ 8{,}8\}$.
+  husk: 'Finn kjernepunktene først, koble dem sammen via ε-steg, legg til ikke-kjernepunkter, resten er outliers.'
+
+- id: "6.3-03"
+  del: "6.3"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hva skjer typisk hvis du senker $\varepsilon$ i DBSCAN (med samme `min_samples`)?
+  alternativer:
+    - tekst: 'Færre punkter blir kjernepunkter, så du får flere, mindre klynger og flere outliers'
+      riktig: true
+      forklaring: 'Mindre nabolag gir færre naboer per punkt.'
+    - tekst: 'Klyngene slås sammen til færre, større klynger'
+      forklaring: 'Det skjer når $\varepsilon$ økes.'
+    - tekst: 'Ingenting, fordi DBSCAN velger $\varepsilon$ selv'
+      forklaring: '$\varepsilon$ er en hyperparameter du setter.'
+    - tekst: 'Alle outliers blir kjernepunkter'
+      forklaring: 'Lavere $\varepsilon$ gir færre kjernepunkter, ikke flere.'
+  forklaring: |
+    For stor $\varepsilon$ slår sammen klynger, for liten deler dem opp og merker mange punkter som støy.
+  husk: 'Lavere ε → flere, mindre klynger og flere outliers. Høyere ε → klynger slås sammen.'
+
+- id: "6.3-04"
+  del: "6.3"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om DBSCAN sammenlignet med k-means stemmer?
+  alternativer:
+    - tekst: 'DBSCAN trenger ikke å få oppgitt antall klynger.'
+      riktig: true
+      forklaring: 'Antall klynger følger av tettheten i dataene.'
+    - tekst: 'DBSCAN kan finne klynger med vilkårlig form.'
+      riktig: true
+      forklaring: 'Klynger følger kjeder av tette punkter.'
+    - tekst: 'DBSCAN merker outliers med label $-1$ i stedet for å tvinge dem inn i en klynge.'
+      riktig: true
+      forklaring: 'k-means plasserer alle punkter i en klynge.'
+    - tekst: 'DBSCAN fungerer godt når klyngene har svært ulik tetthet.'
+      forklaring: 'Én $\varepsilon$ for hele datasettet passer dårlig når tettheten varierer.'
+  forklaring: |
+    DBSCAN er tetthetsbasert, k-means sentroidebasert. DBSCAN sliter med varierende tetthet og høye dimensjoner.
+  husk: 'DBSCAN: ingen k, vilkårlig form, outliers = −1. Svakhet: varierende tetthet.'
+
+- id: "6.3-05"
+  del: "6.3"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** I DBSCAN kan også ikke-kjernepunkter utvide en klynge til nye punkter.
+  riktig: false
+  forklaring: |
+    Bare kjernepunkter utvider klyngen. Et ikke-kjernepunkt hører til klyngen fordi det ligger i nabolaget til et kjernepunkt, men naboene dets legges ikke til via det.
+  husk: 'Bare kjernepunkter sprer klyngen videre.'
+
+- id: "6.3-06"
+  del: "6.3"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    DBSCAN kjøres på data der alle punktene får label $-1$. Hva er den mest sannsynlige årsaken?
+  alternativer:
+    - tekst: '$\varepsilon$ er for liten eller `min_samples` for høy, så ingen punkter blir kjernepunkter'
+      riktig: true
+      forklaring: 'Uten kjernepunkter kan ingen klynge startes.'
+    - tekst: '$\varepsilon$ er for stor'
+      forklaring: 'For stor $\varepsilon$ gir få, store klynger, ikke bare outliers.'
+    - tekst: 'Dataene har for mange klynger'
+      forklaring: 'DBSCAN finner så mange klynger som tettheten tilsier.'
+    - tekst: 'DBSCAN trenger at antall klynger oppgis'
+      forklaring: 'Det trenger den ikke.'
+  forklaring: |
+    Øk $\varepsilon$ eller senk `min_samples`. Skalering av featurene påvirker også avstandene og dermed hva som er en fornuftig $\varepsilon$.
+  husk: 'Alle −1: ingen kjernepunkter. Øk ε eller senk min_samples.'
+
+# ---------------------------------------------------------------- 6.4 Concentration of distances
+- id: "6.4-01"
+  del: "6.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva betyr «concentration of distances» i høye dimensjoner?
+  alternativer:
+    - tekst: 'Avstandene mellom tilfeldige punkter blir omtrent like store, så forskjellen mellom nærmeste og fjerneste nabo blir relativt liten'
+      riktig: true
+      forklaring: 'Den relative spredningen i avstandene går mot 0.'
+    - tekst: 'Alle punktene samler seg nær origo'
+      forklaring: 'Avstandene blir store, ikke små.'
+    - tekst: 'Avstandene blir mindre og mindre'
+      forklaring: 'Snittavstanden vokser omtrent som $\sqrt{d}$.'
+    - tekst: 'Punktene danner naturlige klynger'
+      forklaring: 'Det motsatte: klyngestrukturen blir vanskeligere å se.'
+  forklaring: |
+    Når nærmeste og fjerneste punkt er omtrent like langt unna, mister avstandsbaserte metoder som k-means og DBSCAN mye av sin mening.
+  husk: 'Høye dimensjoner: avstander blir store og like. Relativ forskjell → 0.'
+
+- id: "6.4-02"
+  del: "6.4"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke er grunner til å gjøre dimensjonsreduksjon, slik kurset beskriver?
+  alternativer:
+    - tekst: 'Visualisering i 2D eller 3D'
+      riktig: true
+      forklaring: 'Vi kan ikke se data med hundrevis av dimensjoner direkte.'
+    - tekst: 'Støyfjerning'
+      riktig: true
+      forklaring: 'Retninger med lite varians er ofte mest støy.'
+    - tekst: 'Feature discovery, finne nye og mer meningsfulle features'
+      riktig: true
+      forklaring: 'For eksempel prinsipalkomponenter som oppsummerer mange korrelerte features.'
+    - tekst: 'Å få labels til uveiledet læring'
+      forklaring: 'Dimensjonsreduksjon lager ikke labels.'
+  forklaring: |
+    Dimensjonsreduksjon motvirker også dimensjonsforbannelsen før klynging.
+  husk: 'Tre grunner: visualisering, støyfjerning, feature discovery.'
+
+- id: "6.4-03"
+  del: "6.4"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Mer treningsdata løser problemet med concentration of distances.
+  riktig: false
+  forklaring: |
+    Fenomenet er en egenskap ved geometrien i høye dimensjoner: summen av mange kvadrerte koordinatforskjeller blir relativt stabil uansett hvor mange punkter vi har. Flere punkter endrer ikke at avstandene blir like. Dimensjonsreduksjon eller bedre features hjelper.
+  husk: 'Concentration of distances er geometri, ikke datamangel. Reduser dimensjonen.'
+
+- id: "6.4-04"
+  del: "6.4"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Euklidsk avstand mellom to tilfeldige punkter med $d$ uavhengige, like fordelte koordinater er roten av en sum av $d$ kvadrater. Hvordan oppfører snittet og den relative spredningen seg når $d$ vokser?
+  alternativer:
+    - tekst: 'Snittet vokser omtrent som $\sqrt{d}$, og standardavvik delt på snitt går mot 0'
+      riktig: true
+      forklaring: 'Summen vokser lineært og har standardavvik som vokser som $\sqrt{d}$. Etter roten blir den relative spredningen liten.'
+    - tekst: 'Snittet er konstant, og spredningen vokser'
+      forklaring: 'Flere ledd i summen gir større avstand.'
+    - tekst: 'Både snitt og relativ spredning vokser lineært'
+      forklaring: 'Den relative spredningen krymper.'
+    - tekst: 'Snittet går mot 0'
+      forklaring: 'Avstandene blir større.'
+  forklaring: |
+    Dette er bakgrunnen for histogrammene i kurset, der avstandsfordelingen blir smalere (relativt sett) jo flere dimensjoner.
+  husk: 'Snittavstand ∝ √d, relativ spredning → 0.'
+
+- id: "6.4-05"
+  del: "6.4"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du skal klynge tekstdokumenter representert som vektorer med 20 000 dimensjoner. Hva er et fornuftig første steg?
+  alternativer:
+    - tekst: 'Redusere dimensjonen (for eksempel med PCA) før klyngingen'
+      riktig: true
+      forklaring: 'Avstander i 20 000 dimensjoner er lite informative.'
+    - tekst: 'Øke $k$ i k-means til 20 000'
+      forklaring: 'Antall klynger har ingenting med antall dimensjoner å gjøre.'
+    - tekst: 'Bruke DBSCAN direkte, fordi den ikke påvirkes av dimensjonen'
+      forklaring: 'DBSCAN er også avstandsbasert og rammes like hardt.'
+    - tekst: 'Fjerne halvparten av dokumentene'
+      forklaring: 'Færre punkter løser ikke problemet med avstander.'
+  forklaring: |
+    Dimensjonsreduksjon fjerner støy og samler informasjonen i færre, mer meningsfulle retninger.
+  husk: 'Høy dimensjon + avstandsbasert metode: reduser dimensjonen først.'
+
+- id: "6.4-06"
+  del: "6.4"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar hvorfor avstandsbasert klynging fungerer dårlig i svært høye dimensjoner, og kobl det til dimensjonsforbannelsen fra kapittel 2.
+  eksempelsvar: |
+    I høye dimensjoner blir rommet så stort at dataene ligger glissent (dimensjonsforbannelsen: datamengden som trengs, vokser eksponentielt, og nesten alt volum ligger i skallet). Avstanden mellom to punkter er en sum over mange dimensjoner, og når $d$ vokser, blir alle parvise avstander omtrent like (concentration of distances). Da kan klyngealgoritmer som k-means og DBSCAN ikke skille nære og fjerne punkter, og klyngene blir tilfeldige. Dimensjonsreduksjon før klyngingen hjelper.
+  punkter:
+    - tekst: 'Avstandene blir omtrent like (concentration of distances).'
+      stikkord: ['like', 'concentration', 'konsentr', 'relativ']
+    - tekst: 'Kobler til dimensjonsforbannelsen (glisne data, eksponentiell datamengde, skall).'
+      stikkord: ['dimensjonsforbannelse', 'glisn', 'eksponentiell', 'skall', 'tomt']
+    - tekst: 'Konsekvens for klynging: nære og fjerne punkter kan ikke skilles.'
+      stikkord: ['klyng', 'nabo', 'skille']
+    - tekst: 'Løsning: dimensjonsreduksjon.'
+      stikkord: ['dimensjonsreduksjon', 'pca', 'redusere']
+  husk: 'Høye dimensjoner: glisne data og like avstander. Reduser dimensjonen før klynging.'
+
+# ---------------------------------------------------------------- 6.5 PCA
+- id: "6.5-01"
+  del: "6.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva er de prinsipale komponentene i PCA?
+  alternativer:
+    - tekst: 'Egenvektorene til kovariansmatrisen, sortert etter egenverdi fra størst til minst'
+      riktig: true
+      forklaring: 'PC1 er retningen med mest varians.'
+    - tekst: 'De opprinnelige featurene sortert etter varians'
+      forklaring: 'PC-ene er nye retninger, lineære kombinasjoner av de opprinnelige featurene.'
+    - tekst: 'Egenverdiene til kovariansmatrisen'
+      forklaring: 'Egenverdiene er variansen langs hver PC. Retningen er egenvektoren.'
+    - tekst: 'Klyngesentrene i dataene'
+      forklaring: 'PCA finner retninger, ikke klynger.'
+  forklaring: |
+    PC-ene er ortogonale, så hver fanger en ulik del av variansen uten overlapp. Andelen forklart varians er $\lambda_i/\sum_j\lambda_j$.
+  husk: 'PC = egenvektor av kovariansmatrisen. Egenverdi = varians langs den.'
+
+- id: "6.5-02"
+  del: "6.5"
+  niva: avansert
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Kovariansmatrisen til et datasett med to features er
+    $$S = \begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}.$$
+  deler:
+    - sporsmal: 'Største egenverdi $\lambda_1$'
+      svar: 6
+      toleranse: 0.001
+    - sporsmal: 'Minste egenverdi $\lambda_2$'
+      svar: 1
+      toleranse: 0.001
+    - sporsmal: 'Andel varians forklart av PC1 (tre desimaler)'
+      svar: 0.857
+      toleranse: 0.002
+    - sporsmal: 'Første komponent av den normaliserte egenvektoren for PC1, valgt med positivt fortegn (tre desimaler)'
+      svar: 0.894
+      toleranse: 0.003
+  losning: |
+    $\det(S - \lambda I) = (5 - \lambda)(2 - \lambda) - 4 = \lambda^2 - 7\lambda + 6 = (\lambda - 6)(\lambda - 1) = 0$, så $\lambda_1 = 6$ og $\lambda_2 = 1$.
+
+    Andel forklart av PC1: $6/(6 + 1) = 0{,}857$.
+
+    Egenvektor for $\lambda = 6$: $(S - 6I)\mathbf{e} = \begin{pmatrix} -1 & 2 \\ 2 & -4 \end{pmatrix}\mathbf{e} = \mathbf{0}$ gir $e_1 = 2e_2$, altså $\mathbf{e} \propto (2, 1)$. Normalisert: $(2, 1)/\sqrt{5} = (0{,}894;\ 0{,}447)$.
+  husk: 'Egenverdier fra det(S − λI) = 0. Egenvektor fra (S − λI)e = 0, normaliser til lengde 1.'
+
+- id: "6.5-03"
+  del: "6.5"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Tre datapunkter har featurene $(1, 2)$, $(2, 3)$ og $(3, 7)$. Hva er kovariansen $\text{cov}(x_1, x_2)$ med nevner $N - 1$?
+  alternativer:
+    - tekst: '2,5'
+      riktig: true
+      forklaring: 'Snitt $(2, 4)$. $\frac{1}{2}[(-1)(-2) + 0 \cdot (-1) + 1 \cdot 3] = 5/2$.'
+    - tekst: '1,67'
+      forklaring: 'Det er summen 5 delt på $N = 3$. Formelen i kurset deler på $N - 1$.'
+    - tekst: '7'
+      forklaring: 'Det er variansen til $x_2$.'
+    - tekst: '1'
+      forklaring: 'Det er variansen til $x_1$.'
+  forklaring: |
+    $\text{cov}(x_i, x_j) = \frac{1}{N-1}\sum_k (x_{i,k} - \bar{x}_i)(x_{j,k} - \bar{x}_j)$. Positiv kovarians betyr at featurene øker sammen.
+  husk: 'Trekk fra snittet, gang avvikene parvis, summer og del på N − 1.'
+
+- id: "6.5-04"
+  del: "6.5"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om PCA stemmer?
+  alternativer:
+    - tekst: 'En egenverdi på 0 betyr at dataene ikke varierer langs den tilhørende retningen.'
+      riktig: true
+      forklaring: 'Den dimensjonen kan fjernes uten å miste informasjon.'
+    - tekst: 'PCA er uveiledet og bruker ikke labels.'
+      riktig: true
+      forklaring: 'Den ser bare på variansen i featurene.'
+    - tekst: 'PCA skal tilpasses (`fit`) på treningsdataene og brukes (`transform`) på testdataene.'
+      riktig: true
+      forklaring: 'Samme regel som for skalering.'
+    - tekst: 'Retningene med mest varians er alltid de mest nyttige for klassifisering.'
+      forklaring: 'Ikke nødvendigvis. Klasseforskjellen kan ligge i en retning med lite varians.'
+  forklaring: |
+    PCA er en lineær metode. Den fungerer godt når strukturen i dataene er lineær (som S-kurven i 3D projisert til 2D), men dårlig for for eksempel MNIST i 2D.
+  husk: 'PCA: uveiledet, lineær, egenverdi 0 = ingen varians. Fit på trening.'
+
+- id: "6.5-05"
+  del: "6.5"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** At prinsipalkomponentene er ortogonale, betyr at hver komponent fanger like mye av variansen.
+  riktig: false
+  forklaring: |
+    Ortogonalitet betyr at komponentene fanger *ulike* deler av variansen uten overlapp. Hvor mye hver fanger, er gitt av egenverdien, og PC1 fanger mest.
+  husk: 'Ortogonal = ingen overlapp i variansen, ikke lik varians.'
+
+- id: "6.5-06"
+  del: "6.5"
+  niva: avansert
+  type: tekst
+  tags: [oving-3]
+  sporsmal: |
+    Beskriv stegene i PCA fra rådata til et datasett med færre dimensjoner, og forklar hvordan du ville valgt antall komponenter.
+  eksempelsvar: |
+    1. Sentrer dataene (trekk fra snittet av hver feature) og skaler dem gjerne.
+    2. Regn ut kovariansmatrisen.
+    3. Finn egenverdier og egenvektorer, og sorter egenvektorene etter egenverdi, størst først.
+    4. Velg de $m$ første egenvektorene som nye akser og projiser dataene på dem.
+
+    Antall komponenter velges ut fra andelen forklart varians, $\lambda_i/\sum_j\lambda_j$, for eksempel slik at de valgte forklarer 90–95 % av variansen, eller ut fra et knekkpunkt i plottet av egenverdiene. PCA tilpasses på treningsdataene og brukes på testdataene.
+  punkter:
+    - tekst: 'Sentrere (og eventuelt skalere) dataene.'
+      stikkord: ['sentrer', 'snitt', 'skaler', 'standardiser']
+    - tekst: 'Kovariansmatrise og egenverdier/egenvektorer.'
+      stikkord: ['kovarians', 'egen']
+    - tekst: 'Sorter etter egenverdi og projiser på de første.'
+      stikkord: ['sorter', 'projiser', 'største']
+    - tekst: 'Velg antall ut fra forklart varians.'
+      stikkord: ['forklart varians', 'andel', 'prosent', 'λ']
+  husk: 'Sentrer → kovarians → egenvektorer sortert etter λ → projiser. Velg m etter forklart varians.'
+
+- id: "6.5-07"
+  del: "6.5"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    PCA på et datasett med fire features gir egenverdiene 4,2, 2,1, 0,5 og 0,2. Hvor stor andel av variansen beholdes hvis du reduserer til to komponenter?
+  alternativer:
+    - tekst: '90 %'
+      riktig: true
+      forklaring: '$(4{,}2 + 2{,}1)/(4{,}2 + 2{,}1 + 0{,}5 + 0{,}2) = 6{,}3/7{,}0 = 0{,}90$.'
+    - tekst: '60 %'
+      forklaring: 'Det er bare PC1 ($4{,}2/7$).'
+    - tekst: '50 %'
+      forklaring: 'To av fire komponenter er ikke det samme som halvparten av variansen.'
+    - tekst: '10 %'
+      forklaring: 'Det er andelen som går tapt.'
+  forklaring: |
+    Summen av egenverdiene er den totale variansen. De to første komponentene står for 90 % av den.
+  husk: 'Andel beholdt varians = sum av valgte λ / sum av alle λ.'
+
+# ---------------------------------------------------------------- 6.6 SNE, t-SNE og KL
+- id: "6.6-01"
+  del: "6.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor kan t-SNE ikke brukes til å projisere nye datapunkter etter treningen?
+  alternativer:
+    - tekst: 'Fordi t-SNE bare lærer posisjoner for de punktene den ble kjørt på, ikke en avbildning fra høy til lav dimensjon'
+      riktig: true
+      forklaring: 'Det finnes ingen funksjon eller matrise å bruke på nye punkter.'
+    - tekst: 'Fordi projeksjonsmatrisen er for stor'
+      forklaring: 'Det finnes ingen projeksjonsmatrise i t-SNE.'
+    - tekst: 'Fordi t-SNE bare fungerer på bilder'
+      forklaring: 't-SNE fungerer på alle numeriske data.'
+    - tekst: 'Fordi t-SNE krever labels'
+      forklaring: 't-SNE er uveiledet.'
+  forklaring: |
+    PCA lærer en lineær avbildning som kan brukes på nye data. t-SNE optimerer posisjonene direkte med gradient descent på KL-divergensen.
+  husk: 't-SNE lærer posisjoner, ikke en avbildning. PCA lærer en avbildning.'
+
+- id: "6.6-02"
+  del: "6.6"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    To fordelinger over to utfall: $P = (0{,}5;\ 0{,}5)$ og $Q = (0{,}25;\ 0{,}75)$. Bruk naturlig logaritme.
+  deler:
+    - sporsmal: '$D_{KL}(P \,\|\, Q)$ (tre desimaler)'
+      svar: 0.144
+      toleranse: 0.002
+    - sporsmal: '$D_{KL}(Q \,\|\, P)$ (tre desimaler)'
+      svar: 0.131
+      toleranse: 0.002
+  losning: |
+    $D_{KL}(P\|Q) = 0{,}5\ln\frac{0{,}5}{0{,}25} + 0{,}5\ln\frac{0{,}5}{0{,}75} = 0{,}347 - 0{,}203 = 0{,}144$
+
+    $D_{KL}(Q\|P) = 0{,}25\ln\frac{0{,}25}{0{,}5} + 0{,}75\ln\frac{0{,}75}{0{,}5} = -0{,}173 + 0{,}304 = 0{,}131$
+
+    De er ulike: KL-divergensen er ikke symmetrisk. Begge er positive, og de er 0 bare når fordelingene er like.
+  husk: 'KL ≥ 0, = 0 bare når P = Q, og ikke symmetrisk.'
+
+- id: "6.6-03"
+  del: "6.6"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om t-SNE stemmer?
+  alternativer:
+    - tekst: 't-SNE bevarer først og fremst lokale naboskap.'
+      riktig: true
+      forklaring: 'Punkter som er naboer i høy dimensjon, skal være naboer i lav dimensjon.'
+    - tekst: 'Avstander mellom klynger i et t-SNE-plott sier lite om de virkelige avstandene.'
+      riktig: true
+      forklaring: 'Globale avstander bevares ikke.'
+    - tekst: 'Perplexity styrer omtrent hvor mange naboer hvert punkt tar hensyn til.'
+      riktig: true
+      forklaring: 'Den bestemmer bredden $\sigma_i$ på gaussen rundt hvert punkt.'
+    - tekst: 't-SNE er en lineær metode som PCA.'
+      forklaring: 't-SNE er ikke-lineær.'
+  forklaring: |
+    «t» står for t-fordelingen som brukes i det lavdimensjonale rommet. Den tunge halen gir mer plass og motvirker at punktene klumper seg sammen.
+  husk: 't-SNE: lokale naboskap, ikke-lineær, t-fordeling i lav dimensjon, perplexity ≈ antall naboer.'
+
+- id: "6.6-04"
+  del: "6.6"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** En høy verdi av KL-divergensen mellom naboskapsfordelingene i høy og lav dimensjon betyr at t-SNE har funnet en god embedding.
+  riktig: false
+  forklaring: |
+    t-SNE *minimerer* KL-divergensen. Høy KL betyr at naboskapene i det lavdimensjonale plottet avviker mye fra de i de opprinnelige dataene, altså en dårlig embedding.
+  husk: 'Lav KL = naboskapene er godt bevart.'
+
+- id: "6.6-05"
+  del: "6.6"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Hvilken sammenheng gjelder mellom KL-divergens, cross-entropy og entropi?
+  alternativer:
+    - tekst: '$D_{KL}(P\|Q) = H(P, Q) - H(P)$'
+      riktig: true
+      forklaring: 'KL er den ekstra overraskelsen vi får ved å bruke $Q$ i stedet for den sanne $P$.'
+    - tekst: '$D_{KL}(P\|Q) = H(P) - H(P, Q)$'
+      forklaring: 'Det ville gitt en negativ verdi, siden $H(P,Q) \geq H(P)$.'
+    - tekst: '$D_{KL}(P\|Q) = H(P, Q) + H(Q)$'
+      forklaring: 'Entropien som trekkes fra, er entropien til den sanne fordelingen $P$.'
+    - tekst: '$D_{KL}(P\|Q) = H(P,Q) \cdot H(P)$'
+      forklaring: 'Sammenhengen er en differanse.'
+  forklaring: |
+    Siden $H(P)$ ikke avhenger av $Q$, gir minimering av cross-entropy med hensyn på $Q$ samme optimum som minimering av KL. Det kobler kapittel 1.7 og 6.6.
+  husk: 'D_KL(P‖Q) = H(P, Q) − H(P). Min cross-entropy = min KL.'
+
+- id: "6.6-06"
+  del: "6.6"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Sammenlign PCA og t-SNE: hva bevarer de, hvordan fungerer de, og når ville du brukt hver av dem?
+  eksempelsvar: |
+    PCA er lineær: den finner ortogonale retninger med mest varians og projiserer dataene på dem. Den bevarer global struktur (store avstander), er rask og deterministisk, og lærer en avbildning som kan brukes på nye data. Den fungerer dårlig når strukturen er ikke-lineær. t-SNE er ikke-lineær: den lager naboskapssannsynligheter (gausser) i høy dimensjon og plasserer punktene i lav dimensjon slik at KL-divergensen til tilsvarende fordelinger (med t-fordeling) blir minst mulig. Den bevarer lokale naboskap og gir gode visualiseringer av klynger, men globale avstander betyr lite, den er treg, avhenger av perplexity og kan ikke brukes på nye punkter. PCA passer som forbehandling og når vi trenger en transformasjon, t-SNE til visualisering.
+  punkter:
+    - tekst: 'PCA: lineær, maks varians, global struktur.'
+      stikkord: ['lineær', 'varians', 'global']
+    - tekst: 't-SNE: ikke-lineær, KL-divergens, lokale naboskap.'
+      stikkord: ['ikke-lineær', 'kl', 'lokal', 'nabo']
+    - tekst: 'PCA kan brukes på nye data, t-SNE ikke.'
+      stikkord: ['nye data', 'nye punkter', 'avbildning', 'transform']
+    - tekst: 'Bruksområder: PCA som forbehandling, t-SNE til visualisering.'
+      stikkord: ['visualiser', 'forbehandl', 'preprosess']
+  husk: 'PCA: lineær, global, kan transformere nye data. t-SNE: ikke-lineær, lokal, bare visualisering.'
+
+# ---------------------------------------------------------------- 6.7 Anomalideteksjon
+- id: "6.7-01"
+  del: "6.7"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor får anomalier typisk høy anomaliskår i isolation forest?
+  alternativer:
+    - tekst: 'Fordi de isoleres med få tilfeldige splitter og derfor får kort stilengde i trærne'
+      riktig: true
+      forklaring: 'Punkter langt fra resten skilles ut tidlig.'
+    - tekst: 'Fordi de krever dypere trær for å isoleres'
+      forklaring: 'Det er motsatt. Normale punkter i tette områder krever mange splitter.'
+    - tekst: 'Fordi de har flest naboer'
+      forklaring: 'Anomalier har få naboer.'
+    - tekst: 'Fordi isolation forest trenes med labels for anomalier'
+      forklaring: 'Isolation forest er uveiledet.'
+  forklaring: |
+    Skåren vokser når gjennomsnittlig stilengde over trærne synker. Mange trær gjør resultatet robust mot tilfeldighetene i hvert enkelt tre.
+  husk: 'Isolation forest: kort sti = lett å isolere = anomali.'
+
+- id: "6.7-02"
+  del: "6.7"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke koblinger mellom metode og definisjon av anomali er riktige?
+  alternativer:
+    - tekst: 'k-means: punkter med avstand til nærmeste sentroide over en terskel (for eksempel 95. prosentil)'
+      riktig: true
+      forklaring: 'k-means trenger en terskel for å avgjøre hva som er langt unna.'
+    - tekst: 'DBSCAN: punkter som får label $-1$'
+      riktig: true
+      forklaring: 'Outliers kommer automatisk ut av DBSCAN, uten terskel.'
+    - tekst: 'Isolation forest: punkter med kort gjennomsnittlig stilengde'
+      riktig: true
+      forklaring: 'De isoleres med få splitter.'
+    - tekst: 'PCA: punkter med høyest verdi på PC1'
+      forklaring: 'Kurset bruker k-means, DBSCAN og isolation forest til anomalideteksjon.'
+  forklaring: |
+    De tre metodene i kurset definerer anomalier på ulike måter: avstand, tetthet og isolerbarhet.
+  husk: 'k-means: avstand + terskel. DBSCAN: −1. Isolation forest: kort sti.'
+
+- id: "6.7-03"
+  del: "6.7"
+  niva: middels
+  type: enkeltvalg
+  tags: [oving-3]
+  sporsmal: |
+    I øving 3 brukes `IsolationForest(n_estimators=100, contamination=0.05)`. Hva styrer `contamination`?
+  alternativer:
+    - tekst: 'Den forventede andelen anomalier, som bestemmer terskelen for hva som merkes som anomali'
+      riktig: true
+      forklaring: 'Med 0,05 merkes omtrent 5 % av punktene som anomalier.'
+    - tekst: 'Antall trær i skogen'
+      forklaring: 'Det er `n_estimators`.'
+    - tekst: 'Hvor stor andel av dataene hvert tre trenes på'
+      forklaring: 'Det styres av andre parametre (`max_samples`).'
+    - tekst: 'Hvor dype trærne kan bli'
+      forklaring: 'Dybden er ikke det `contamination` styrer.'
+  forklaring: |
+    `contamination` er en antakelse om dataene. Er den for høy, merkes normale punkter som anomalier; for lav, og ekte anomalier slipper gjennom.
+  husk: 'n_estimators = antall trær. contamination = forventet andel anomalier (setter terskelen).'
+
+- id: "6.7-04"
+  del: "6.7"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** DBSCAN kan trenes på et treningssett og deretter brukes til å avgjøre om nye testpunkter er anomalier.
+  riktig: false
+  forklaring: |
+    DBSCAN er ikke-parametrisk: den lærer ingen modell som kan brukes på nye punkter, men gir labels til punktene den kjøres på. For nye data må den kjøres på nytt med alle punktene. k-means (sentroider og terskel) og isolation forest (trærne) kan derimot brukes på nye data.
+  husk: 'DBSCAN må se alle data. k-means og isolation forest kan brukes på nye punkter.'
+
+- id: "6.7-05"
+  del: "6.7"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Du bruker k-means til anomalideteksjon og merker punkter som anomalier når avstanden til nærmeste sentroide er over 95. prosentil av avstandene i treningsdataene. Hva er en svakhet ved denne metoden?
+  alternativer:
+    - tekst: 'Den merker alltid omtrent 5 % av treningspunktene som anomalier, også hvis dataene ikke har noen'
+      riktig: true
+      forklaring: 'Terskelen er relativ. 95. prosentil er ikke alltid riktig valg.'
+    - tekst: 'Den kan ikke brukes på nye punkter'
+      forklaring: 'Sentroidene og terskelen kan brukes på nye punkter.'
+    - tekst: 'Den krever labels for anomaliene'
+      forklaring: 'Metoden er uveiledet.'
+    - tekst: 'Den finner bare anomalier i klynger med vilkårlig form'
+      forklaring: 'k-means antar tvert imot runde klynger.'
+  forklaring: |
+    Terskelen må tilpasses dataene og hvor mange anomalier vi forventer. I tillegg arver metoden k-means sine antakelser om runde klynger og valgt $k$.
+  husk: 'Prosentilterskel = fast andel anomalier. Tilpass terskelen til dataene.'
+
+- id: "6.7-06"
+  del: "6.7"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar hvordan isolation forest finner anomalier, og hvorfor metoden bruker mange trær.
+  eksempelsvar: |
+    Hvert tre bygges ved å velge en tilfeldig feature og en tilfeldig splitt-verdi mellom minimum og maksimum, gjentatt rekursivt til punktene er isolert (eller en maksdybde er nådd). Trærne trenes på delutvalg av dataene. Anomalier ligger langt fra resten og isoleres derfor etter få splitter: de får kort stilengde. Normale punkter i tette områder krever mange splitter. Anomaliskåren baseres på gjennomsnittlig stilengde over alle trærne. Fordi splittene er tilfeldige, kan ett tre gi en tilfeldig kort sti for et normalt punkt; snittet over mange trær gjør resultatet robust.
+  punkter:
+    - tekst: 'Tilfeldige features og splitt-verdier, rekursivt.'
+      stikkord: ['tilfeldig']
+    - tekst: 'Anomalier isoleres med få splitter / kort stilengde.'
+      stikkord: ['kort', 'få splitt', 'stilengde', 'tidlig']
+    - tekst: 'Skår basert på snitt av stilengde over trærne.'
+      stikkord: ['snitt', 'gjennomsnitt', 'over trærne']
+    - tekst: 'Mange trær gir robusthet mot tilfeldighet.'
+      stikkord: ['robust', 'mange trær', 'tilfeldighet']
+  husk: 'Tilfeldige splitter, kort sti = anomali, snitt over mange trær for robusthet.'
