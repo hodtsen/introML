@@ -1,0 +1,697 @@
+# Oppgaver til kapittel 2: Bayes, ubalanserte data og beslutningstrær
+
+# ---------------------------------------------------------------- 2.1 Bayes' teorem
+- id: "2.1-01"
+  del: "2.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I Bayes' teorem for klassifisering, $p(C_k \mid \mathbf{x}) = \dfrac{p(\mathbf{x} \mid C_k)\,p(C_k)}{p(\mathbf{x})}$, hva er rollen til nevneren $p(\mathbf{x})$?
+  alternativer:
+    - tekst: 'Den normaliserer slik at posteriorene summerer til 1, og er lik for alle klasser'
+      riktig: true
+      forklaring: 'Evidensen avhenger ikke av $k$. Den skalerer alle klassene likt og endrer ikke hvilken som vinner.'
+    - tekst: 'Den er sannsynligheten for klassen før vi har sett dataene'
+      forklaring: 'Det er prior, $p(C_k)$.'
+    - tekst: 'Den avgjør hvilken klasse som predikeres'
+      forklaring: 'Siden den er lik for alle klasser, påvirker den ikke rangeringen.'
+    - tekst: 'Den er sannsynligheten for dataene gitt klassen'
+      forklaring: 'Det er likelihood, $p(\mathbf{x} \mid C_k)$.'
+  forklaring: |
+    Posterior $\propto$ likelihood $\times$ prior. For å finne mest sannsynlige klasse holder det å sammenligne tellerne. Evidensen trengs bare hvis vi vil ha selve sannsynligheten.
+  husk: 'Posterior ∝ likelihood · prior. Evidensen er lik for alle klasser og kan droppes ved klassifisering.'
+
+- id: "2.1-02"
+  del: "2.1"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En sykdom finnes hos 1 % av befolkningen. En test er positiv hos 95 % av de syke og hos 5 % av de friske. En tilfeldig person tester positivt.
+  deler:
+    - sporsmal: 'Hva er sannsynligheten for at personen er syk (tre desimaler)?'
+      svar: 0.161
+      toleranse: 0.003
+  losning: |
+    $p(\text{syk} \mid +) = \dfrac{p(+ \mid \text{syk})\,p(\text{syk})}{p(+)} = \dfrac{0{,}95 \cdot 0{,}01}{0{,}95 \cdot 0{,}01 + 0{,}05 \cdot 0{,}99} = \dfrac{0{,}0095}{0{,}0095 + 0{,}0495} \approx 0{,}161$
+
+    Selv med en god test er det bare 16 % sjanse for sykdom, fordi prioren er så lav. De mange friske gir flere falske positive enn de få syke gir sanne positive.
+  husk: 'Lav prior kan dominere: når klassen er sjelden, er de fleste positive prediksjoner falske.'
+
+- id: "2.1-03"
+  del: "2.1"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Hvilke koblinger mellom navn og ledd i Bayes' teorem er riktige?
+  alternativer:
+    - tekst: 'Prior: $p(C_k)$, sannsynligheten for klassen før vi ser datapunktet'
+      riktig: true
+      forklaring: 'Kan estimeres fra klassefordelingen i treningsdataene.'
+    - tekst: 'Likelihood: $p(\mathbf{x} \mid C_k)$, hvor sannsynlige featurene er innen klassen'
+      riktig: true
+      forklaring: 'Dette er leddet som er vanskelig når featurene er avhengige.'
+    - tekst: 'Posterior: $p(\mathbf{x})$, sannsynligheten for dataene'
+      forklaring: '$p(\mathbf{x})$ er evidensen. Posterioren er $p(C_k \mid \mathbf{x})$.'
+    - tekst: 'Evidens: $p(C_k \mid \mathbf{x})$, det modellen skal estimere'
+      forklaring: 'Det modellen skal estimere, er posterioren.'
+  forklaring: |
+    posterior = likelihood · prior / evidens, altså $p(C_k \mid \mathbf{x}) = p(\mathbf{x} \mid C_k)\,p(C_k)/p(\mathbf{x})$.
+  husk: 'Posterior p(C|x), likelihood p(x|C), prior p(C), evidens p(x).'
+
+- id: "2.1-04"
+  del: "2.1"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Hvis vi kjente den sanne posterioren $p(C_k \mid \mathbf{x})$ for alle $\mathbf{x}$, ville vi ikke trengt maskinlæring for å klassifisere.
+  riktig: true
+  forklaring: |
+    Da ville vi bare valgt klassen med høyest posterior. Problemet er at likelihood $p(\mathbf{x} \mid C_k)$ er ukjent og vanskelig å estimere når featurene er mange og avhengige. Maskinlæringsmodeller som logistisk regresjon og naiv Bayes er måter å estimere posterioren på.
+  husk: 'Maskinlæring for klassifisering = å estimere posterioren, fordi den ikke kan regnes ut eksakt.'
+
+- id: "2.1-05"
+  del: "2.1"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    For to klasser regner du ut forholdet $\dfrac{p(\mathbf{x} \mid C_0)\,p(C_0)}{p(\mathbf{x} \mid C_1)\,p(C_1)} = 0{,}4$. Hva kan du konkludere?
+  alternativer:
+    - tekst: 'Klasse 1 er mest sannsynlig, og $p(C_1 \mid \mathbf{x}) = 1/1{,}4 \approx 0{,}71$'
+      riktig: true
+      forklaring: 'Forholdet er under 1, så klasse 1 vinner. Med to klasser er $p(C_1 \mid \mathbf{x}) = 1/(1 + 0{,}4)$.'
+    - tekst: 'Klasse 0 er mest sannsynlig, med posterior 0,4'
+      forklaring: 'Et forhold under 1 betyr at nevneren (klasse 1) er størst.'
+    - tekst: 'Vi kan ikke konkludere uten å regne ut evidensen $p(\mathbf{x})$'
+      forklaring: 'Evidensen er lik for begge klasser og forkortes bort i forholdet.'
+    - tekst: 'Klasse 1 er mest sannsynlig, med posterior 0,6'
+      forklaring: '$1 - 0{,}4$ er ikke riktig. Posterioren er $1/(1 + \text{forholdet})$.'
+  forklaring: |
+    La $a = p(\mathbf{x}\mid C_0)p(C_0)$ og $b = p(\mathbf{x}\mid C_1)p(C_1)$. Da er $p(C_1 \mid \mathbf{x}) = b/(a + b) = 1/(1 + a/b) = 1/1{,}4 \approx 0{,}714$.
+  husk: 'Forhold > 1: klasse 0. Forhold < 1: klasse 1. Evidensen forkortes bort.'
+
+- id: "2.1-06"
+  del: "2.1"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar hvorfor vi i praksis ikke kan bruke Bayes' teorem direkte til å klassifisere datapunkter med mange features, og hvilket ledd som er problemet.
+  eksempelsvar: |
+    Prioren kan estimeres fra klassefordelingen, og evidensen kan droppes fordi den er lik for alle klasser. Problemet er likelihood $p(\mathbf{x} \mid C_k)$: vi må kjenne simultanfordelingen til alle featurene innen hver klasse. Med mange, avhengige features krever det enormt mye data (dimensjonsforbannelsen), fordi vi må ha observasjoner for nesten hver kombinasjon av verdier. Derfor gjør vi forenklende antakelser (naiv Bayes) eller lærer posterioren direkte (logistisk regresjon).
+  punkter:
+    - tekst: 'Peker ut likelihood $p(\mathbf{x} \mid C_k)$ som problemet.'
+      stikkord: ['likelihood', 'p(x|c', 'p(x | c']
+    - tekst: 'Forklarer at featurene er avhengige, så simultanfordelingen må estimeres.'
+      stikkord: ['avhengig', 'simultan', 'felles', 'kombinasjon']
+    - tekst: 'Kobler til datamengde eller dimensjonsforbannelsen.'
+      stikkord: ['data', 'dimensjon', 'eksponentiell']
+    - tekst: 'Prior er enkel og evidensen kan droppes.'
+      stikkord: ['prior', 'evidens']
+  husk: 'Prior: lett. Evidens: kan droppes. Likelihood med avhengige features: krever enorme datamengder.'
+
+# ---------------------------------------------------------------- 2.2 Naiv Bayes
+- id: "2.2-01"
+  del: "2.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva er den «naive» antakelsen i naiv Bayes?
+  alternativer:
+    - tekst: 'At featurene er betinget uavhengige gitt klassen'
+      riktig: true
+      forklaring: 'Da kan likelihood skrives som et produkt av én-dimensjonale fordelinger, $\prod_i p(x_i \mid C_k)$.'
+    - tekst: 'At alle klasser er like sannsynlige'
+      forklaring: 'Naiv Bayes bruker prior fra dataene. Like priorer er ikke en del av antakelsen.'
+    - tekst: 'At featurene er normalfordelte'
+      forklaring: 'Gaussisk likelihood er ett valg for kontinuerlige features, men er ikke den naive antakelsen.'
+    - tekst: 'At sammenhengen mellom features og klasse er lineær'
+      forklaring: 'Det er en antakelse i logistisk regresjon, ikke i naiv Bayes.'
+  forklaring: |
+    Med antakelsen blir $p(\mathbf{x} \mid C_k) = \prod_i p(x_i \mid C_k)$, og hver faktor kan estimeres med lite data. Uten den måtte vi estimert simultanfordelingen.
+  husk: 'Naiv = betinget uavhengige features gitt klassen. Likelihood blir et produkt.'
+
+- id: "2.2-02"
+  del: "2.2"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et naiv Bayes-spamfilter er trent på e-poster. 40 % er spam. Ordet «gratis» forekommer i 50 % av spam-epostene og 5 % av de vanlige. Ordet «møte» forekommer i 10 % av spam-epostene og 40 % av de vanlige. En ny e-post inneholder begge ordene. Se bare på disse to featurene.
+  deler:
+    - sporsmal: 'Uskalert score for spam, $p(\text{spam})\,p(\text{gratis} \mid \text{spam})\,p(\text{møte} \mid \text{spam})$'
+      svar: 0.02
+      toleranse: 0.0005
+    - sporsmal: 'Uskalert score for vanlig e-post'
+      svar: 0.012
+      toleranse: 0.0005
+    - sporsmal: 'Normalisert sannsynlighet for spam'
+      svar: 0.625
+      toleranse: 0.003
+  losning: |
+    - Spam: $0{,}4 \cdot 0{,}5 \cdot 0{,}1 = 0{,}020$
+    - Vanlig: $0{,}6 \cdot 0{,}05 \cdot 0{,}4 = 0{,}012$
+
+    Spam vinner. Normalisert: $0{,}020/(0{,}020 + 0{,}012) = 0{,}625$. Summen i nevneren spiller rollen til evidensen $p(\mathbf{x})$.
+  husk: 'Naiv Bayes for hånd: prior ganger alle betingede sannsynligheter, per klasse. Normaliser til slutt om du trenger sannsynligheten.'
+
+- id: "2.2-03"
+  del: "2.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et datasett om passasjerer har blant annet featurene `Sex`, `Age`, `Pclass` og `Fare` (billettpris). For hvilket par er antakelsen om betinget uavhengighet mest tvilsom?
+  alternativer:
+    - tekst: '`Pclass` og `Fare` (billettpris)'
+      riktig: true
+      forklaring: 'Billettprisen bestemmes i stor grad av klassen. De to featurene er sterkt avhengige.'
+    - tekst: '`Sex` og `Age`'
+      forklaring: 'Kjønn og alder er omtrent uavhengige i en vanlig befolkning.'
+    - tekst: '`Sex` og et tilfeldig trukket lotteritall'
+      forklaring: 'Et tilfeldig tall er uavhengig av alt annet.'
+    - tekst: 'Alle par er like avhengige, så spørsmålet gir ikke mening'
+      forklaring: 'Graden av avhengighet varierer mye mellom par av features.'
+  forklaring: |
+    Naiv Bayes kan brukes uansett, men prediksjonene blir dårligere jo mer antakelsen brytes. Sterkt avhengige features telles i praksis dobbelt.
+  husk: 'Typisk avhengige features: klasse og pris, høyde og vekt. Omtrent uavhengige: kjønn og alder.'
+
+- id: "2.2-04"
+  del: "2.2"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Hvis featurene i datasettet er avhengige, kan naiv Bayes ikke brukes, fordi formelen da ikke kan regnes ut.
+  riktig: false
+  forklaring: |
+    Formelen kan alltid regnes ut: den ganger bare sammen $p(x_i \mid C_k)$ for hver feature. Modellen *antar* uavhengighet. Når antakelsen er brutt, bygger tallet på en feil forutsetning, og sannsynlighetene blir dårlig kalibrerte, men klassifiseringen kan fortsatt være brukbar.
+  husk: 'Naiv Bayes antar uavhengighet, den krever det ikke. Brudd gir dårligere og ukalibrerte estimater.'
+
+- id: "2.2-05"
+  del: "2.2"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Du bruker naiv Bayes med gaussisk likelihood for featuren «alder». I klasse 1 har alder snitt $\mu = 5$ og standardavvik $\sigma = 2$ (i tiår). Hva er $F(x)$ for $x = 7$?
+  alternativer:
+    - tekst: '$\dfrac{1}{2\sqrt{2\pi}}e^{-1/2} \approx 0{,}121$'
+      riktig: true
+      forklaring: '$(x - \mu)^2/(2\sigma^2) = 4/8 = 0{,}5$, og $1/(\sigma\sqrt{2\pi}) = 1/(2\sqrt{2\pi}) \approx 0{,}199$.'
+    - tekst: '$\dfrac{1}{\sqrt{2\pi}}e^{-2} \approx 0{,}054$'
+      forklaring: 'Her er $\sigma$ satt til 1 og ikke 2, både foran og i eksponenten.'
+    - tekst: '$\dfrac{1}{2\sqrt{2\pi}}e^{-1} \approx 0{,}073$'
+      forklaring: 'Eksponenten skal være $4/(2 \cdot 4) = 0{,}5$, ikke $4/4$.'
+    - tekst: '0,5, fordi 7 er over snittet'
+      forklaring: '0,5 er sannsynligheten for å være over snittet. Spørsmålet er etter tettheten i $x = 7$.'
+  forklaring: |
+    $F(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$. Tettheten brukes som $p(x_i \mid C_k)$ i produktet for kontinuerlige features.
+  husk: 'Kontinuerlige features i naiv Bayes: bruk en fordeling (for eksempel gauss) med μ og σ estimert per klasse.'
+
+- id: "2.2-06"
+  del: "2.2"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om naiv Bayes stemmer?
+  alternativer:
+    - tekst: 'Den trenger mye mindre data enn å estimere hele simultanfordelingen $p(\mathbf{x} \mid C_k)$.'
+      riktig: true
+      forklaring: 'Hver én-dimensjonale fordeling kan estimeres med lite data.'
+    - tekst: 'Prioren $p(C_k)$ kan estimeres fra andelen av hver klasse i treningsdataene.'
+      riktig: true
+      forklaring: 'Det er den vanlige måten å sette prioren på.'
+    - tekst: 'Sannsynlighetene den gir, er godt kalibrerte når featurene er avhengige.'
+      forklaring: 'Avhengige features telles flere ganger, og sannsynlighetene blir typisk for ekstreme.'
+    - tekst: 'Uavhengighetsantakelsen gjelder bare numeriske features.'
+      forklaring: 'Den gjelder alle features, kategoriske og numeriske.'
+  forklaring: |
+    Naiv Bayes byr på en enkel modell som trenger lite data, men betaler med en sterk antakelse.
+  husk: 'Fordel: lite data, enkel. Ulempe: antar betinget uavhengighet, ukalibrerte sannsynligheter.'
+
+# ---------------------------------------------------------------- 2.3 Dimensjonsforbannelsen
+- id: "2.3-01"
+  del: "2.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Du deler hver feature inn i 10 intervaller (bins) og vil ha minst 10 datapunkter i hver celle. Hvor mange datapunkter trenger du med 5 features?
+  alternativer:
+    - tekst: '$10^6$'
+      riktig: true
+      forklaring: '$N = m \cdot b^d = 10 \cdot 10^5 = 10^6$.'
+    - tekst: '500'
+      forklaring: 'Det ville vært riktig hvis antall celler vokste lineært, $10 \cdot 5 \cdot 10$. De vokser eksponentielt.'
+    - tekst: '$10^5$'
+      forklaring: 'Det er antall celler. Hver celle skal ha 10 punkter.'
+    - tekst: '$5^{10}$'
+      forklaring: 'Grunntallet er antall bins (10), og eksponenten antall features (5).'
+  forklaring: |
+    Antall celler er $b^d$. Med $b = m = 10$ blir $N = 10^{d+1}$. Hver nye feature ganger datamengden med 10.
+  husk: 'N = m · b^d: datamengden vokser eksponentielt med antall features.'
+
+- id: "2.3-02"
+  del: "2.3"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    I en $d$-dimensjonal enhetskule er andelen av volumet i et ytre skall med tykkelse $\epsilon$ lik $1 - (1 - \epsilon)^d$.
+  deler:
+    - sporsmal: 'Andelen i skallet med $\epsilon = 0{,}1$ og $d = 2$'
+      svar: 0.19
+      toleranse: 0.003
+    - sporsmal: 'Andelen i skallet med $\epsilon = 0{,}1$ og $d = 20$ (tre desimaler)'
+      svar: 0.878
+      toleranse: 0.003
+  losning: |
+    - $d = 2$: $1 - 0{,}9^2 = 1 - 0{,}81 = 0{,}19$
+    - $d = 20$: $1 - 0{,}9^{20} \approx 1 - 0{,}122 = 0{,}878$
+
+    I 20 dimensjoner ligger nesten 88 % av volumet i det tynne ytterste skallet. Tilfeldige punkter havner derfor nesten alltid langt fra sentrum og omtrent like langt fra hverandre.
+  husk: 'I høye dimensjoner ligger nesten alt volum i skallet. Avstander mister mening.'
+
+- id: "2.3-03"
+  del: "2.3"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om dimensjonsforbannelsen stemmer?
+  alternativer:
+    - tekst: 'Den er en grunn til at naiv Bayes antar uavhengige features i stedet for å estimere simultanfordelingen.'
+      riktig: true
+      forklaring: 'Simultanfordelingen krever data i hver celle av et eksponentielt stort rom.'
+    - tekst: 'Den gjør avstandsbaserte metoder som klynging vanskeligere i høye dimensjoner.'
+      riktig: true
+      forklaring: 'Avstander konsentreres: nærmeste og fjerneste punkt blir omtrent like langt unna (kapittel 6).'
+    - tekst: 'Datamengden som trengs, vokser lineært med antall features.'
+      forklaring: 'Den vokser eksponentielt.'
+    - tekst: 'Med nok data forsvinner problemet for alle realistiske antall features.'
+      forklaring: 'For MNIST med $d = 784$ ville $10^{785}$ punkter vært nødvendig, langt mer enn det finnes atomer i universet.'
+  forklaring: |
+    Rommet blir eksponentielt større med hver ny dimensjon, så dataene blir glissent fordelt. Det rammer både sannsynlighetsestimering og avstandsbaserte metoder.
+  husk: 'Dimensjonsforbannelsen: eksponentiell datamengde, tomt rom, avstander som konsentreres.'
+
+- id: "2.3-04"
+  del: "2.3"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** MNIST-bilder på 28 × 28 piksler har 784 features. Med 10 bins per piksel og 10 punkter per celle ville vi trengt $10^{785}$ treningsbilder for å estimere simultanfordelingen direkte.
+  riktig: true
+  forklaring: |
+    $N = 10 \cdot 10^{784} = 10^{785}$. Det viser hvorfor vi ikke kan estimere fordelingen til bilder celle for celle, og hvorfor vi trenger modeller med sterke antakelser eller som lærer struktur, som nevrale nettverk.
+  husk: 'MNIST: d = 784, N = 10^785. Umulig uten forenklende antakelser.'
+
+- id: "2.3-05"
+  del: "2.3"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar med egne ord hvorfor «de fleste punktene ligger i skallet» i høye dimensjoner, og hvilken konsekvens det har for maskinlæring.
+  eksempelsvar: |
+    Volumet av en kule med radius $r$ i $d$ dimensjoner er proporsjonalt med $r^d$. Den indre kulen med radius $1 - \epsilon$ har derfor volumandel $(1 - \epsilon)^d$, som går mot 0 når $d$ vokser, selv for liten $\epsilon$. Nesten alt volumet, og dermed nesten alle tilfeldige punkter, ligger da nær overflaten. Konsekvensen er at punktene blir spredt og omtrent like langt fra hverandre, så nabolag og avstander mister mening, og vi trenger enorme datamengder for å dekke rommet.
+  punkter:
+    - tekst: 'Volum vokser som $r^d$, så den indre kulen får andel $(1-\epsilon)^d \to 0$.'
+      stikkord: ['r^d', 'volum', '(1-', 'eksponent', 'går mot']
+    - tekst: 'Nesten alle punkter ligger nær overflaten (i skallet).'
+      stikkord: ['skall', 'overflat', 'kant', 'ytterst']
+    - tekst: 'Konsekvens: avstander blir like, nabolag meningsløse, eller enorme datamengder kreves.'
+      stikkord: ['avstand', 'nabo', 'like langt', 'data']
+  husk: 'Indre volumandel (1 − ε)^d → 0. Punkter havner ytterst og blir omtrent like langt fra hverandre.'
+
+- id: "2.3-06"
+  del: "2.3"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du går fra 3 til 6 features og beholder 10 bins per feature og 10 punkter per celle. Hvor mange ganger flere datapunkter trenger du?
+  alternativer:
+    - tekst: '1000 ganger flere'
+      riktig: true
+      forklaring: '$10^{7}/10^{4} = 10^3$.'
+    - tekst: '2 ganger flere'
+      forklaring: 'Dobbelt så mange features gir ikke dobbelt så mange celler, men $10^3$ ganger så mange.'
+    - tekst: '30 ganger flere'
+      forklaring: 'Veksten er multiplikativ: hver ny feature ganger med 10.'
+    - tekst: '100 ganger flere'
+      forklaring: 'Tre nye features gir faktoren $10^3$, ikke $10^2$.'
+  forklaring: |
+    $N = 10^{d+1}$ gir $10^4$ for $d = 3$ og $10^7$ for $d = 6$.
+  husk: 'Hver ekstra feature ganger antall celler med antall bins.'
+
+# ---------------------------------------------------------------- 2.4 Ubalanserte data
+- id: "2.4-01"
+  del: "2.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Et datasett har 950 negative og 50 positive punkter. En modell predikerer «negativ» for alle punkter. Hva er accuracy og recall?
+  alternativer:
+    - tekst: 'Accuracy 0,95 og recall 0'
+      riktig: true
+      forklaring: 'Alle 950 negative er riktige, men ingen av de 50 positive blir funnet.'
+    - tekst: 'Accuracy 0,95 og recall 0,95'
+      forklaring: 'Recall er TP/(TP + FN) = 0/50 = 0.'
+    - tekst: 'Accuracy 0,05 og recall 1'
+      forklaring: 'Det ville vært resultatet om modellen predikerte «positiv» for alle.'
+    - tekst: 'Accuracy 0,50 og recall 0'
+      forklaring: 'Accuracy regnes over alle punktene: 950/1000.'
+  forklaring: |
+    Dette er accuracy-paradokset: en ubrukelig modell får høy accuracy fordi den store klassen dominerer. Recall avslører problemet.
+  husk: 'Accuracy-paradokset: høy accuracy, null recall. Se alltid på recall og precision ved ubalanse.'
+
+- id: "2.4-02"
+  del: "2.4"
+  niva: middels
+  type: tall
+  tags: [regning, oving-2]
+  sporsmal: |
+    Treningsdataene har 950 negative og 50 positive punkter. Du vil balansere klassene til 50/50.
+  deler:
+    - sporsmal: 'Hvor mange punkter er igjen totalt etter undersampling?'
+      svar: 100
+      toleranse: 0
+    - sporsmal: 'Hvor mange punkter er det totalt etter oversampling?'
+      svar: 1900
+      toleranse: 0
+    - sporsmal: 'Hvor mange av de positive punktene etter oversampling er duplikater?'
+      svar: 900
+      toleranse: 0
+  losning: |
+    - **Undersampling** fjerner punkter fra den store klassen til den er like stor som den lille: $50 + 50 = 100$. Vi kaster 900 negative punkter.
+    - **Oversampling** trekker punkter fra den lille klassen med tilbakelegging til den er like stor som den store: $950 + 950 = 1900$.
+    - Bare 50 av de 950 positive er unike, så $950 - 50 = 900$ er duplikater.
+  husk: 'Undersampling krymper den store klassen. Oversampling dupliserer den lille.'
+
+- id: "2.4-03"
+  del: "2.4"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om under- og oversampling stemmer?
+  alternativer:
+    - tekst: 'Undersampling kaster informasjon og kan gi undertilpasning (høy bias).'
+      riktig: true
+      forklaring: 'Mange punkter fra den store klassen fjernes.'
+    - tekst: 'Oversampling kan gi overtilpasning (høy varians) fordi de samme punktene gjentas.'
+      riktig: true
+      forklaring: 'Modellen kan lære seg duplikatene utenat.'
+    - tekst: 'Oversampling tilfører ny informasjon om den lille klassen.'
+      forklaring: 'Den kopierer bare punkter som allerede finnes.'
+    - tekst: 'Resampling skal gjøres på hele datasettet før splitt i trening og test.'
+      forklaring: 'Resampling gjøres bare på treningsdataene. Testdataene skal ha den virkelige fordelingen, og duplikater i begge sett gir lekkasje.'
+  forklaring: |
+    Begge metodene endrer treningsfordelingen for å gi den lille klassen mer vekt. Alternativet er å vekte tapet.
+  husk: 'Under: mister data → bias. Over: duplikater → varians. Bare på treningsdata.'
+
+- id: "2.4-04"
+  del: "2.4"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du bruker vektet binær cross-entropy $\mathcal{L} = -w_1 y\ln y_{\text{pred}} - w_0(1-y)\ln(1 - y_{\text{pred}})$. Den positive klassen er sjelden og viktig. Hvordan bør vektene velges?
+  alternativer:
+    - tekst: '$w_1 > w_0$, for eksempel omvendt proporsjonalt med klassestørrelsen'
+      riktig: true
+      forklaring: 'Feil på de sjeldne positive punktene skal koste mer.'
+    - tekst: '$w_0 > w_1$, fordi den negative klassen har flest punkter'
+      forklaring: 'Det ville forsterket ubalansen.'
+    - tekst: '$w_0 = w_1 = 0{,}5$'
+      forklaring: 'Like vekter gir vanlig cross-entropy (skalert), uten noen korrigering.'
+    - tekst: '$w_1 = 0$, slik at modellen fokuserer på den store klassen'
+      forklaring: 'Da ville modellen ikke lært noe om den positive klassen i det hele tatt.'
+  forklaring: |
+    $w_1$ vekter leddet for punkter med $y = 1$. Med 950 negative og 50 positive kan for eksempel $w_1 = 19$ og $w_0 = 1$ gi klassene like stor samlet vekt.
+  husk: 'w₁ hører til y = 1-leddet. Gi den lille klassen størst vekt.'
+
+- id: "2.4-05"
+  del: "2.4"
+  niva: avansert
+  type: pastand
+  sporsmal: |
+    **Påstand:** Å senke klassifiseringsterskelen gjør modellen bedre på ubalanserte data, fordi recall øker.
+  riktig: false
+  forklaring: |
+    Terskelen endrer ikke modellen, bare hvor vi står på ROC-kurven. Recall øker, men FPR øker også og precision faller som regel. Det kan være riktig valg når falske negative er dyre, men modellens evne til å skille klassene (for eksempel AUC) er uendret.
+  husk: 'Terskelendring flytter balansen mellom feiltypene. Den gjør ikke modellen bedre.'
+
+- id: "2.4-06"
+  del: "2.4"
+  niva: avansert
+  type: tekst
+  tags: [oving-2, case]
+  sporsmal: |
+    Du skal lage en modell for å oppdage en sjelden maskinfeil (2 % av tilfellene). Beskriv to ulike tiltak mot ubalansen, med en fordel og en ulempe for hvert, og si hvilken metrikk du vil evaluere med.
+  eksempelsvar: |
+    1. **Oversampling** av feiltilfellene i treningsdataene: ingen data kastes, men duplikatene kan gi overtilpasning.
+    2. **Vektet tap** (vektet cross-entropy med høy $w_1$): bruker alle data uten duplikater, men vektene er en hyperparameter som må velges, og for høye vekter gir mange falske alarmer.
+
+    (Undersampling er også et alternativ: rask, men kaster mye informasjon.) Jeg ville evaluert med recall og precision (eventuelt F1 eller precision–recall-kurve) på en testmengde med den virkelige fordelingen, ikke accuracy, som ville vært 98 % for en modell som aldri finner feil.
+  punkter:
+    - tekst: 'Nevner minst to tiltak (oversampling, undersampling, vektet tap).'
+      stikkord: ['oversampl', 'undersampl', 'vekt']
+    - tekst: 'Gir fordel og ulempe for tiltakene (for eksempel overtilpasning ved oversampling, tap av data ved undersampling).'
+      stikkord: ['overtilpass', 'overfit', 'kaster', 'mister', 'varians', 'bias']
+    - tekst: 'Velger recall/precision (eller F1, PR-kurve) og forkaster accuracy.'
+      stikkord: ['recall', 'precision', 'f1', 'accuracy']
+    - tekst: 'Testdata skal beholde den virkelige fordelingen.'
+      stikkord: ['test', 'virkelig', 'opprinnelig']
+  husk: 'Tre verktøy: undersampling, oversampling, vektet tap. Evaluer med recall og precision på upåvirket testdata.'
+
+# ---------------------------------------------------------------- 2.5 Beslutningstrær
+- id: "2.5-01"
+  del: "2.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En node har 8 positive og 12 negative punkter. Hva er Gini-urenheten?
+  alternativer:
+    - tekst: '0,48'
+      riktig: true
+      forklaring: '$1 - 0{,}4^2 - 0{,}6^2 = 1 - 0{,}16 - 0{,}36 = 0{,}48$.'
+    - tekst: '0,52'
+      forklaring: 'Dette er $0{,}16 + 0{,}36$, altså summen av kvadratene. Gini er 1 minus denne summen.'
+    - tekst: '0,97'
+      forklaring: 'Dette er entropien i bits, ikke Gini.'
+    - tekst: '0,24'
+      forklaring: 'Dette er $p(1-p)$. For to klasser er Gini $2p(1-p)$.'
+  forklaring: |
+    $\text{Gini} = 1 - \sum_i p_i^2$ med $p_1 = 8/20 = 0{,}4$ og $p_0 = 12/20 = 0{,}6$. Maks for to klasser er 0,5.
+  husk: 'Gini = 1 − Σ p². To klasser: mellom 0 (ren) og 0,5 (50/50).'
+
+- id: "2.5-02"
+  del: "2.5"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Rotnoden har 8 positive og 12 negative punkter. To kandidatsplitter:
+
+    - **Split A:** venstre 6 positive og 2 negative, høyre 2 positive og 10 negative
+    - **Split B:** venstre 8 positive og 6 negative, høyre 0 positive og 6 negative
+  deler:
+    - sporsmal: 'Vektet Gini etter split A (tre desimaler)'
+      svar: 0.317
+      toleranse: 0.003
+    - sporsmal: 'Vektet Gini etter split B (tre desimaler)'
+      svar: 0.343
+      toleranse: 0.003
+    - sporsmal: 'Hvilken split velger treet etter Gini? Skriv 1 for A og 2 for B.'
+      svar: 1
+      toleranse: 0
+  losning: |
+    **Split A:** venstre Gini $= 1 - 0{,}75^2 - 0{,}25^2 = 0{,}375$, høyre Gini $= 1 - (2/12)^2 - (10/12)^2 = 0{,}278$. Vektet: $\tfrac{8}{20} \cdot 0{,}375 + \tfrac{12}{20} \cdot 0{,}278 = 0{,}150 + 0{,}167 = 0{,}317$.
+
+    **Split B:** venstre Gini $= 1 - (8/14)^2 - (6/14)^2 = 0{,}490$, høyre er ren (Gini 0). Vektet: $\tfrac{14}{20} \cdot 0{,}490 = 0{,}343$.
+
+    Treet velger split A, som gir lavest vektet Gini. Merk at split B har en helt ren gren, men den andre grenen er nesten like uren som roten.
+  husk: 'Vekt hver gren med andelen punkter den får. Velg lavest vektet urenhet, ikke den med en ren gren.'
+
+- id: "2.5-03"
+  del: "2.5"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    En node har 8 positive og 12 negative punkter (entropi 0,971 bit). En splitt gir venstre gren med 6 positive og 2 negative (entropi 0,811) og høyre gren med 2 positive og 10 negative (entropi 0,650). Hva er informasjonsgevinsten?
+  alternativer:
+    - tekst: 'Omtrent 0,26 bit'
+      riktig: true
+      forklaring: 'Forventet entropi etter er $0{,}4 \cdot 0{,}811 + 0{,}6 \cdot 0{,}650 = 0{,}715$, og $0{,}971 - 0{,}715 = 0{,}256$.'
+    - tekst: 'Omtrent 0,24 bit'
+      forklaring: 'Dette er $0{,}971 - (0{,}811 + 0{,}650)/2$ med et uvektet snitt. Grenene skal vektes med antall punkter.'
+    - tekst: 'Omtrent 0,72 bit'
+      forklaring: 'Det er forventet entropi etter splitten, ikke gevinsten.'
+    - tekst: 'Omtrent 1,46 bit'
+      forklaring: 'Entropiene i grenene skal ikke summeres uvektet.'
+  forklaring: |
+    $\Delta I = I_{\text{før}} - \sum_i \frac{p_i + n_i}{p + n} I_i$. Vektene her er $8/20$ og $12/20$.
+  husk: 'Informasjonsgevinst = entropi før − vektet entropi etter. Velg splitten med størst gevinst.'
+
+- id: "2.5-04"
+  del: "2.5"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om Gini og entropi som splitt-kriterier stemmer?
+  alternativer:
+    - tekst: 'Begge er 0 for en ren node.'
+      riktig: true
+      forklaring: 'En node med bare én klasse har ingen urenhet.'
+    - tekst: 'De gir i hovedsak de samme splittene.'
+      riktig: true
+      forklaring: 'Kurvene har nesten samme form (se figuren i 2.5).'
+    - tekst: 'Gini er standard i sklearn og er litt raskere å regne ut.'
+      riktig: true
+      forklaring: 'Gini trenger ingen logaritme.'
+    - tekst: 'Treet velger splitten med høyest Gini etter splitt.'
+      forklaring: 'Treet velger lavest urenhet etter splitt, altså størst reduksjon.'
+  forklaring: |
+    For to klasser er Gini maks 0,5 og entropi maks 1 bit, begge ved 50/50-fordeling.
+  husk: 'Lavere urenhet etter splitt = bedre splitt. Gini og entropi er nesten like i praksis.'
+
+- id: "2.5-05"
+  del: "2.5"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Med tre klasser kan Gini-urenheten bli større enn 0,5.
+  riktig: true
+  forklaring: |
+    Maksimum er $1 - 1/k$. Med tre like store klasser er Gini $1 - 3 \cdot (1/3)^2 = 2/3 \approx 0{,}67$. Grensen 0,5 gjelder bare for to klasser.
+  husk: 'Maks Gini = 1 − 1/k. To klasser: 0,5. Tre klasser: 0,67.'
+
+- id: "2.5-06"
+  del: "2.5"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    En kandidatsplitt gir to grener med nøyaktig samme klassefordeling som foreldrenoden. Hva er informasjonsgevinsten?
+  alternativer:
+    - tekst: '0, fordi den vektede entropien etter er lik entropien før'
+      riktig: true
+      forklaring: 'Splitten har ikke skilt klassene i det hele tatt.'
+    - tekst: 'Positiv, fordi to mindre noder alltid er renere'
+      forklaring: 'Renhet avhenger av fordelingen i nodene, ikke størrelsen.'
+    - tekst: 'Negativ, fordi splitten gjør treet større'
+      forklaring: 'Informasjonsgevinst kan ikke bli negativ. Den måler bare endring i urenhet.'
+    - tekst: '1 bit'
+      forklaring: '1 bit ville betydd at en 50/50-node ble splittet i to rene grener.'
+  forklaring: |
+    Hvis begge grenene har samme andel positive som roten, er $I_i = I_{\text{før}}$ for hver gren, og det vektede snittet er $I_{\text{før}}$. Gevinsten er 0.
+  husk: 'En splitt som ikke endrer klassefordelingen, gir null gevinst.'
+
+# ---------------------------------------------------------------- 2.6 Bygge beslutningstrær
+- id: "2.6-01"
+  del: "2.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En løvnode inneholder 7 positive og 3 negative treningspunkter. Hva predikerer treet for et nytt punkt som havner der?
+  alternativer:
+    - tekst: 'Klasse 1 (flertallsklassen)'
+      riktig: true
+      forklaring: 'Løvnoden predikerer klassen med flest treningspunkter.'
+    - tekst: 'Klasse 0'
+      forklaring: 'Det er bare 3 av 10 negative.'
+    - tekst: 'Treet kan ikke predikere, fordi noden ikke er ren'
+      forklaring: 'Stoppkriterier kan gi blandede løvnoder. Da brukes flertallet.'
+    - tekst: 'Klasse 1 med sannsynlighet 1'
+      forklaring: 'Hvis treet gir sannsynligheter, er estimatet 7/10, ikke 1.'
+  forklaring: |
+    $\hat{y} = 1$ hvis $p/(p + n) > n/(p + n)$, altså hvis det er flest positive. Andelen $7/10$ kan brukes som sannsynlighetsestimat.
+  husk: 'Blandet løvnode: predikerer flertallsklassen, andelen kan brukes som sannsynlighet.'
+
+- id: "2.6-02"
+  del: "2.6"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke er vanlige grunner til at algoritmen stopper å splitte en node og gjør den til en løvnode?
+  alternativer:
+    - tekst: 'Alle punktene i noden har samme klasse.'
+      riktig: true
+      forklaring: 'En ren node kan ikke bli bedre.'
+    - tekst: 'Det finnes ingen features igjen å splitte på, eller ingen splitt som reduserer urenheten.'
+      riktig: true
+      forklaring: 'Da kan noden ikke deles på en nyttig måte.'
+    - tekst: 'Treet har nådd maksimal dybde (`max_depth`).'
+      riktig: true
+      forklaring: 'En hyperparameter som begrenser hvor komplekst treet blir.'
+    - tekst: 'Noden har flere positive enn negative punkter.'
+      forklaring: 'Flertallet bestemmer prediksjonen, ikke om vi skal fortsette å splitte.'
+  forklaring: |
+    Algoritmen er rekursiv: velg beste splitt, del dataene, og kall den samme prosedyren på hver gren til et stoppkriterium slår inn.
+  husk: 'Stopp når noden er ren, ingen nyttig splitt finnes, eller maks dybde er nådd.'
+
+- id: "2.6-03"
+  del: "2.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [oving-2]
+  sporsmal: |
+    Et beslutningstre uten dybdegrense får 100 % accuracy på treningsdataene og 71 % på valideringsdataene. Hva er det beste neste tiltaket?
+  alternativer:
+    - tekst: 'Begrense dybden (`max_depth`) og velge verdien med kryssvalidering'
+      riktig: true
+      forklaring: 'Treet har overtilpasset. Mindre dybde gir en enklere modell.'
+    - tekst: 'Øke dybden til treet blir enda mer presist'
+      forklaring: 'Treet er allerede perfekt på treningsdataene. Mer dybde gir mer overtilpasning.'
+    - tekst: 'Skalere featurene'
+      forklaring: 'Trær splitter på terskler og påvirkes ikke av skala.'
+    - tekst: 'Bytte fra Gini til entropi'
+      forklaring: 'De gir nesten like trær. Problemet er kompleksiteten, ikke kriteriet.'
+  forklaring: |
+    Stor forskjell mellom trenings- og valideringsresultat er tegn på høy varians. For trær styres kompleksiteten av blant annet `max_depth`, og verdien velges med validering eller kryssvalidering.
+  husk: 'Perfekt på trening, dårlig på validering: overtilpasning. Begrens dybden.'
+
+- id: "2.6-04"
+  del: "2.6"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Beslutningstrær krever at featurene skaleres før trening, akkurat som logistisk regresjon med gradient descent.
+  riktig: false
+  forklaring: |
+    Et tre splitter på terskler for én feature om gangen («er $x_j < 3{,}2$?»). Skalering endrer verdiene, men ikke rekkefølgen, så de samme splittene blir valgt. Logistisk regresjon trenes med gradienter som påvirkes av skalaen.
+  husk: 'Trær: ingen skalering nødvendig. Logistisk regresjon og nevrale nett: skaler.'
+
+- id: "2.6-05"
+  del: "2.6"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    To klasser skilles av den diagonale linjen $x_1 = x_2$. Hvorfor sliter et beslutningstre med dette, mens logistisk regresjon løser det lett?
+  alternativer:
+    - tekst: 'Treet lager bare akseparallelle splitter, så det må tilnærme diagonalen med en trapp av mange splitter'
+      riktig: true
+      forklaring: 'Hver splitt er en terskel på én feature. En diagonal grense krever mange slike.'
+    - tekst: 'Treet kan bare bruke én feature totalt'
+      forklaring: 'Treet kan bruke ulike features i ulike noder, men hver splitt bruker én.'
+    - tekst: 'Treet trenger skalerte features for diagonale grenser'
+      forklaring: 'Skalering endrer ikke at splittene er akseparallelle.'
+    - tekst: 'Treet kan ikke løse ikke-lineære problemer'
+      forklaring: 'Trær er gode på ikke-lineære problemer. Svakheten er skrå grenser.'
+  forklaring: |
+    Logistisk regresjon gir én lineær grense i vilkårlig retning, så $x_1 - x_2 = 0$ er enkelt. Treet håndterer derimot godt grenser som følger aksene og ikke-lineære mønstre som XOR.
+  husk: 'Trær: akseparallelle splitter, gode på ikke-linearitet, dårlige på diagonaler.'
+
+- id: "2.6-06"
+  del: "2.6"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Beskriv algoritmen for å bygge et beslutningstre for klassifisering. Svar med pseudokode eller punkter.
+  eksempelsvar: |
+    1. Start med alle treningspunktene i rotnoden.
+    2. Hvis et stoppkriterium er oppfylt (noden er ren, ingen nyttig splitt, maks dybde), gjør noden til en løvnode som predikerer flertallsklassen.
+    3. Ellers: prøv alle features (og terskler) og velg splitten som gir lavest vektet urenhet (Gini) eller størst informasjonsgevinst.
+    4. Del punktene i grener etter splitten.
+    5. Gjenta rekursivt fra steg 2 for hver gren.
+  punkter:
+    - tekst: 'Velger splitten med lavest urenhet / størst informasjonsgevinst.'
+      stikkord: ['gini', 'entropi', 'urenhet', 'informasjonsgevinst', 'beste splitt']
+    - tekst: 'Rekursjon: samme prosedyre på hver gren.'
+      stikkord: ['rekursiv', 'gjenta', 'hver gren', 'barn']
+    - tekst: 'Stoppkriterier (ren node, ingen features/gevinst, maks dybde).'
+      stikkord: ['stopp', 'ren', 'max_depth', 'maks dybde', 'dybde']
+    - tekst: 'Løvnoden predikerer flertallsklassen.'
+      stikkord: ['flertall', 'majoritet', 'løvnode', 'løv']
+  husk: 'Velg beste splitt, del, gjenta rekursivt, stopp ved ren node, ingen gevinst eller maks dybde.'
