@@ -303,3 +303,8 @@
     padding-left: 0.25rem;
   }
 }
+.resultat-tabell td:nth-child(2),
+.resultat-tabell td:nth-child(3),
+.tabell-enkel td .andel-celle {
+  white-space: nowrap;
+}

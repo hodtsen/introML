@@ -631,6 +631,10 @@ main {
   background: var(--accent-soft);
   font-weight: 500;
 }
+.sm-del-tittel {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
 .sm-del-nr {
   font-variant-numeric: tabular-nums;
   color: var(--ink-3);

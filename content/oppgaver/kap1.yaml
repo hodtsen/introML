@@ -268,7 +268,7 @@
   niva: middels
   type: flervalg
   sporsmal: |
-    Samme modell som over: TP = 18, FN = 6, FP = 30, TN = 146. Hvilke påstander stemmer?
+    En klassifikator for en sjelden sykdom testes på 200 pasienter og får TP = 18, FN = 6, FP = 30 og TN = 146. Hvilke påstander stemmer?
   alternativer:
     - tekst: 'FPR er omtrent 0,17.'
       riktig: true

@@ -105,12 +105,11 @@ function skalerKvoter(antall: number): Record<number, number> {
   return ut;
 }
 
-// Trekker spørsmål spredt over delkapitlene i en kandidatliste.
-function trekk(kandidater: OppgaveMeta[], n: number, r: () => number, sett: Set<string>, prioriterUsette: boolean, brukt: Set<string>) {
-  let liste = stokk(kandidater.filter((o) => !brukt.has(o.id)), r);
-  if (prioriterUsette) liste = [...liste.filter((o) => !sett.has(o.id)), ...liste.filter((o) => sett.has(o.id))];
+// Trekker spørsmål spredt over delkapitlene i en kandidatliste. Med prioriterUsette
+// trekkes først fra spørsmål brukeren ikke har sett, og resten fylles med sette.
+function spredt(liste: OppgaveMeta[], n: number, r: () => number): OppgaveMeta[] {
   const perDel = new Map<string, OppgaveMeta[]>();
-  for (const o of liste) {
+  for (const o of stokk(liste, r)) {
     if (!perDel.has(o.del)) perDel.set(o.del, []);
     perDel.get(o.del)!.push(o);
   }
@@ -123,6 +122,16 @@ function trekk(kandidater: OppgaveMeta[], n: number, r: () => number, sett: Set<
       if (valgt.length >= n) break;
     }
   }
+  return valgt;
+}
+
+function trekk(kandidater: OppgaveMeta[], n: number, r: () => number, sett: Set<string>, prioriterUsette: boolean, brukt: Set<string>) {
+  const ledige = kandidater.filter((o) => !brukt.has(o.id));
+  let valgt: OppgaveMeta[];
+  if (prioriterUsette) {
+    valgt = spredt(ledige.filter((o) => !sett.has(o.id)), n, r);
+    if (valgt.length < n) valgt.push(...spredt(ledige.filter((o) => sett.has(o.id)), n - valgt.length, r));
+  } else valgt = spredt(ledige, n, r);
   valgt.forEach((o) => brukt.add(o.id));
   return valgt;
 }
