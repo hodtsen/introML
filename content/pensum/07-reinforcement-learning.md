@@ -35,6 +35,8 @@ RL ser helt annerledes ut enn veiledet læring: det finnes ikke et datasett med 
 
 ### Forklaring
 
+<!-- figur: rl-lokke -->
+
 **RL-loopen.**
 
 1. Miljøet gir agenten en tilstand $S_t$.
@@ -366,6 +368,8 @@ Agenten får bare data fra handlingene den faktisk gjør. Gjør den alltid det d
 **Tommelfingerregel (notatene).** Har agenten ikke lært noe i perioden der $\varepsilon > \varepsilon_{\min}$, lærer den sannsynligvis ikke noe vettugt om den trener videre. Da er det bedre å endre andre deler av oppsettet, for eksempel tapsfunksjonen.
 
 **$\varepsilon = 0$ fra start (øving 4).** Agenten velger alltid høyest Q. I starten er alle Q-verdier 0, så den velger den samme handlingen hver gang og utforsker ikke miljøet. Den finner kanskje aldri målet, og Q-verdiene oppdateres aldri med noe nyttig.
+
+<!-- figur: epsilon-greedy -->
 
 ### Formler
 

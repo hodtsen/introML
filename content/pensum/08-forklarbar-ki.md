@@ -199,6 +199,8 @@ Shapley-dekomposisjonen er beviselig den eneste fordelingen som oppfyller alle f
 
 Regn ut Shapley-verdien for hver katt og sjekk mot effektivitetsaksiomet. (Fasit: $\tfrac{1}{2}$, $1$ og $\tfrac{3}{2}$, som summerer til 3.)
 
+<!-- figur: shapley -->
+
 ### Formler
 
 Shapley-verdien til spiller $i$:

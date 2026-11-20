@@ -56,6 +56,8 @@ Produktet er $k!/k^k$. For $k = 3$ er det 0,22, for $k = 5$ 0,038 og for $k = 10
 
 **I praksis.** `sklearn.cluster.MiniBatchKMeans` er anbefalt for store datasett: i stedet for hele datasettet brukes en liten tilfeldig trekning per iterasjon (som mini-batch SGD). `n_clusters` er $k$, og `init` velger initialisering (standard er k-means++). Lar vi algoritmen velge $k$ selv, fungerer det ofte dårlig (F8: «Not wow»).
 
+<!-- figur: kmeans -->
+
 ### Formler
 
 Euklidsk avstand i $n$ dimensjoner:
@@ -393,6 +395,8 @@ Med `n_components=1` får vi én feature fra to. PCA er parametrisk: når PC-ene
 
 - **S-kurven (3D → 2D):** fungerer godt, fordi variansen i dybderetningen er liten. PCA kan altså fungere på ikke-lineære data så lenge variansen kan representeres langs lineære kombinasjoner av aksene.
 - **MNIST (784 → 2):** fungerer dårlig. PCA rangerer retninger etter varians, ikke etter relevans. Mye av variasjonen i håndskrevne tall er *hvordan* de er skrevet (tykk eller tynn strek, kursiv), ikke *hvilket* tall det er. To lineære retninger er altfor lite. En lineær metode kan bare ta vare på nyttig struktur hvis strukturen er lineært separerbar og faller sammen med variansen.
+
+<!-- figur: pca -->
 
 ### Formler
 

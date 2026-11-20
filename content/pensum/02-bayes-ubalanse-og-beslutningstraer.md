@@ -387,6 +387,8 @@ Tallet sier lite alene, men vi kan bruke det til å rangere alle mulige splitter
 
 **Gini vs entropi.** Plottet over $[0, 1]$ oppfører de seg nesten likt og gir i hovedsak de samme splittene. Entropi krever en logaritme og er dyrere å regne ut. Gini er derfor raskere og er standardvalget i `sklearn.tree.DecisionTreeClassifier`. Log loss og entropi har samme form ($-\sum p \log p$ mot $-\sum y \log \hat{y}$) og er nært beslektet.
 
+<!-- figur: entropi-gini -->
+
 ### Formler
 
 Gini-urenhet for et datasett $D$ med $k$ klasser, der $p_i$ er andelen i klasse $i$:

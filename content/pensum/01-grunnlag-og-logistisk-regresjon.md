@@ -143,6 +143,8 @@ Med terskel 0,5 blir dette klasse 1, men modellen er usikker.
 
 **Kobling til øving 1.** I øving 1 følger klassifiseringsdataene et XOR-mønster: klassen bestemmes av fortegnet til $x_0 \cdot x_1$. Ingen rett linje i $(x_0, x_1)$-planet skiller klassene, så logistisk regresjon på de rå featurene blir ikke mye bedre enn tilfeldig. Legger vi til featuren $x_0 x_1$, blir problemet lineært separerbart i det nye feature-rommet. Dette er feature engineering (kapittel 3) og motivasjonen for nevrale nettverk (kapittel 5).
 
+<!-- figur: sigmoid -->
+
 ### Formler
 
 $$
@@ -369,6 +371,8 @@ Bruker vi `fit` på testdataene, eller på hele datasettet før splitt, lekker i
 
 **Følg med på treningen.** Plott tap og accuracy per epoke. Tapet bør synke og flate ut, og accuracy bør stige og flate ut. Har kurvene ikke flatet ut, trengs flere epoker. Har de flatet ut tidlig, kunne vi stoppet før.
 
+<!-- figur: gradient-descent -->
+
 ### Formler
 
 Oppdateringsregelen:
@@ -580,6 +584,8 @@ prob_predictions = log_reg.predict_proba(X_test)     # sannsynligheter, ikke kla
 fpr, tpr, thresholds = metrics.roc_curve(y_test, prob_predictions, pos_label=1)
 auc = metrics.roc_auc_score(y_test, prob_predictions)
 ```
+
+<!-- figur: roc-terskel -->
 
 ### Formler
 

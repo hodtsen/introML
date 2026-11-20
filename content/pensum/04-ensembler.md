@@ -333,6 +333,8 @@ Residualene krymper for hver runde. Den lille læringsraten gjør at hvert tre b
 
 **Kobling til øving 4.** XAI-øvingen bruker `GradientBoostingRegressor` (`max_depth = 5`) på boligprisdata og forklarer den med SHAP (kapittel 8). Modellen fanger ikke-lineære sammenhenger som en lineær modell ikke ser.
 
+<!-- figur: gradient-boosting -->
+
 ### Formler
 
 Pseudo-residualene i runde $t$, for MSE:

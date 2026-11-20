@@ -143,6 +143,8 @@ $$
 
 Den største $z$ får størst sannsynlighet, og alle tre summerer til 1. Predikert klasse er den med høyest verdi.
 
+<!-- figur: aktiveringer -->
+
 ### Formler
 
 $$
@@ -200,6 +202,8 @@ Hvordan nodene settes sammen, kalles nettverkets arkitektur. Kurset bruker bare 
 - **Forward pass:** å sende data fra input til prediksjon gjennom lagene.
 
 ### Forklaring
+
+<!-- figur: nevralt-nettverk -->
 
 **Aktiveringen til én node.** Node $j$ i lag $l$ tar alle aktiveringene fra forrige lag, ganger dem med hver sin vekt, legger til bias og sender summen gjennom aktiveringsfunksjonen. Input-laget er lag 0, med $a^{(0)}_i = x_i$.
 

@@ -390,6 +390,8 @@ Høy varians tyder på at algoritmen er for sensitiv for variasjoner i dataene (
 
 **Hvorfor kan $F(\mathbf{x})$ flyttes ut av forventningen?** Fordi den sanne sammenhengen ikke avhenger av hvilket datasett $D$ vi trekker. For gitt $\mathbf{x}$ er $F(\mathbf{x})$ en konstant.
 
+<!-- figur: bias-varians -->
+
 ### Formler
 
 $$

@@ -238,6 +238,8 @@ AI Act regulerer KI-systemer etter hvor stor samfunnsrisiko de utgjør. Etter de
 
 ### Forklaring
 
+<!-- figur: ai-act-risiko -->
+
 **Uakseptabel risiko (artikkel 5, gjelder fra 2.2.2025).** Forbudt er KI-systemer som
 
 1. bruker manipulerende eller villedende teknikker, eller teknikker under bevissthetsterskelen, som kan gi betydelig skade,
