@@ -1,0 +1,98 @@
+# Oppgaver til kapittel 1: Grunnlag og logistisk regresjon
+#
+# Format: se README.md («Skrive oppgaver»). Bruk enkle anførselstegn eller
+# blokk-skalarer (|) for tekst med LaTeX, ellers tolker YAML \f, \b osv. som kontrolltegn.
+
+- id: "1.5-01"
+  del: "1.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En klassifikator for en sjelden sykdom testes på 200 pasienter. Resultatet er TP = 18, FN = 6, FP = 30 og TN = 146. Hva er recall?
+  alternativer:
+    - tekst: '0,75'
+      riktig: true
+      forklaring: 'Recall = TP/(TP + FN) = 18/24 = 0,75. Nevneren er alle som faktisk er syke.'
+    - tekst: '0,375'
+      forklaring: 'Dette er precision, TP/(TP + FP) = 18/48. Precision har de predikert positive i nevneren.'
+    - tekst: '0,82'
+      forklaring: 'Dette er accuracy, (18 + 146)/200 = 0,82.'
+    - tekst: '0,83'
+      forklaring: 'Dette er spesifisiteten (TNR), 146/176 ≈ 0,83.'
+  forklaring: |
+    Sett opp matrisen først: $P = TP + FN = 24$ syke og $N = FP + TN = 176$ friske. Recall (TPR, sensitivitet) er andelen av de syke modellen finner: $18/24 = 0{,}75$.
+  husk: 'Recall og TPR har faktisk positive i nevneren, precision har predikert positive.'
+
+- id: "1.5-02"
+  del: "1.5"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Samme modell som over: TP = 18, FN = 6, FP = 30, TN = 146. Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'FPR er omtrent 0,17.'
+      riktig: true
+      forklaring: 'FPR = FP/N = 30/176 ≈ 0,17, altså 1 − spesifisitet.'
+    - tekst: 'Under halvparten av pasientene som får positivt svar, er faktisk syke.'
+      riktig: true
+      forklaring: 'Precision er 18/48 = 0,375, så 62,5 % av alarmene er falske.'
+    - tekst: 'Accuracy på 0,82 viser at modellen finner de fleste syke.'
+      forklaring: 'Accuracy domineres av de 176 friske. Hvor mange syke modellen finner, er recall (0,75), og det kan ikke leses ut av accuracy.'
+    - tekst: 'FPR er andelen av de positive prediksjonene som er gale.'
+      forklaring: 'Det er 1 − precision. FPR har de faktisk negative i nevneren.'
+  forklaring: |
+    $FPR = 30/176 \approx 0{,}17$ og $\text{precision} = 18/48 = 0{,}375$. Mange falske alarmer er typisk når den positive klassen er sjelden: selv en lav FPR gir mange FP fordi det er så mange negative.
+  husk: 'FPR er andel av de negative som gir alarm. Andelen falske blant alarmene er 1 − precision.'
+
+- id: "1.5-03"
+  del: "1.5"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Precision og recall har samme teller, men ulik nevner.
+  riktig: true
+  forklaring: |
+    Begge har TP i telleren. Recall deler på alle faktisk positive ($TP + FN$), precision på alle predikert positive ($TP + FP$). Derfor måler de ulike feil: recall straffes av FN, precision av FP.
+  husk: 'Samme teller (TP), ulik nevner: recall ser på de positive, precision på alarmene.'
+
+- id: "1.5-04"
+  del: "1.5"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En spamfilter-modell evalueres på 1000 e-poster, hvorav 100 er spam (positiv klasse). Modellen merker 90 e-poster som spam, og 72 av dem er faktisk spam.
+  deler:
+    - sporsmal: 'Hva er precision?'
+      svar: 0.8
+    - sporsmal: 'Hva er recall?'
+      svar: 0.72
+    - sporsmal: 'Hva er FPR?'
+      svar: 0.02
+  losning: |
+    Sett opp matrisen: $TP = 72$, $FP = 90 - 72 = 18$, $FN = 100 - 72 = 28$ og $TN = 900 - 18 = 882$.
+
+    - Precision $= 72/90 = 0{,}80$
+    - Recall $= 72/100 = 0{,}72$
+    - FPR $= 18/900 = 0{,}02$
+  husk: 'Start alltid med å fylle ut alle fire cellene i confusion matrix. Da blir resten ren innsetting.'
+
+- id: "1.5-05"
+  del: "1.5"
+  niva: avansert
+  type: tekst
+  tags: [case]
+  sporsmal: |
+    Et sykehus vil bruke en modell til å finne pasienter med en alvorlig, men behandlbar sykdom, slik at de kan få en billig oppfølgingstest. Hvilken metrikk bør sykehuset legge mest vekt på, og hvorfor er accuracy et dårlig valg her? Svar med 3–5 setninger.
+  eksempelsvar: |
+    Sykehuset bør legge mest vekt på recall (sensitivitet), fordi en falsk negativ betyr at en syk pasient ikke blir fulgt opp, mens en falsk positiv bare koster en billig ekstra test. Sykdommen er trolig sjelden, så accuracy blir høy selv om modellen overser mange syke: en modell som sier «frisk» til alle, får nesten 100 % accuracy og 0 recall. Precision er mindre viktig så lenge oppfølgingstesten er billig.
+  punkter:
+    - tekst: 'Velger recall/sensitivitet/TPR som viktigste metrikk.'
+      stikkord: ['recall', 'sensitivitet', 'tpr', 'true positive rate']
+    - tekst: 'Begrunner med at falske negative er dyrest (syke som ikke følges opp).'
+      stikkord: ['falsk negativ', 'falske negative', 'fn', 'oversett', 'overse']
+    - tekst: 'Forklarer at accuracy blir misvisende fordi klassene er ubalanserte (sykdommen er sjelden).'
+      stikkord: ['ubalanse', 'sjelden', 'balanse', 'accuracy-paradoks', 'nesten alle', 'flertall']
+    - tekst: 'Nevner at falske positive er akseptable fordi oppfølgingstesten er billig.'
+      stikkord: ['falsk positiv', 'falske positive', 'billig', 'fp']
+  husk: 'Velg metrikk etter hvilken feil som koster mest: recall når FN er dyrest, precision når FP er dyrest.'

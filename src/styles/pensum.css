@@ -1,0 +1,462 @@
+/* ------------------------------------------------------------ delkapittel */
+.delkapittel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 46rem) 13.5rem;
+  gap: 3rem;
+  justify-content: start;
+}
+.delkapittel {
+  min-width: 0;
+}
+.innholdsliste {
+  position: sticky;
+  top: calc(var(--topp) + 1.75rem);
+  align-self: start;
+  font-size: 0.875rem;
+  padding-top: 4.5rem;
+}
+.innholdsliste-tittel {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--ink-2);
+}
+.innholdsliste ul,
+.innholdsliste-mobil ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.innholdsliste button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 0.3rem 0.75rem;
+  border-left: 2px solid var(--line);
+  cursor: pointer;
+  color: var(--ink-3);
+}
+.innholdsliste button:hover {
+  color: var(--ink);
+}
+.innholdsliste button.aktiv {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  font-weight: 500;
+}
+.innholdsliste-mobil {
+  display: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  margin-bottom: 1.5rem;
+}
+.innholdsliste-mobil summary {
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+.innholdsliste-mobil ul {
+  padding: 0 0.5rem 0.6rem;
+}
+.innholdsliste-mobil button {
+  border: 0;
+  background: none;
+  padding: 0.45rem 0.5rem;
+  color: var(--link);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+@media (max-width: 1280px) {
+  .delkapittel-grid {
+    grid-template-columns: minmax(0, 46rem);
+  }
+  .innholdsliste {
+    display: none;
+  }
+  .innholdsliste-mobil {
+    display: block;
+  }
+}
+
+.delkapittel .side-hode h1 {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.375rem);
+  margin-bottom: 0.4rem;
+}
+.h1-nr {
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.15em;
+}
+.kildelinje {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+  margin-bottom: 1rem;
+}
+.dk-verktoy {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: center;
+}
+.dk-verktoy .er-lest {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+.dk-mestring-tekst {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+/* Seksjonene */
+.seksjon {
+  margin: 2.25rem 0 0;
+}
+.seksjon > h2 {
+  font-size: 1.375rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1rem;
+}
+.seksjon-introduksjon {
+  margin-top: 1.5rem;
+}
+.seksjon-introduksjon > h2 {
+  display: none;
+}
+.seksjon-introduksjon .prosa > p:first-child {
+  font-size: 1.1875rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.seksjon-begreper .prosa > ul {
+  list-style: none;
+  padding: 0;
+}
+.seksjon-begreper .prosa > ul > li {
+  padding: 0.55rem 0 0.55rem 1rem;
+  border-left: 3px solid var(--line);
+  margin-bottom: 0.4rem;
+}
+.seksjon-begreper .prosa > ul > li > strong:first-child {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.97em;
+}
+.seksjon-formler .math-display {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 0.75rem 1rem;
+}
+.seksjon-misforstaelser {
+  background: var(--warn-soft);
+  border: 1px solid var(--warn-line);
+  border-radius: var(--r-lg);
+  padding: 1.1rem 1.4rem 0.4rem;
+}
+.seksjon-misforstaelser > h2 {
+  border-bottom-color: var(--warn-line);
+}
+.seksjon-oppsummering {
+  border: 2px solid var(--accent);
+  border-radius: var(--r-lg);
+  padding: 1.1rem 1.4rem 0.4rem;
+  background: var(--surface);
+}
+.seksjon-oppsummering > h2 {
+  color: var(--accent);
+  border-bottom-color: var(--accent-soft);
+}
+
+/* Prosa */
+.prosa {
+  font-family: var(--font-prose);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.prosa p,
+.prosa ul,
+.prosa ol {
+  margin: 0 0 1em;
+}
+.prosa ul,
+.prosa ol {
+  padding-left: 1.4em;
+}
+.prosa li {
+  margin-bottom: 0.4em;
+}
+.prosa li > ul,
+.prosa li > ol {
+  margin-top: 0.4em;
+}
+.prosa h3,
+.prosa h4 {
+  font-family: var(--font-ui);
+  margin: 1.6em 0 0.5em;
+}
+.prosa h3 {
+  font-size: 1.1875rem;
+}
+.prosa h4 {
+  font-size: 1.0625rem;
+}
+.prosa strong {
+  font-weight: 600;
+}
+.prosa code {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+  font-size: 0.84em;
+}
+.prosa pre {
+  background: #17213a;
+  color: #e4e9f3;
+  border-radius: var(--r-md);
+  padding: 0.9rem 1.1rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+.prosa pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+.prosa blockquote {
+  margin: 0 0 1em;
+  padding: 0.25rem 0 0.25rem 1rem;
+  border-left: 3px solid var(--accent);
+  color: var(--ink-2);
+}
+.prosa hr {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2rem 0;
+}
+.prosa .tabell {
+  overflow-x: auto;
+  margin: 0 0 1.25em;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  background: var(--surface);
+}
+.prosa table {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--font-ui);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.prosa th,
+.prosa td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+.prosa th {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+.prosa tr:last-child td {
+  border-bottom: 0;
+}
+
+/* KaTeX */
+.katex {
+  font-size: 1.06em;
+}
+.math-display {
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin: 0.75em 0 1.1em;
+  padding: 0.25rem 0;
+}
+.math-display .katex-display {
+  margin: 0;
+}
+.prosa .katex-display > .katex {
+  font-size: 1.12em;
+}
+
+.dk-slutt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 2.5rem 0 1.5rem;
+}
+.forrige-neste {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.25rem;
+}
+.fn-lenke {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--surface);
+}
+.fn-lenke:hover {
+  border-color: var(--accent);
+}
+.fn-lenke span {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+.fn-neste {
+  text-align: right;
+  grid-column: 2;
+}
+@media (max-width: 600px) {
+  .forrige-neste {
+    grid-template-columns: 1fr;
+  }
+  .fn-neste {
+    grid-column: 1;
+  }
+  .prosa {
+    font-size: 1rem;
+  }
+  .seksjon-misforstaelser,
+  .seksjon-oppsummering {
+    padding: 0.9rem 1rem 0.2rem;
+  }
+}
+
+/* ------------------------------------------------------------ kapittelside */
+.kapittel-etikett {
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+.kapittelside .ingress {
+  font-family: var(--font-prose);
+  font-size: 1.125rem;
+  line-height: 1.65;
+}
+.mestring-linje {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+  margin-top: 1rem;
+}
+.delkapittel-liste {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 54rem;
+  border-top: 1px solid var(--line);
+}
+.dk-rad {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr) auto;
+  grid-template-areas: "nr tittel mestring" "nr meta mestring";
+  gap: 0.1rem 1rem;
+  padding: 0.85rem 0.5rem;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: var(--ink);
+}
+.dk-rad:hover {
+  background: var(--surface);
+}
+.dk-nr {
+  grid-area: nr;
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-size: 1.0625rem;
+}
+.dk-tittel {
+  grid-area: tittel;
+  font-weight: 500;
+  font-size: 1.0625rem;
+}
+.dk-meta {
+  grid-area: meta;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  display: flex;
+  gap: 0.75rem;
+}
+.dk-mestring {
+  grid-area: mestring;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  justify-content: center;
+}
+.merke-lest {
+  color: var(--ok);
+  font-weight: 500;
+}
+@media (max-width: 640px) {
+  .dk-rad {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    grid-template-areas: "nr tittel" "nr meta" "nr mestring";
+  }
+  .dk-mestring {
+    align-items: flex-start;
+    flex-direction: row;
+  }
+}
+
+/* formelark */
+.formelark-kap {
+  font-size: 1.375rem;
+}
+.formelark-del {
+  margin-bottom: 2rem;
+  max-width: 50rem;
+}
+.formelark-del h3 {
+  font-size: 1.0625rem;
+  margin-bottom: 0.75rem;
+}
+.formelark-del h3 a {
+  color: var(--ink);
+  text-decoration: none;
+}
+.formelark-del h3 a:hover {
+  text-decoration: underline;
+}
+
+/* figurer i teksten */
+.figur {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+}
+.figur-laster,
+.figur-mangler {
+  color: var(--ink-3);
+  font-size: 0.9375rem;
+  padding: 1rem;
+}

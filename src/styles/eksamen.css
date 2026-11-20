@@ -1,0 +1,305 @@
+.eksamen-oppsett .oppsett-rutenett {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .eksamen-oppsett .oppsett-rutenett {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.oppsett-valg .dempet {
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0;
+}
+
+.eksamen-topp {
+  position: sticky;
+  top: var(--topp);
+  z-index: 20;
+  background: var(--ink);
+  color: var(--paper);
+}
+.eksamen-topp-indre {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.6rem 1.25rem;
+  flex-wrap: wrap;
+}
+.eksamen-topp .dempet {
+  color: var(--paper);
+  opacity: 0.75;
+}
+.eksamen-topp .knapp {
+  margin-left: auto;
+  background: #fde725;
+  border-color: #fde725;
+  color: #1b2a41;
+}
+.klokke {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 1.0625rem;
+}
+.klokke.lite-tid {
+  color: #ffb4a8;
+}
+.eksamen-rutenett {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+.eksamen-navigator {
+  position: sticky;
+  top: calc(var(--topp) + 70px);
+}
+.eksamen-navigator ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+}
+.eksamen-navigator li.ny-gruppe {
+  grid-column-start: 1;
+}
+.nav-celle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 26px;
+  height: 34px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  position: relative;
+}
+.nav-celle.besvart {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.nav-celle.gjeldende {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink);
+}
+.nav-celle.flagget::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--series-2);
+  border: 2px solid var(--surface);
+}
+.nav-forklaring {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  display: flex;
+  gap: 1rem;
+}
+.nav-forklaring li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.nav-forklaring .nav-celle {
+  width: 16px;
+  min-width: 16px;
+  height: 16px;
+  cursor: default;
+}
+.eksamen-sporsmal {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 1.4rem 1.5rem;
+  min-height: 420px;
+}
+.eksamen-sporsmal header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.eksamen-sporsmal header p {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
+}
+.flaggknapp.aktiv {
+  color: var(--series-2);
+  font-weight: 600;
+}
+.alternativ-knapp[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+@media (max-width: 860px) {
+  .eksamen-rutenett {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem 0.75rem 3rem;
+  }
+  .eksamen-navigator {
+    position: static;
+  }
+  .eksamen-navigator ol {
+    grid-template-columns: repeat(10, 1fr);
+  }
+  .eksamen-sporsmal {
+    padding: 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .eksamen-navigator ol {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* resultat */
+.resultat-hode {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.resultat-karakter {
+  width: 132px;
+  height: 132px;
+  border-radius: var(--r-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.rk-bokstav {
+  font-family: var(--font-prose);
+  font-size: 3.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+.rk-prosent {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.resultat-hode .dempet {
+  font-size: 0.875rem;
+}
+.resultat-tall {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1.5rem;
+}
+.resultat-tall p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.resultat-tall strong {
+  color: var(--ink);
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.2rem;
+}
+@media (max-width: 600px) {
+  .resultat-hode {
+    grid-template-columns: 1fr;
+  }
+  .resultat-karakter {
+    width: 100px;
+    height: 100px;
+  }
+  .rk-bokstav {
+    font-size: 2.75rem;
+  }
+}
+.gjennomgang {
+  margin-top: 1rem;
+}
+.gjennomgang-liste {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.gj-post {
+  border-bottom: 1px solid var(--line);
+}
+.gj-hode {
+  display: grid;
+  grid-template-columns: 22px 2rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  padding: 0.75rem 0.25rem;
+  cursor: pointer;
+}
+.gj-hode:hover {
+  background: var(--surface);
+}
+.gj-status {
+  display: flex;
+}
+.gj-riktig .gj-status {
+  color: var(--ok);
+}
+.gj-feil .gj-status {
+  color: var(--bad);
+}
+.gj-delvis .gj-status {
+  color: var(--part);
+}
+.ikon-blank {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px dashed var(--line-strong);
+}
+.gj-nr {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+}
+.gj-utdrag {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9375rem;
+}
+.gj-poeng {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+.gj-innhold {
+  padding: 0.5rem 0.25rem 1.25rem 2.5rem;
+}
+@media (max-width: 600px) {
+  .gj-innhold {
+    padding-left: 0.25rem;
+  }
+}

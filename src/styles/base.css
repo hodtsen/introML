@@ -1,0 +1,548 @@
+/* Designvariabler. Lyst tema som standard, mørkt via systeminnstilling. */
+:root {
+  color-scheme: light;
+  --ink: #1b2a41;
+  --ink-2: #46536b;
+  --ink-3: #66728a;
+  --paper: #f3f5f8;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --surface-3: #e3e8f0;
+  --line: #d8dee8;
+  --line-strong: #b4bfd0;
+  --accent: #33508c;
+  --accent-hover: #2a4377;
+  --accent-ink: #ffffff;
+  --accent-soft: #e7edf8;
+  --link: #2a4d96;
+  --ok: #1b7448;
+  --ok-soft: #e3f2ea;
+  --bad: #b3261e;
+  --bad-soft: #fbe9e7;
+  --part: #8a5a00;
+  --part-soft: #fbf2df;
+  --warn-soft: #fcf5e6;
+  --warn-line: #dfb862;
+  --focus: #2a78d6;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #e87ba4;
+  --series-5: #6250d6;
+  --tom-celle: #e4e8ef;
+  --font-prose: "Literata", Georgia, "Times New Roman", serif;
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 14px;
+  --topp: 60px;
+  --skygge: 0 8px 28px rgba(27, 42, 65, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --ink: #e5e9f1;
+    --ink-2: #b7c0d0;
+    --ink-3: #8f9ab0;
+    --paper: #111726;
+    --surface: #182034;
+    --surface-2: #1e2840;
+    --surface-3: #27324d;
+    --line: #2d3953;
+    --line-strong: #44516d;
+    --accent: #8aa5e6;
+    --accent-hover: #a3b9ee;
+    --accent-ink: #111726;
+    --accent-soft: #233154;
+    --link: #a3b9ee;
+    --ok: #5fc796;
+    --ok-soft: #173426;
+    --bad: #ff8f84;
+    --bad-soft: #3d1d1d;
+    --part: #f0c36b;
+    --part-soft: #392d14;
+    --warn-soft: #2d2715;
+    --warn-line: #8a6d2c;
+    --focus: #7fb2f0;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --series-4: #d55181;
+    --series-5: #9085e9;
+    --tom-celle: #263049;
+    --skygge: 0 10px 30px rgba(0, 0, 0, 0.45);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--topp) + 16px);
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0 0 0.5em;
+  color: var(--ink);
+  letter-spacing: -0.005em;
+}
+h1 {
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.25rem);
+  letter-spacing: -0.015em;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.3125rem;
+}
+h4 {
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--link);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+code,
+kbd,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+kbd {
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 0 0.35em;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+  background: var(--surface);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  color: var(--ink);
+}
+
+.visuelt-skjult {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.dempet {
+  color: var(--ink-3);
+}
+.liten {
+  font-size: 0.875rem;
+}
+
+/* ------------------------------------------------------------ knapper */
+.knapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4em;
+  min-height: 40px;
+  padding: 0.45rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-sm);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 500;
+  font-size: 0.9375rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+.knapp:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  text-decoration: none;
+}
+.knapp:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.knapp-sekundaer {
+  background: var(--surface);
+  color: var(--accent);
+  border-color: var(--line-strong);
+}
+.knapp-sekundaer:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.knapp-fare {
+  background: var(--bad);
+  border-color: var(--bad);
+  color: #fff;
+}
+.knapp-fare:hover {
+  background: var(--bad);
+  filter: brightness(0.92);
+}
+.knapp-liten {
+  min-height: 32px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.875rem;
+}
+.knapp-stor {
+  min-height: 48px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1.0625rem;
+}
+.knapp-tekst {
+  background: none;
+  border: 0;
+  padding: 0.25rem 0.1rem;
+  color: var(--link);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  font-size: 0.9375rem;
+}
+.knapp-tekst:hover {
+  text-decoration-thickness: 2px;
+}
+
+.handlinger {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+
+.svarlinje {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* segmenterte valg (antall, tid, sortering) */
+.segmentert {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface);
+}
+.segmentert button {
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: none;
+  padding: 0.4rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  min-height: 38px;
+}
+.segmentert button:last-child {
+  border-right: 0;
+}
+.segmentert button[aria-pressed="true"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+.segmentert button:not([aria-pressed="true"]):hover {
+  background: var(--accent-soft);
+}
+
+/* skjemaer */
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
+legend {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+}
+.brikker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.brikke {
+  position: relative;
+}
+.brikke input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+.brikke span {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  background: var(--surface);
+  min-width: 2.4rem;
+  text-align: center;
+}
+.brikke input:checked + span {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+.brikke input:focus-visible + span {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.brikke-handlinger {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.3rem;
+}
+
+.bryter {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin: 0.5rem 0;
+  cursor: pointer;
+}
+.bryter input {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.15rem;
+  accent-color: var(--accent);
+}
+
+.radiokort {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  background: var(--surface);
+  font-size: 0.9375rem;
+}
+.radiokort:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.radiokort input {
+  margin-top: 0.25rem;
+  accent-color: var(--accent);
+}
+.radiokort strong {
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.tekstfelt {
+  display: block;
+  margin-top: 1rem;
+}
+.tekstfelt > span {
+  display: block;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  margin-bottom: 0.35rem;
+}
+.tekstfelt textarea,
+.filterfelt input {
+  width: 100%;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-sm);
+  padding: 0.6rem 0.75rem;
+  background: var(--surface);
+  line-height: 1.5;
+  resize: vertical;
+}
+.tekstfelt textarea:read-only {
+  background: var(--surface-2);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1.25rem;
+}
+.panel > h2 {
+  font-size: 1.1875rem;
+}
+
+.varsel {
+  border-radius: var(--r-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--line);
+}
+.varsel-info {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.feilmelding {
+  color: var(--bad);
+}
+.feilmelding-liten {
+  color: var(--bad);
+  font-size: 0.875rem;
+  display: block;
+  margin-top: 0.25rem;
+}
+.melding-ok {
+  color: var(--ok);
+}
+
+.laster {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+  justify-content: center;
+  color: var(--ink-3);
+}
+.laster-prikk {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: puls 1s ease-in-out infinite alternate;
+}
+@keyframes puls {
+  from {
+    opacity: 0.25;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.etikett {
+  display: inline-block;
+  font-size: 0.8125rem;
+  padding: 0.05rem 0.5rem;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+}
+.niva-grunnleggende {
+  border-color: #9fc7b3;
+}
+.niva-middels {
+  border-color: #9db1d8;
+}
+.niva-avansert {
+  border-color: #c3a6d6;
+}
+
+.tabell-enkel {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.tabell-enkel th,
+.tabell-enkel td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.tabell-enkel th {
+  font-weight: 600;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+
+.enkel-liste {
+  padding-left: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+.enkel-liste li {
+  margin-bottom: 0.3rem;
+}
+
+.dialog-bakgrunn {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 23, 38, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh 1rem 1rem;
+  z-index: 100;
+}
+.dialog {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 1.5rem;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: var(--skygge);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
