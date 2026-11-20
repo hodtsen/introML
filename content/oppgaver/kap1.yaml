@@ -1,0 +1,834 @@
+# Oppgaver til kapittel 1: Grunnlag og logistisk regresjon
+#
+# Format: se README.md («Skrive oppgaver»). Bruk enkle anførselstegn eller
+# blokk-skalarer (|) for tekst med LaTeX, ellers tolker YAML \f, \b osv. som kontrolltegn.
+
+# ---------------------------------------------------------------- 1.1 Maskinlæring, data og features
+- id: "1.1-01"
+  del: "1.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I Mitchells definisjon lærer et program av erfaring $E$ med hensyn til en oppgave $T$ og et ytelsesmål $P$. Du trener en modell som skal forutsi om en kunde sier opp abonnementet. Hva er $E$?
+  alternativer:
+    - tekst: 'Historiske kundedata med kjent utfall (sa opp eller ikke)'
+      riktig: true
+      forklaring: 'Erfaringen er dataene modellen lærer av.'
+    - tekst: 'Å forutsi om en ny kunde sier opp'
+      forklaring: 'Dette er oppgaven $T$, det vi vil estimere.'
+    - tekst: 'Andelen riktige prediksjoner på testdata'
+      forklaring: 'Dette er ytelsesmålet $P$.'
+    - tekst: 'Antall epoker modellen trenes'
+      forklaring: 'Antall epoker er en hyperparameter for treningen, ikke en del av definisjonen.'
+  forklaring: |
+    Mitchell (1997): programmet lærer hvis ytelsen på $T$, målt med $P$, blir bedre med erfaring $E$. I maskinlæring er $E$ dataene, $T$ det vi vil estimere og $P$ tapsfunksjonen og metrikkene.
+  husk: 'E = data, T = oppgaven (hva som estimeres), P = ytelsesmål (tap og metrikker).'
+
+- id: "1.1-02"
+  del: "1.1"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Et datasett om passasjerer har kolonnene `PassengerId`, `Pclass` (1, 2 eller 3), `Age`, `Sex`, `Fare` og `Survived`. Du skal forutsi `Survived`. Hvilke påstander stemmer?
+  alternativer:
+    - tekst: '`Pclass` er en kategorisk feature selv om den er lagret som tall.'
+      riktig: true
+      forklaring: 'Klassene 1, 2 og 3 er kategorier. At de er lagret som heltall, gjør dem ikke kvantitative.'
+    - tekst: '`PassengerId` bør ikke brukes som feature.'
+      riktig: true
+      forklaring: 'ID-en er et løpenummer uten sammenheng med utfallet. Modellen kan bare lære støy av den.'
+    - tekst: '`Survived` bør skaleres til intervallet [0, 1] sammen med de andre kolonnene.'
+      forklaring: 'Target skal ikke normaliseres, og `Survived` er allerede 0 eller 1.'
+    - tekst: '`Age` og `Fare` er kvalitative features.'
+      forklaring: 'Alder og billettpris kan måles og regnes med. De er kvantitative.'
+  forklaring: |
+    Ikke alle tallkolonner er kvantitative, og ikke alle kolonner er nyttige features. Target er det vi vil estimere og skal verken brukes som input eller normaliseres.
+  husk: 'Spør om tallene har en meningsfull størrelse og rekkefølge. Hvis ikke, er det en kategori eller en ID.'
+
+- id: "1.1-03"
+  del: "1.1"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En feature har minimum 18 og maksimum 68 i treningsdataene. Bruk min–maks-skalering.
+  deler:
+    - sporsmal: 'Hva blir den skalerte verdien for et treningspunkt med verdien 37?'
+      svar: 0.38
+    - sporsmal: 'Et testpunkt har verdien 78. Hva blir den skalerte verdien når du bruker min og maks fra treningsdataene?'
+      svar: 1.2
+  losning: |
+    $x' = \dfrac{x - \min}{\max - \min}$ med $\min = 18$ og $\max = 68$ fra treningsdataene.
+
+    - $x = 37$: $(37 - 18)/50 = 19/50 = 0{,}38$
+    - $x = 78$: $(78 - 18)/50 = 60/50 = 1{,}2$
+
+    Testpunktet havner utenfor $[0, 1]$. Det er helt i orden: skaleringen skal være den samme som modellen ble trent med, og vi skal ikke tilpasse den til testdataene.
+  husk: 'Min og maks hentes fra treningsdataene og brukes uendret på test. Testverdier kan derfor havne utenfor [0, 1].'
+
+- id: "1.1-04"
+  del: "1.1"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Det er greit å skalere hele datasettet før du deler det i trenings- og testdata, så lenge du bruker samme skalering på begge delene.
+  riktig: false
+  forklaring: |
+    Skaleringen lærer noe av dataene (minimum, maksimum, snitt eller standardavvik). Tilpasses den på hele datasettet, lekker informasjon fra testdataene inn i modellen, og testresultatet blir for optimistisk. Riktig rekkefølge er: splitt først, tilpass skaleringen (`fit`) på treningsdataene, og bruk den (`transform`) på både trening og test.
+  husk: 'Splitt først, fit på trening, transform på begge. Alt som lærer av data, regnes som en del av modellen.'
+
+- id: "1.1-05"
+  del: "1.1"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Hvilken antakelse gjør en lineær modell $f(\mathbf{x}) = \sum_i w_i x_i + b$ om sammenhengen den modellerer?
+  alternativer:
+    - tekst: 'At hver feature bidrar additivt og uavhengig av verdien til de andre featurene'
+      riktig: true
+      forklaring: 'Bidraget $w_i x_i$ avhenger bare av $x_i$. Modellen kan ikke uttrykke vekselvirkninger uten at vi lager dem som egne features.'
+    - tekst: 'At featurene er statistisk uavhengige av hverandre'
+      forklaring: 'Det er naiv Bayes som antar betinget uavhengighet. En lineær modell kan godt trenes på korrelerte features.'
+    - tekst: 'At alle features har samme skala'
+      forklaring: 'Skala påvirker trening og tolkning av vektene, men er ingen antakelse modellen gjør om sammenhengen.'
+    - tekst: 'At dataene er perfekt lineært separerbare'
+      forklaring: 'Logistisk regresjon kan trenes også når klassene overlapper. Den finner bare den beste lineære grensen.'
+  forklaring: |
+    Dette er modellens induktive bias: antakelsene den gjør for å kunne generalisere. For en lineær modell er det at effektene er additive, altså ingen vekselvirkninger mellom features.
+  husk: 'Induktivt bias = modellens innebygde antakelser. Lineær modell: additive effekter, ingen vekselvirkninger.'
+
+- id: "1.1-06"
+  del: "1.1"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Nevn tre typiske problemer i et rådatasett som må løses i preprosesseringen før du kan trene logistisk regresjon, og hvordan hvert av dem kan løses.
+  eksempelsvar: |
+    1. **Manglende verdier:** fjern radene (eller kolonnen) eller imputer, for eksempel med snitt eller median fra treningsdataene.
+    2. **Strenger og kategorier:** logistisk regresjon trenger tall, så kategoriske features må enkodes, for eksempel med label encoding eller one-hot.
+    3. **Ulik skala:** features med svært ulik størrelsesorden skaleres (for eksempel min–maks), slik at gradient descent ikke domineres av de største verdiene.
+  punkter:
+    - tekst: 'Manglende verdier, løst ved å fjerne eller imputere.'
+      stikkord: ['manglende', 'mangler', 'missing', 'nan', 'imput', 'tomme']
+    - tekst: 'Kategoriske verdier eller strenger, løst ved enkoding.'
+      stikkord: ['enkod', 'encod', 'one-hot', 'label', 'streng', 'kategori']
+    - tekst: 'Ulik skala, løst med normalisering eller skalering.'
+      stikkord: ['skal', 'normali', 'min-maks', 'minmaks', 'standardiser']
+    - tekst: 'Nevner at preprosesseringen tilpasses på treningsdataene (unngå lekkasje).'
+      stikkord: ['trening+lekk', 'lekkasje', 'leak', 'fit']
+  husk: 'Tre klassiske problemer: manglende verdier, strenger og ulik skala. Løsninger: fjern/imputer, enkod, skaler.'
+
+# ---------------------------------------------------------------- 1.2 Logistisk regresjon: modellen
+- id: "1.2-01"
+  del: "1.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva er outputen fra en logistisk regresjonsmodell $y_{\text{pred}} = \sigma(\mathbf{w}\mathbf{x} + b)$?
+  alternativer:
+    - tekst: 'Et tall i $(0, 1)$ som tolkes som modellens estimerte sannsynlighet for klasse 1'
+      riktig: true
+      forklaring: 'Sigmoid presser alle reelle tall inn i $(0, 1)$.'
+    - tekst: 'Alltid nøyaktig 0 eller 1'
+      forklaring: 'Det er outputen fra et perceptron med Heaviside. Logistisk regresjon gir klasse først når vi velger en terskel.'
+    - tekst: 'Et vilkårlig reelt tall som tolkes som en regresjonsverdi'
+      forklaring: 'Det er $z = \mathbf{w}\mathbf{x} + b$ før sigmoid. Logistisk regresjon er en klassifiseringsmetode.'
+    - tekst: 'Den sanne sannsynligheten $p(y = 1 \mid \mathbf{x})$'
+      forklaring: 'Outputen er et estimat. Det kan være dårlig kalibrert.'
+  forklaring: |
+    $z$ kan være et hvilket som helst reelt tall. Sigmoid $\sigma(z) = 1/(1 + e^{-z})$ gjør det om til et tall mellom 0 og 1, som vi tolker som modellens estimat av $p(y = 1 \mid \mathbf{x})$.
+  husk: 'Logistisk regresjon gir en sannsynlighet, ikke en klasse. Klassen krever en terskel.'
+
+- id: "1.2-02"
+  del: "1.2"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En logistisk regresjonsmodell har vekter $\mathbf{w} = (0{,}5;\ -1{,}2;\ 0{,}8)$ og bias $b = 0{,}1$. Et datapunkt har $\mathbf{x} = (2;\ 1;\ 0{,}5)$.
+  deler:
+    - sporsmal: 'Regn ut $z = \mathbf{w}\mathbf{x} + b$.'
+      svar: 0.3
+      toleranse: 0.005
+    - sporsmal: 'Regn ut $y_{\text{pred}} = \sigma(z)$ (tre desimaler).'
+      svar: 0.574
+      toleranse: 0.003
+    - sporsmal: 'Hvilken klasse predikeres med terskel 0,5? Skriv 0 eller 1.'
+      svar: 1
+      toleranse: 0
+  losning: |
+    $z = 0{,}5 \cdot 2 + (-1{,}2) \cdot 1 + 0{,}8 \cdot 0{,}5 + 0{,}1 = 1 - 1{,}2 + 0{,}4 + 0{,}1 = 0{,}3$
+
+    $\sigma(0{,}3) = \dfrac{1}{1 + e^{-0{,}3}} = \dfrac{1}{1 + 0{,}741} \approx 0{,}574$
+
+    Siden $0{,}574 > 0{,}5$, predikeres klasse 1. Merk at $\sigma(z) > 0{,}5$ nøyaktig når $z > 0$.
+  husk: 'Med terskel 0,5 holder det å se på fortegnet til z: z > 0 gir klasse 1.'
+
+- id: "1.2-03"
+  del: "1.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor er beslutningsgrensen til logistisk regresjon lineær, selv om sigmoid-funksjonen er krum?
+  alternativer:
+    - tekst: 'Fordi grensen $\sigma(z) = 0{,}5$ tilsvarer $z = \mathbf{w}\mathbf{x} + b = 0$, som er en rett linje (et hyperplan) i feature-rommet'
+      riktig: true
+      forklaring: 'Sigmoid er monoton og virker på $z$. Terskelen på $\sigma$ blir en terskel på $z$, og $z$ er lineær i $\mathbf{x}$.'
+    - tekst: 'Fordi sigmoid er tilnærmet lineær rundt $z = 0$'
+      forklaring: 'Det stemmer at sigmoid er nesten rett rundt 0, men grensen er eksakt lineær uansett terskel, fordi sigmoid er monoton.'
+    - tekst: 'Fordi modellen trenes med gradient descent'
+      forklaring: 'Treningsmetoden bestemmer ikke formen på grensen. Den følger av modellformen.'
+    - tekst: 'Grensen er ikke lineær, den er S-formet'
+      forklaring: 'Det er sannsynligheten som følger en S-kurve langs $z$. Selve grensen der klassen skifter, er lineær.'
+  forklaring: |
+    Enhver terskel $\tau$ på $\sigma(z)$ tilsvarer en terskel $z = \ln\frac{\tau}{1-\tau}$ på $z$. Mengden av punkter med samme $z$ er et hyperplan. Derfor kan logistisk regresjon ikke løse XOR uten nye features.
+  husk: 'Sigmoid er monoton, så grensen σ(z) = τ er en grense på z, og den er lineær i x.'
+
+- id: "1.2-04"
+  del: "1.2"
+  niva: avansert
+  type: enkeltvalg
+  tags: [oving-1]
+  sporsmal: |
+    I øving 1 følger klassifiseringsdataene et XOR-mønster: klassen er 1 når $x_0$ og $x_1$ har ulikt fortegn. Logistisk regresjon på $(x_0, x_1)$ gir omtrent 50 % accuracy. Hvilket grep gjør at logistisk regresjon kan løse problemet?
+  alternativer:
+    - tekst: 'Legge til featuren $x_0 \cdot x_1$'
+      riktig: true
+      forklaring: 'Produktet er negativt nøyaktig når fortegnene er ulike, så klassene blir lineært separerbare i den nye featuren.'
+    - tekst: 'Trene i flere epoker med lavere læringsrate'
+      forklaring: 'Ingen lineær grense i $(x_0, x_1)$ skiller XOR-klassene, uansett hvor lenge vi trener.'
+    - tekst: 'Normalisere $x_0$ og $x_1$ til $[0, 1]$'
+      forklaring: 'Skalering endrer ikke at klassene ligger i motsatte kvadranter. Grensen må fortsatt være krum.'
+    - tekst: 'Øke terskelen fra 0,5 til 0,7'
+      forklaring: 'Terskelen flytter den lineære grensen parallelt. Den kan ikke gjøre den krum.'
+  forklaring: |
+    Logistisk regresjon gir alltid en lineær grense i de featurene den får. Med feature engineering kan vi gi modellen en ny feature der problemet blir lineært. Alternativet er en modell som selv lager ikke-lineære grenser, som et nevralt nettverk med skjulte lag (kapittel 5).
+  husk: 'XOR er ikke lineært separerbart. Løsningen er en ny feature (som x₀·x₁) eller en ikke-lineær modell.'
+
+- id: "1.2-05"
+  del: "1.2"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** For logistisk regresjon er $z = \mathbf{w}\mathbf{x} + b$ en vektor med én verdi per feature.
+  riktig: false
+  forklaring: |
+    $\mathbf{w}\mathbf{x}$ er et skalarprodukt, $\sum_i w_i x_i$, så $z$ er ett tall per datapunkt. Med en datamatrise $X$ av form (antall datapunkter, antall features) gir `np.matmul(X, w) + b` en vektor med én $z$ per *datapunkt*.
+  husk: 'z er én skalar per datapunkt: den vektede summen av featurene pluss bias.'
+
+- id: "1.2-06"
+  del: "1.2"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    `X` har form `(100, 3)` og `w` har form `(3,)`. Hva gir koden under?
+
+    ```python
+    z = np.matmul(X, w) + b
+    y_pred = 1 / (1 + np.exp(-z))
+    ```
+  alternativer:
+    - tekst: 'En array med 100 sannsynligheter i $(0, 1)$, én per datapunkt'
+      riktig: true
+      forklaring: 'Matriseproduktet gir 100 verdier av $z$, og sigmoid gjør hver av dem om til en sannsynlighet.'
+    - tekst: 'En array med 100 klasser, 0 eller 1'
+      forklaring: 'Koden har ingen terskel. Den gir sannsynligheter.'
+    - tekst: 'En array med 3 sannsynligheter, én per feature'
+      forklaring: '$X$ har 100 rader. Produktet summerer over de 3 featurene og gir én verdi per rad.'
+    - tekst: 'Et enkelt tall, gjennomsnittlig sannsynlighet'
+      forklaring: 'Ingenting i koden tar et snitt.'
+  forklaring: |
+    `np.matmul(X, w)` med former (100, 3) og (3,) gir form (100,). Uttrykket `1 / (1 + np.exp(-z))` er sigmoid, brukt elementvis.
+  husk: 'Kjenn igjen sigmoid i NumPy: 1 / (1 + np.exp(-z)). Uten terskel er outputen sannsynligheter.'
+
+# ---------------------------------------------------------------- 1.5 Evaluering
+- id: "1.5-01"
+  del: "1.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En klassifikator for en sjelden sykdom testes på 200 pasienter. Resultatet er TP = 18, FN = 6, FP = 30 og TN = 146. Hva er recall?
+  alternativer:
+    - tekst: '0,75'
+      riktig: true
+      forklaring: 'Recall = TP/(TP + FN) = 18/24 = 0,75. Nevneren er alle som faktisk er syke.'
+    - tekst: '0,375'
+      forklaring: 'Dette er precision, TP/(TP + FP) = 18/48. Precision har de predikert positive i nevneren.'
+    - tekst: '0,82'
+      forklaring: 'Dette er accuracy, (18 + 146)/200 = 0,82.'
+    - tekst: '0,83'
+      forklaring: 'Dette er spesifisiteten (TNR), 146/176 ≈ 0,83.'
+  forklaring: |
+    Sett opp matrisen først: $P = TP + FN = 24$ syke og $N = FP + TN = 176$ friske. Recall (TPR, sensitivitet) er andelen av de syke modellen finner: $18/24 = 0{,}75$.
+  husk: 'Recall og TPR har faktisk positive i nevneren, precision har predikert positive.'
+
+- id: "1.5-02"
+  del: "1.5"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    En klassifikator for en sjelden sykdom testes på 200 pasienter og får TP = 18, FN = 6, FP = 30 og TN = 146. Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'FPR er omtrent 0,17.'
+      riktig: true
+      forklaring: 'FPR = FP/N = 30/176 ≈ 0,17, altså 1 − spesifisitet.'
+    - tekst: 'Under halvparten av pasientene som får positivt svar, er faktisk syke.'
+      riktig: true
+      forklaring: 'Precision er 18/48 = 0,375, så 62,5 % av alarmene er falske.'
+    - tekst: 'Accuracy på 0,82 viser at modellen finner de fleste syke.'
+      forklaring: 'Accuracy domineres av de 176 friske. Hvor mange syke modellen finner, er recall (0,75), og det kan ikke leses ut av accuracy.'
+    - tekst: 'FPR er andelen av de positive prediksjonene som er gale.'
+      forklaring: 'Det er 1 − precision. FPR har de faktisk negative i nevneren.'
+  forklaring: |
+    $FPR = 30/176 \approx 0{,}17$ og $\text{precision} = 18/48 = 0{,}375$. Mange falske alarmer er typisk når den positive klassen er sjelden: selv en lav FPR gir mange FP fordi det er så mange negative.
+  husk: 'FPR er andel av de negative som gir alarm. Andelen falske blant alarmene er 1 − precision.'
+
+- id: "1.5-03"
+  del: "1.5"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Precision og recall har samme teller, men ulik nevner.
+  riktig: true
+  forklaring: |
+    Begge har TP i telleren. Recall deler på alle faktisk positive ($TP + FN$), precision på alle predikert positive ($TP + FP$). Derfor måler de ulike feil: recall straffes av FN, precision av FP.
+  husk: 'Samme teller (TP), ulik nevner: recall ser på de positive, precision på alarmene.'
+
+- id: "1.5-04"
+  del: "1.5"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En spamfilter-modell evalueres på 1000 e-poster, hvorav 100 er spam (positiv klasse). Modellen merker 90 e-poster som spam, og 72 av dem er faktisk spam.
+  deler:
+    - sporsmal: 'Hva er precision?'
+      svar: 0.8
+    - sporsmal: 'Hva er recall?'
+      svar: 0.72
+    - sporsmal: 'Hva er FPR?'
+      svar: 0.02
+  losning: |
+    Sett opp matrisen: $TP = 72$, $FP = 90 - 72 = 18$, $FN = 100 - 72 = 28$ og $TN = 900 - 18 = 882$.
+
+    - Precision $= 72/90 = 0{,}80$
+    - Recall $= 72/100 = 0{,}72$
+    - FPR $= 18/900 = 0{,}02$
+  husk: 'Start alltid med å fylle ut alle fire cellene i confusion matrix. Da blir resten ren innsetting.'
+
+- id: "1.5-05"
+  del: "1.5"
+  niva: avansert
+  type: tekst
+  tags: [case]
+  sporsmal: |
+    Et sykehus vil bruke en modell til å finne pasienter med en alvorlig, men behandlbar sykdom, slik at de kan få en billig oppfølgingstest. Hvilken metrikk bør sykehuset legge mest vekt på, og hvorfor er accuracy et dårlig valg her? Svar med 3–5 setninger.
+  eksempelsvar: |
+    Sykehuset bør legge mest vekt på recall (sensitivitet), fordi en falsk negativ betyr at en syk pasient ikke blir fulgt opp, mens en falsk positiv bare koster en billig ekstra test. Sykdommen er trolig sjelden, så accuracy blir høy selv om modellen overser mange syke: en modell som sier «frisk» til alle, får nesten 100 % accuracy og 0 recall. Precision er mindre viktig så lenge oppfølgingstesten er billig.
+  punkter:
+    - tekst: 'Velger recall/sensitivitet/TPR som viktigste metrikk.'
+      stikkord: ['recall', 'sensitivitet', 'tpr', 'true positive rate']
+    - tekst: 'Begrunner med at falske negative er dyrest (syke som ikke følges opp).'
+      stikkord: ['falsk negativ', 'falske negative', 'fn', 'oversett', 'overse']
+    - tekst: 'Forklarer at accuracy blir misvisende fordi klassene er ubalanserte (sykdommen er sjelden).'
+      stikkord: ['ubalanse', 'sjelden', 'balanse', 'accuracy-paradoks', 'nesten alle', 'flertall']
+    - tekst: 'Nevner at falske positive er akseptable fordi oppfølgingstesten er billig.'
+      stikkord: ['falsk positiv', 'falske positive', 'billig', 'fp']
+  husk: 'Velg metrikk etter hvilken feil som koster mest: recall når FN er dyrest, precision når FP er dyrest.'
+
+# ---------------------------------------------------------------- 1.3 Tapsfunksjon
+- id: "1.3-01"
+  del: "1.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Et datapunkt har $y = 1$, og modellen predikerer $y_{\text{pred}} = 0{,}8$. Hva er binær cross-entropy loss (naturlig logaritme) for dette punktet?
+  alternativer:
+    - tekst: '0,22'
+      riktig: true
+      forklaring: 'Med $y = 1$ er bare første ledd igjen: $-\ln 0{,}8 \approx 0{,}22$.'
+    - tekst: '1,61'
+      forklaring: 'Dette er $-\ln 0{,}2$, som ville vært tapet hvis $y = 0$.'
+    - tekst: '0,04'
+      forklaring: 'Dette er kvadratfeilen $(1 - 0{,}8)^2$, ikke cross-entropy.'
+    - tekst: '0,20'
+      forklaring: 'Dette er absoluttfeilen $|1 - 0{,}8|$.'
+  forklaring: |
+    $\mathcal{L} = -y\ln y_{\text{pred}} - (1-y)\ln(1 - y_{\text{pred}})$. Med $y = 1$ forsvinner andre ledd, og tapet er $-\ln 0{,}8 = 0{,}223$.
+  husk: 'For y = 1 er tapet −ln(ŷ), for y = 0 er det −ln(1 − ŷ). Bare ett ledd er aktivt.'
+
+- id: "1.3-02"
+  del: "1.3"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Fire datapunkter har target og prediksjon $(y, y_{\text{pred}})$: $(1;\ 0{,}9)$, $(1;\ 0{,}6)$, $(0;\ 0{,}2)$ og $(0;\ 0{,}7)$. Regn ut gjennomsnittlig binær cross-entropy med naturlig logaritme.
+  deler:
+    - sporsmal: 'Tapet for punktet $(0;\ 0{,}7)$'
+      svar: 1.204
+      toleranse: 0.005
+    - sporsmal: 'Gjennomsnittlig tap over alle fire punktene'
+      svar: 0.511
+      toleranse: 0.005
+  losning: |
+    - $(1;\ 0{,}9)$: $-\ln 0{,}9 = 0{,}105$
+    - $(1;\ 0{,}6)$: $-\ln 0{,}6 = 0{,}511$
+    - $(0;\ 0{,}2)$: $-\ln(1 - 0{,}2) = -\ln 0{,}8 = 0{,}223$
+    - $(0;\ 0{,}7)$: $-\ln(1 - 0{,}7) = -\ln 0{,}3 = 1{,}204$
+
+    Snittet er $(0{,}105 + 0{,}511 + 0{,}223 + 1{,}204)/4 = 2{,}043/4 \approx 0{,}511$. Punktet som er sikkert og feil, bidrar mest.
+  husk: 'Cross-entropy straffer selvsikre feil hardt: −ln går mot uendelig når sannsynligheten for riktig klasse går mot 0.'
+
+- id: "1.3-03"
+  del: "1.3"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Binær cross-entropy kan utledes fra likelihood. Hvorfor tar vi logaritmen av likelihood før vi optimerer?
+  alternativer:
+    - tekst: 'Fordi logaritmen er monoton, så optimum flyttes ikke, og produktet over datapunktene blir en sum som er enklere å derivere'
+      riktig: true
+      forklaring: 'Begge deler stemmer. I tillegg unngår vi at produktet av mange små sannsynligheter blir numerisk null.'
+    - tekst: 'Fordi logaritmen flytter optimum til et bedre sted'
+      forklaring: 'Logaritmen er strengt voksende og endrer ikke hvor maksimum ligger.'
+    - tekst: 'Fordi likelihood ikke er deriverbar'
+      forklaring: 'Likelihood er deriverbar. Logaritmen gjør bare deriveringen enklere.'
+    - tekst: 'For å gjøre tapet negativt'
+      forklaring: 'Fortegnet skyldes minustegnet vi setter foran for å få et tap som skal minimeres.'
+  forklaring: |
+    Utledningen: sannsynligheten for riktig svar $\to$ likelihood $\sigma^y(1-\sigma)^{1-y}$ $\to$ log-likelihood $\to$ minus log-likelihood, som minimeres. Maksimere likelihood og minimere $-\ln L$ gir samme parametre.
+  husk: 'Log er monoton: samme optimum, men produkt blir sum og deriveringen blir enkel.'
+
+- id: "1.3-04"
+  del: "1.3"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** I likelihood $L(\theta \mid \mathbf{x}, y)$ holder vi dataene faste og ser på uttrykket som en funksjon av parametrene.
+  riktig: true
+  forklaring: |
+    Formelen er den samme som for sannsynligheten for dataene, men rollene er byttet om: i sannsynlighet er parametrene gitt og dataene varierer, i likelihood er dataene gitt og vi leter etter parametrene som gjør dem mest sannsynlige.
+  husk: 'Likelihood: data faste, parametre varierer. Maks likelihood = min cross-entropy.'
+
+- id: "1.3-05"
+  del: "1.3"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Hvilken linje regner ut gjennomsnittlig binær cross-entropy riktig, når `y` og `y_pred` er NumPy-arrayer?
+  alternativer:
+    - tekst: '`-np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))`'
+      riktig: true
+      forklaring: 'Begge leddene, riktig fortegn og snitt over datapunktene.'
+    - tekst: '`np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))`'
+      forklaring: 'Mangler minustegnet. Dette er log-likelihood, som skal maksimeres, ikke et tap.'
+    - tekst: '`-np.mean(y * np.log(y_pred))`'
+      forklaring: 'Mangler leddet for $y = 0$. Da straffes ikke modellen for å gi høy sannsynlighet til negative punkter.'
+    - tekst: '`-np.mean(np.log(y) * y_pred + np.log(1 - y) * (1 - y_pred))`'
+      forklaring: 'Logaritmen skal tas av prediksjonen, ikke av target. $\log 0$ for $y = 0$ ville gitt uendelig.'
+  forklaring: |
+    $\mathcal{L} = -\frac{1}{N}\sum_i \left[y^{(i)}\ln y_{\text{pred}}^{(i)} + (1 - y^{(i)})\ln(1 - y_{\text{pred}}^{(i)})\right]$.
+  husk: 'Logaritmen tas av prediksjonen, targetet er vekten. Husk minus foran.'
+
+- id: "1.3-06"
+  del: "1.3"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar kort hvordan binær cross-entropy loss kan utledes, med utgangspunkt i sannsynligheten modellen gir for det riktige svaret.
+  eksempelsvar: |
+    Modellen gir $\sigma$ som sannsynlighet for klasse 1 og $1 - \sigma$ for klasse 0. Sannsynligheten for riktig svar kan skrives samlet som $L = \sigma^y(1-\sigma)^{1-y}$, som er likelihood for ett punkt. Vi vil maksimere den. Tar vi logaritmen, som ikke flytter optimum, får vi $y\ln\sigma + (1-y)\ln(1-\sigma)$. Setter vi minus foran, får vi et tap som skal minimeres: $-y\ln y_{\text{pred}} - (1-y)\ln(1-y_{\text{pred}})$. Over mange punkter tar vi snittet.
+  punkter:
+    - tekst: 'Skriver likelihood som $\sigma^y(1-\sigma)^{1-y}$ (sannsynlighet for riktig svar).'
+      stikkord: ['likelihood', 'sannsynlighet for riktig', 'sigma^y', 'σ^y', '1-y']
+    - tekst: 'Tar logaritmen og begrunner at optimum ikke endres (monoton).'
+      stikkord: ['log', 'logaritm', 'ln']
+    - tekst: 'Setter minus foran for å få et tap som minimeres.'
+      stikkord: ['minus', 'negativ', 'minimer']
+    - tekst: 'Snitt (eller sum) over alle treningspunktene.'
+      stikkord: ['snitt', 'gjennomsnitt', 'mean', 'sum']
+  husk: 'Fire steg: sannsynlighet for riktig svar, likelihood, log-likelihood, minus.'
+
+# ---------------------------------------------------------------- 1.4 Gradient descent
+- id: "1.4-01"
+  del: "1.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Oppdateringsregelen i gradient descent er $\theta_{t+1} = \theta_t - \eta \,\partial\mathcal{L}/\partial\theta$. Hvorfor står det minus?
+  alternativer:
+    - tekst: 'Gradienten peker i retningen der tapet øker mest, og vi vil gå motsatt vei'
+      riktig: true
+      forklaring: 'Minus gjør at vi tar et steg nedover i tapslandskapet.'
+    - tekst: 'Gradienten peker mot minimum, og minus sørger for at vi ikke går for langt'
+      forklaring: 'Gradienten peker mot økende tap. Steglengden styres av $\eta$.'
+    - tekst: 'Fordi tapet er negativt'
+      forklaring: 'Cross-entropy og MSE er aldri negative. Fortegnet handler om retning, ikke verdien til tapet.'
+    - tekst: 'For å gjøre læringsraten negativ'
+      forklaring: 'Læringsraten er et positivt tall.'
+  forklaring: |
+    Den deriverte forteller hvordan tapet endrer seg når $\theta$ øker. Er den positiv, minker tapet om vi gjør $\theta$ mindre, og omvendt. Minustegnet gir alltid riktig retning.
+  husk: 'Gradienten peker oppover. Vi går motsatt vei med steglengde η.'
+
+- id: "1.4-02"
+  del: "1.4"
+  niva: middels
+  type: tall
+  tags: [regning, oving-1]
+  sporsmal: |
+    Logistisk regresjon med én feature: $y_{\text{pred}} = \sigma(wx + b)$, med $w = 0{,}5$ og $b = 0$. Ett treningspunkt har $x = 2$ og $y = 1$. Læringsraten er $\eta = 0{,}1$, og tapet er binær cross-entropy. Ta ett gradient descent-steg.
+  deler:
+    - sporsmal: '$y_{\text{pred}}$ før oppdateringen (tre desimaler)'
+      svar: 0.731
+      toleranse: 0.003
+    - sporsmal: '$\partial \mathcal{L}/\partial w$'
+      svar: -0.538
+      toleranse: 0.005
+    - sporsmal: 'Ny verdi av $w$'
+      svar: 0.554
+      toleranse: 0.003
+    - sporsmal: 'Ny verdi av $b$'
+      svar: 0.027
+      toleranse: 0.002
+  losning: |
+    $z = 0{,}5 \cdot 2 + 0 = 1$, så $y_{\text{pred}} = \sigma(1) \approx 0{,}731$.
+
+    Gradientene er $\partial\mathcal{L}/\partial w = (y_{\text{pred}} - y)\,x = (0{,}731 - 1) \cdot 2 = -0{,}538$ og $\partial\mathcal{L}/\partial b = y_{\text{pred}} - y = -0{,}269$.
+
+    $w \leftarrow 0{,}5 - 0{,}1 \cdot (-0{,}538) = 0{,}554$ og $b \leftarrow 0 - 0{,}1 \cdot (-0{,}269) = 0{,}027$.
+
+    Begge parametrene øker, slik at prediksjonen for punktet (som har $y = 1$) blir høyere.
+  husk: 'Gradientene er (ŷ − y)·x for vektene og (ŷ − y) for bias. Negativ gradient betyr at parameteren øker.'
+
+- id: "1.4-03"
+  del: "1.4"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Treningstapet hopper opp og ned fra epoke til epoke og blir ikke lavere over tid. Modellen og dataene er ellers i orden. Hva er den mest sannsynlige årsaken?
+  alternativer:
+    - tekst: 'Læringsraten er for høy, så stegene skyter over minimum'
+      riktig: true
+      forklaring: 'For store steg gir oscillasjon eller divergens.'
+    - tekst: 'Læringsraten er for lav'
+      forklaring: 'For lav læringsrate gir et tap som synker jevnt, men sakte.'
+    - tekst: 'Modellen har for få parametre'
+      forklaring: 'Det gir undertilpasning, altså et tap som flater ut høyt, ikke et tap som hopper.'
+    - tekst: 'Det er for få epoker'
+      forklaring: 'Flere epoker hjelper ikke når hvert steg går for langt.'
+  forklaring: |
+    Med for høy $\eta$ går parameteren forbi minimum og havner på andre siden, ofte høyere opp. Prøv den interaktive figuren i 1.4: med $\eta$ over halvparten av den kritiske verdien hopper løsningen, og over den kritiske verdien divergerer den.
+  husk: 'Oscillerende eller økende tap: senk læringsraten. Tap som synker veldig sakte: øk den.'
+
+- id: "1.4-04"
+  del: "1.4"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Hvilke av disse er **hyperparametre** når du trener logistisk regresjon med gradient descent?
+  alternativer:
+    - tekst: 'Læringsraten $\eta$'
+      riktig: true
+      forklaring: 'Vi velger den før treningen. Den styrer læringen, men er ikke en del av den ferdige modellen.'
+    - tekst: 'Antall epoker'
+      riktig: true
+      forklaring: 'Bestemmes av oss, ikke av treningen.'
+    - tekst: 'Vektene $\mathbf{w}$'
+      forklaring: 'Vektene er modellparametre som læres fra dataene.'
+    - tekst: 'Biasen $b$'
+      forklaring: 'Bias er også en modellparameter som læres.'
+  forklaring: |
+    Parametre ($\mathbf{w}$, $b$) tilpasses av treningen. Hyperparametre (læringsrate, antall epoker, terskel, batch size) velges av oss, gjerne med validering.
+  husk: 'Parametre læres av data. Hyperparametre velges av oss og styrer læringen.'
+
+- id: "1.4-05"
+  del: "1.4"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** En epoke er én oppdatering av parametrene.
+  riktig: false
+  forklaring: |
+    En epoke er én gjennomgang av alle treningsdataene. Bruker vi hele datasettet per oppdatering (batch gradient descent), blir det én oppdatering per epoke. Med mini-batcher blir det mange oppdateringer per epoke, for eksempel 50 000 / 64 ≈ 782 (kapittel 5).
+  husk: 'Epoke = én runde gjennom alle treningsdata. Antall oppdateringer per epoke avhenger av batch size.'
+
+- id: "1.4-06"
+  del: "1.4"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Gradientene for logistisk regresjon med cross-entropy er $\partial\mathcal{L}/\partial w_j = (y_{\text{pred}} - y)\,x_j$ og $\partial\mathcal{L}/\partial b = y_{\text{pred}} - y$. Forklar intuitivt hva uttrykkene sier om hvordan vektene oppdateres.
+  eksempelsvar: |
+    Gradienten er feilen $(y_{\text{pred}} - y)$ ganget med inputen. Er prediksjonen for høy, blir gradienten positiv for positive $x_j$, og vekten minker. Er den for lav, øker vekten. Stor feil gir stor oppdatering, og et punkt som allerede er riktig klassifisert med høy sikkerhet, bidrar nesten ingenting. Features med store verdier får større oppdatering, noe som er en av grunnene til at skalering hjelper. Bias oppdateres bare med feilen, som om den hadde en feature som alltid er 1.
+  punkter:
+    - tekst: 'Gradienten er feilen ganget med inputen.'
+      stikkord: ['feil', 'avvik', 'differanse', 'y_pred - y', 'ŷ - y']
+    - tekst: 'Fortegnet: for høy prediksjon gir lavere vekt, for lav gir høyere (for positiv $x_j$).'
+      stikkord: ['for høy', 'for lav', 'minker', 'øker', 'fortegn', 'retning']
+    - tekst: 'Størrelsen: stor feil gir stort steg, riktige punkter gir lite.'
+      stikkord: ['stor feil', 'større', 'lite', 'liten', 'proporsjonal']
+    - tekst: 'Features med store verdier gir større oppdatering, og bias er som en feature lik 1.'
+      stikkord: ['skal', 'store verdier', 'bias', 'x_j']
+  husk: 'Gradient = (feil) × (input). Intuitivt: rett opp feilen, mest der inputen er stor.'
+
+# ---------------------------------------------------------------- 1.5 (tillegg)
+- id: "1.5-06"
+  del: "1.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Et røykvarslersystem skal brukes i et sykehus. Falske alarmer koster lite, men et oversett branntilløp kan være katastrofalt. Hvilken metrikk er viktigst å få høy?
+  alternativer:
+    - tekst: 'Recall (TPR)'
+      riktig: true
+      forklaring: 'Recall er andelen av de virkelige branntilløpene som oppdages. Det er falske negative som er dyre her.'
+    - tekst: 'Precision'
+      forklaring: 'Precision blir viktig når falske alarmer er dyre. Her er de billige.'
+    - tekst: 'Spesifisitet (TNR)'
+      forklaring: 'Spesifisitet måler hvor godt vi unngår falske alarmer.'
+    - tekst: 'Accuracy'
+      forklaring: 'Branner er sjeldne, så accuracy kan være høy selv om systemet overser mange.'
+  forklaring: |
+    Velg metrikk etter hvilken feil som koster mest. Dyre falske negative betyr at recall må være høy, og da aksepterer vi flere falske positive.
+  husk: 'Dyre FN → recall. Dyre FP → precision (eller lav FPR).'
+
+# ---------------------------------------------------------------- 1.6 Terskel, ROC og PR
+- id: "1.6-01"
+  del: "1.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva representerer den diagonale linjen fra (0, 0) til (1, 1) i et ROC-diagram?
+  alternativer:
+    - tekst: 'En modell som ikke skiller klassene bedre enn tilfeldig gjetting'
+      riktig: true
+      forklaring: 'Langs diagonalen er TPR = FPR. Modellen gir positive like ofte for begge klassene.'
+    - tekst: 'Terskelen 0,5'
+      forklaring: 'Hver terskel er ett punkt på kurven. Diagonalen er en hel kurve.'
+    - tekst: 'En modell som predikerer 0,5 for alle punkter'
+      forklaring: 'En slik modell gir bare punktene (0, 0) og (1, 1). Diagonalen betyr ingen rangeringsevne, uansett hvilke tall modellen gir.'
+    - tekst: 'Den ideelle modellen'
+      forklaring: 'Den ideelle modellen går rett opp til (0, 1) og bortover til (1, 1), med AUC = 1.'
+  forklaring: |
+    En tilfeldig klassifikator gir samme andel positive prediksjoner uansett klasse, så TPR = FPR for alle terskler. AUC blir 0,5.
+  husk: 'Diagonalen = tilfeldig gjetning, AUC 0,5. Ideell modell = AUC 1, gjennom (0, 1).'
+
+- id: "1.6-02"
+  del: "1.6"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du senker klassifiseringsterskelen $\tau$ fra 0,5 til 0,2. Hva skjer som regel med punktet på ROC-kurven?
+  alternativer:
+    - tekst: 'Det flytter seg oppover og mot høyre: både TPR og FPR øker eller blir like'
+      riktig: true
+      forklaring: 'Lavere terskel gir flere positive prediksjoner, både riktige og gale.'
+    - tekst: 'Det flytter seg nedover og mot venstre'
+      forklaring: 'Det skjer når terskelen økes.'
+    - tekst: 'Det flytter seg rett opp, FPR er uendret'
+      forklaring: 'Flere positive prediksjoner treffer som regel også noen negative punkter.'
+    - tekst: 'Hele ROC-kurven flytter seg'
+      forklaring: 'Kurven er bestemt av modellens rangering og er den samme for alle terskler. Bare punktet vi står i, flytter seg.'
+  forklaring: |
+    Kurven går fra (0, 0) ved svært høy terskel (ingen positive) til (1, 1) ved svært lav terskel (alt positivt). En lavere terskel flytter oss langs kurven mot (1, 1).
+  husk: 'Høy terskel nær (0, 0), lav terskel nær (1, 1). Terskelen flytter oss langs kurven, ikke kurven.'
+
+- id: "1.6-03"
+  del: "1.6"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En modell gir disse sannsynlighetene for klasse 1:
+
+    | Punkt | A | B | C | D | E | F |
+    |---|---|---|---|---|---|---|
+    | $y$ | 1 | 1 | 0 | 1 | 0 | 0 |
+    | $y_{\text{pred}}$ | 0,95 | 0,70 | 0,60 | 0,45 | 0,30 | 0,10 |
+
+    Et punkt predikeres positivt når $y_{\text{pred}} > \tau$.
+  deler:
+    - sporsmal: 'TPR med $\tau = 0{,}5$'
+      svar: 0.6667
+      toleranse: 0.01
+    - sporsmal: 'FPR med $\tau = 0{,}5$'
+      svar: 0.3333
+      toleranse: 0.01
+    - sporsmal: 'TPR med $\tau = 0{,}4$'
+      svar: 1
+      toleranse: 0.001
+    - sporsmal: 'AUC for modellen'
+      svar: 0.8889
+      toleranse: 0.01
+  losning: |
+    Det er 3 positive (A, B, D) og 3 negative (C, E, F).
+
+    - $\tau = 0{,}5$: positive prediksjoner er A, B og C. TP = 2 (A, B), FP = 1 (C). TPR $= 2/3$, FPR $= 1/3$.
+    - $\tau = 0{,}4$: A, B, C og D er positive. TP = 3, så TPR $= 1$, og FPR er fortsatt $1/3$.
+
+    AUC er andelen av de $3 \cdot 3 = 9$ par (positiv, negativ) der den positive har høyest score. Bare paret (D, C) er feil rangert, så AUC $= 8/9 \approx 0{,}89$.
+  husk: 'AUC = andelen positiv–negativ-par som rangeres riktig. Tell parene når datasettet er lite.'
+
+- id: "1.6-04"
+  del: "1.6"
+  niva: avansert
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om ROC-kurven og AUC stemmer?
+  alternativer:
+    - tekst: 'AUC er sannsynligheten for at et tilfeldig positivt punkt får høyere score enn et tilfeldig negativt.'
+      riktig: true
+      forklaring: 'Dette er rangeringstolkningen av AUC.'
+    - tekst: 'TPR og FPR påvirkes ikke av hvor stor andel av dataene som er positive.'
+      riktig: true
+      forklaring: 'Begge beregnes innad i én klasse (TPR blant de positive, FPR blant de negative).'
+    - tekst: 'AUC = 0,9 betyr at 90 % av prediksjonene er riktige.'
+      forklaring: 'AUC er en rangeringssannsynlighet over alle terskler, ikke accuracy ved én terskel.'
+    - tekst: 'Punktet øverst til høyre på kurven tilsvarer høyest terskel.'
+      forklaring: 'Øverst til høyre er alt predikert positivt, altså lavest terskel.'
+  forklaring: |
+    ROC-kurven og AUC er derfor robuste mot klassefordelingen. Precision blander klassene (TP fra de positive, FP fra de negative) og påvirkes av den.
+  husk: 'AUC er rangering, ikke accuracy. TPR og FPR er uavhengige av klassebalansen, precision er det ikke.'
+
+- id: "1.6-05"
+  del: "1.6"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Precision og recall er like store nøyaktig når antall falske positive er lik antall falske negative.
+  riktig: true
+  forklaring: |
+    Precision $= TP/(TP + FP)$ og recall $= TP/(TP + FN)$. Med samme teller er brøkene like nøyaktig når nevnerne er like, altså når $FP = FN$ (gitt $TP > 0$).
+  husk: 'Samme teller, ulik nevner: precision = recall ⇔ FP = FN.'
+
+- id: "1.6-06"
+  del: "1.6"
+  niva: avansert
+  type: tekst
+  tags: [case]
+  sporsmal: |
+    En bank bruker en modell som gir sannsynlighet for svindel. Hver svindel som slipper gjennom, koster i snitt 20 000 kr, mens en manuell kontroll av en falsk alarm koster 200 kr. Forklar hvordan banken bør tenke rundt valg av klassifiseringsterskel.
+  eksempelsvar: |
+    Terskelen bestemmer avveiningen mellom precision og recall. En falsk negativ (svindel som slipper gjennom) koster 100 ganger mer enn en falsk positiv, så banken bør prioritere høy recall og velge en lav terskel, selv om det gir mange falske alarmer og lav precision. Terskelen bør velges ved å se på ROC- eller precision–recall-kurven (på valideringsdata) og ta den som minimerer forventet kostnad, ikke bare bruke 0,5.
+  punkter:
+    - tekst: 'Terskelen styrer avveiningen mellom falske positive og falske negative (precision og recall).'
+      stikkord: ['precision', 'recall', 'avvei', 'tradeoff', 'falske']
+    - tekst: 'Falske negative er mye dyrere, så recall prioriteres.'
+      stikkord: ['recall', 'falsk negativ', 'falske negative', 'dyrere', 'tpr']
+    - tekst: 'Konklusjon: lavere terskel enn 0,5.'
+      stikkord: ['lav terskel', 'lavere terskel', 'senke', 'senk']
+    - tekst: 'Terskelen velges ut fra kostnad, for eksempel med ROC-/PR-kurve på valideringsdata.'
+      stikkord: ['kostnad', 'roc', 'kurve', 'validering']
+  husk: 'Terskel 0,5 er bare en standard. Velg terskelen ut fra hva feilene koster.'
+
+# ---------------------------------------------------------------- 1.7 Entropi og cross-entropy
+- id: "1.7-01"
+  del: "1.7"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En tilfeldig variabel har tre utfall med sannsynlighetene $0{,}5$, $0{,}25$ og $0{,}25$. Hva er entropien målt i bits?
+  alternativer:
+    - tekst: '1,5 bit'
+      riktig: true
+      forklaring: '$-(0{,}5\log_2 0{,}5 + 2 \cdot 0{,}25\log_2 0{,}25) = 0{,}5 + 1 = 1{,}5$.'
+    - tekst: '1 bit'
+      forklaring: '1 bit er entropien til en rettferdig mynt (to like sannsynlige utfall).'
+    - tekst: '$\log_2 3 \approx 1{,}58$ bit'
+      forklaring: 'Det er maksimal entropi for tre utfall, når alle er like sannsynlige.'
+    - tekst: '0,5 bit'
+      forklaring: 'Dette er bare bidraget fra det første utfallet.'
+  forklaring: |
+    $H(p) = -\sum_i p_i \log_2 p_i$. Utfallet med $p = 0{,}5$ bidrar $0{,}5 \cdot 1 = 0{,}5$ bit, og hvert av de to med $p = 0{,}25$ bidrar $0{,}25 \cdot 2 = 0{,}5$ bit.
+  husk: 'Entropi er forventet overraskelse, −Σ p log p. Størst når alle utfall er like sannsynlige.'
+
+- id: "1.7-02"
+  del: "1.7"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et bilde tilhører klasse 1 av tre ($\mathbf{y} = (1, 0, 0)$). Modellen predikerer $\hat{\mathbf{y}} = (0{,}7;\ 0{,}2;\ 0{,}1)$. Hva er cross-entropy loss med naturlig logaritme?
+  alternativer:
+    - tekst: '$-\ln 0{,}7 \approx 0{,}36$'
+      riktig: true
+      forklaring: 'Bare leddet for den sanne klassen er med, fordi de andre $y_i$ er 0.'
+    - tekst: '$-(\ln 0{,}7 + \ln 0{,}2 + \ln 0{,}1) \approx 4{,}26$'
+      forklaring: 'Hvert ledd skal vektes med $y_i$. For klasse 2 og 3 er $y_i = 0$.'
+    - tekst: '$-\ln 0{,}3 \approx 1{,}20$'
+      forklaring: '$0{,}3$ er sannsynligheten for feil klasse. Tapet bruker sannsynligheten for den riktige.'
+    - tekst: '$(1 - 0{,}7)^2 = 0{,}09$'
+      forklaring: 'Dette er kvadratfeil for første komponent, ikke cross-entropy.'
+  forklaring: |
+    $\mathcal{L} = -\sum_i y_i \log \hat{y}_i$. Med one-hot target er tapet $-\log$ av sannsynligheten modellen gir den riktige klassen.
+  husk: 'Med one-hot target: tap = −log(sannsynligheten for riktig klasse).'
+
+- id: "1.7-03"
+  del: "1.7"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    La $p$ være den sanne fordelingen og $q$ modellens. Hvilke påstander om entropi og cross-entropy stemmer?
+  alternativer:
+    - tekst: 'Generelt er $H(p, q) \neq H(q, p)$.'
+      riktig: true
+      forklaring: 'Cross-entropy er ikke symmetrisk. Forventningen tas over den sanne fordelingen $p$.'
+    - tekst: 'Binær cross-entropy loss er $H(p, q)$ med to utfall.'
+      riktig: true
+      forklaring: 'Med $p = (y, 1-y)$ og $q = (\hat y, 1 - \hat y)$ blir $H(p,q) = -y\ln\hat y - (1-y)\ln(1-\hat y)$.'
+    - tekst: 'Entropien er størst når én klasse dominerer.'
+      forklaring: 'Entropien er størst når alle utfall er like sannsynlige, og 0 når ett utfall er sikkert.'
+    - tekst: 'Valget av $\log_2$ eller $\ln$ endrer hvilke parametre som minimerer tapet.'
+      forklaring: 'Grunntallet skalerer bare tapet med en konstant (bits mot nats). Optimum er det samme.'
+  forklaring: |
+    $H(p,q) = -\sum_i p(x_i)\log q(x_i)$ er minst når $q = p$, og da er den lik $H(p)$.
+  husk: 'H(p, q) er ikke symmetrisk. Grunntallet i log endrer bare enheten.'
+
+- id: "1.7-04"
+  del: "1.7"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** En mynt som alltid gir kron, har entropi 1 bit fordi den har to mulige utfall.
+  riktig: false
+  forklaring: |
+    Entropien avhenger av sannsynlighetene, ikke av antall mulige utfall. Når kron har sannsynlighet 1, er det ingen usikkerhet, og $H = -1 \cdot \log_2 1 = 0$. Det er en rettferdig mynt som har 1 bit.
+  husk: 'Sikkert utfall: H = 0. Rettferdig mynt: H = 1 bit.'
+
+- id: "1.7-05"
+  del: "1.7"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En urettferdig mynt gir kron med sannsynlighet 0,75 og mynt med sannsynlighet 0,25.
+  deler:
+    - sporsmal: 'Entropien i bits (tre desimaler)'
+      svar: 0.811
+      toleranse: 0.003
+  losning: |
+    $H = -(0{,}75\log_2 0{,}75 + 0{,}25\log_2 0{,}25) = -(0{,}75 \cdot (-0{,}415) + 0{,}25 \cdot (-2)) = 0{,}311 + 0{,}5 = 0{,}811$ bit.
+
+    Mindre enn 1 bit, fordi utfallet er lettere å forutsi enn for en rettferdig mynt.
+  husk: 'log₂ 0,25 = −2 og log₂ 0,5 = −1 er verdt å kunne utenat.'
+
+- id: "1.7-06"
+  del: "1.7"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar med egne ord hva entropi og cross-entropy måler, og hvorfor det gir mening å bruke cross-entropy som tapsfunksjon for klassifisering.
+  eksempelsvar: |
+    Entropi måler hvor usikker en fordeling er, som forventet overraskelse $-\sum p\log p$: den er 0 når utfallet er sikkert og størst når alle utfall er like sannsynlige. Cross-entropy $H(p,q)$ måler forventet overraskelse når de sanne utfallene følger $p$, men vi bruker modellens $q$ til å vurdere dem. Den er minst når $q = p$. Som tap betyr det at modellen straffes når den gir lav sannsynlighet til klassen som faktisk inntraff, og hardest når den er sikker og feil. Å minimere cross-entropy er det samme som å maksimere likelihood.
+  punkter:
+    - tekst: 'Entropi som usikkerhet eller forventet overraskelse (0 når sikkert, størst ved like sannsynligheter).'
+      stikkord: ['usikker', 'overrask', 'informasjon', 'uforutsigbar']
+    - tekst: 'Cross-entropy sammenligner sann fordeling $p$ med modellens $q$, minst når de er like.'
+      stikkord: ['sann', 'modellens', 'p og q', 'fordeling', 'like']
+    - tekst: 'Som tap: straffer lav sannsynlighet for riktig klasse, særlig selvsikre feil.'
+      stikkord: ['riktig klasse', 'straff', 'selvsikker', 'sikker og feil', 'lav sannsynlighet']
+    - tekst: 'Kobling til likelihood (min cross-entropy = maks likelihood).'
+      stikkord: ['likelihood']
+  husk: 'Cross-entropy = forventet overraskelse når vi bruker modellens q på data fra p. Minst når q = p.'

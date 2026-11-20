@@ -1,0 +1,835 @@
+# Oppgaver til kapittel 7: Reinforcement learning
+
+# ---------------------------------------------------------------- 7.1 RL-loopen og MDP
+- id: "7.1-01"
+  del: "7.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvilket utsagn beskriver best Markov-egenskapen slik den brukes i reinforcement learning?
+  alternativer:
+    - tekst: 'Neste tilstand avhenger bare av nåværende tilstand og handling, ikke av historien før det'
+      riktig: true
+      forklaring: '$P(S_{t+1} \mid S_t, A_t, S_{t-1}, \dots) = P(S_{t+1} \mid S_t, A_t)$.'
+    - tekst: 'Neste tilstand avhenger av hele sekvensen av tidligere tilstander og handlinger'
+      forklaring: 'Det er det motsatte av Markov-egenskapen.'
+    - tekst: 'Neste tilstand avhenger bare av belønningen i forrige steg'
+      forklaring: 'Overgangen avhenger av tilstanden og handlingen.'
+    - tekst: 'Agenten husker alle tidligere tilstander'
+      forklaring: 'Markov-egenskapen handler om miljøet, ikke om agentens minne.'
+  forklaring: |
+    «Fremtiden er uavhengig av fortiden, gitt nåtiden.» Det er det som gjør at Q-verdier kan defineres for tilstand–handling-par alene.
+  husk: 'Markov: neste tilstand avhenger bare av (S_t, A_t).'
+
+- id: "7.1-02"
+  del: "7.1"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Hvilke elementer inngår i en MDP slik kurset definerer den, $(S, A, P_A, R_A)$?
+  alternativer:
+    - tekst: 'Mengden tilstander $S$'
+      riktig: true
+      forklaring: 'State space.'
+    - tekst: 'Mengden handlinger $A$'
+      riktig: true
+      forklaring: 'Action space.'
+    - tekst: 'Belønningen $R_A(S_t, S_{t+1})$ for overganger'
+      riktig: true
+      forklaring: 'Den umiddelbare belønningen miljøet gir.'
+    - tekst: 'Læringsraten $\alpha$'
+      forklaring: '$\alpha$ er en hyperparameter i læringsalgoritmen, ikke en del av problemet.'
+  forklaring: |
+    $P_A$ er overgangssannsynlighetene $P(S_{t+1} \mid S_t, A_t)$. MDP-en beskriver problemet. $\alpha$, $\gamma$ og $\varepsilon$ hører til agenten og læringen.
+  husk: 'MDP = (S, A, P_A, R_A): tilstander, handlinger, overganger, belønninger.'
+
+- id: "7.1-03"
+  del: "7.1"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I RL-loopen velger agenten handling $A_t$ i tilstand $S_t$. Hva returnerer miljøet?
+  alternativer:
+    - tekst: 'Ny tilstand $S_{t+1}$ og belønning $R_{t+1}$'
+      riktig: true
+      forklaring: 'I tillegg gjerne et flagg for om episoden er ferdig.'
+    - tekst: 'Q-verdien til handlingen'
+      forklaring: 'Q-verdier læres av agenten. Miljøet kjenner dem ikke.'
+    - tekst: 'Den optimale handlingen'
+      forklaring: 'Miljøet forteller ikke hva som er riktig. Det gir bare belønning.'
+    - tekst: 'En ny policy'
+      forklaring: 'Policyen tilhører agenten.'
+  forklaring: |
+    I kode: `next_state, reward, done, info = env.step(action)`. Agenten må selv lære hvilke handlinger som lønner seg.
+  husk: 'Agent: handling. Miljø: ny tilstand + belønning (+ done).'
+
+- id: "7.1-04"
+  del: "7.1"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** I reinforcement learning får agenten vite hva den riktige handlingen var, slik som i veiledet læring.
+  riktig: false
+  forklaring: |
+    Agenten får bare en belønning, ofte forsinket. Den vet ikke hva som hadde vært beste handling og må lære det gjennom prøving og feiling. Det er hovedforskjellen fra veiledet læring, der hvert datapunkt har en fasit.
+  husk: 'RL: belønning, ikke fasit. Agenten lærer ved prøving og feiling.'
+
+- id: "7.1-05"
+  del: "7.1"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hva er en «agent» i reinforcement learning?
+  alternativer:
+    - tekst: 'Alt som tar inn en tilstand og velger en handling, for eksempel en tabell, en regel eller et nevralt nett'
+      riktig: true
+      forklaring: 'Agenten er det som mapper tilstand til handling og lærer av belønning.'
+    - tekst: 'En språkmodell'
+      forklaring: 'Ordet brukes også om språkmodeller i dag, men i RL betyr det noe mer generelt.'
+    - tekst: 'Miljøet agenten handler i'
+      forklaring: 'Miljøet er det agenten samhandler med.'
+    - tekst: 'Belønningsfunksjonen'
+      forklaring: 'Belønningen gis av miljøet.'
+  forklaring: |
+    Se figuren i 7.1: agenten sender handlinger til miljøet og får tilstander og belønninger tilbake.
+  husk: 'Agent = noe som mapper tilstand til handling.'
+
+- id: "7.1-06"
+  del: "7.1"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Beskriv RL-loopen med begrepene tilstand, handling, belønning og episode, og forklar hvorfor Markov-egenskapen er nyttig.
+  eksempelsvar: |
+    Agenten observerer tilstanden $S_t$ og velger en handling $A_t$ etter policyen sin. Miljøet svarer med ny tilstand $S_{t+1}$ og belønning $R_{t+1}$. Dette gjentas til episoden er ferdig (for eksempel når spillet er over eller målet nås), og så starter en ny episode. Målet er å maksimere samlet (diskontert) belønning. Markov-egenskapen sier at neste tilstand bare avhenger av nåværende tilstand og handling. Da kan agenten ta beslutninger og lære verdier ut fra nåværende tilstand alene, uten å huske hele historien.
+  punkter:
+    - tekst: 'Agenten ser tilstand og velger handling.'
+      stikkord: ['tilstand', 'state', 'handling', 'action']
+    - tekst: 'Miljøet gir ny tilstand og belønning.'
+      stikkord: ['belønning', 'reward', 'ny tilstand']
+    - tekst: 'Episode: gjentas til slutttilstand, mål om maks samlet belønning.'
+      stikkord: ['episode', 'samlet', 'kumulativ', 'total']
+    - tekst: 'Markov: holder å se på nåværende tilstand.'
+      stikkord: ['markov', 'nåværende', 'historie', 'fortid']
+  husk: 'S_t → A_t → (S_{t+1}, R_{t+1}) → … til episoden er ferdig. Markov: nåtiden er nok.'
+
+# ---------------------------------------------------------------- 7.2 Policy, reward og verdi
+- id: "7.2-01"
+  del: "7.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva er en policy i reinforcement learning?
+  alternativer:
+    - tekst: 'En regel (eller sannsynlighetsfordeling) som avgjør hvilken handling agenten velger i hver tilstand'
+      riktig: true
+      forklaring: 'Deterministisk: $\pi(s) = a$. Stokastisk: $\pi(a \mid s)$.'
+    - tekst: 'En regel som velger handling ut fra belønningen i forrige tidssteg'
+      forklaring: 'Policyen velger ut fra nåværende tilstand.'
+    - tekst: 'En tabell som lagrer estimert retur for hver tilstand'
+      forklaring: 'Det er en verditabell. Policyen er regelen som bruker verdiene.'
+    - tekst: 'Algoritmen som oppdaterer Q-verdiene'
+      forklaring: 'Det er læringsalgoritmen (for eksempel Q-læring).'
+  forklaring: |
+    En grådig policy ut fra Q er $\pi(s) = \arg\max_a Q(s, a)$. Den optimale policyen maksimerer forventet kumulativ belønning.
+  husk: 'Policy = tilstand → handling. Q-tabellen er ikke policyen, men policyen kan bruke den.'
+
+- id: "7.2-02"
+  del: "7.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hva er forskjellen på belønning (reward) og verdi (Q-verdi)?
+  alternativer:
+    - tekst: 'Belønningen gis av miljøet for ett steg, mens Q-verdien læres og estimerer forventet samlet fremtidig belønning'
+      riktig: true
+      forklaring: 'Q inkluderer fremtiden, belønningen bare nåtiden.'
+    - tekst: 'De er det samme, bare med ulike navn'
+      forklaring: 'En handling kan gi 0 i belønning, men høy Q-verdi fordi den leder mot målet.'
+    - tekst: 'Belønningen læres av agenten, Q-verdien gis av miljøet'
+      forklaring: 'Det er motsatt.'
+    - tekst: 'Q-verdien er belønningen i neste tilstand'
+      forklaring: 'Q er forventet kumulativ, diskontert belønning, ikke bare neste.'
+  forklaring: |
+    I en labyrint der hvert steg gir 0 og målet gir 10, har steg nær målet høy Q-verdi selv om belønningen for selve steget er 0.
+  husk: 'Reward: gitt av miljøet, nå. Q: lært, forventet fremtidig sum.'
+
+- id: "7.2-03"
+  del: "7.2"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om policyer stemmer?
+  alternativer:
+    - tekst: 'En deterministisk policy gir alltid samme handling i samme tilstand.'
+      riktig: true
+      forklaring: '$\pi(s) = a$.'
+    - tekst: 'En stokastisk policy gir en sannsynlighetsfordeling over handlinger.'
+      riktig: true
+      forklaring: '$\pi(a \mid s)$. ε-greedy er et eksempel.'
+    - tekst: 'Målet i RL er å finne en policy som maksimerer forventet kumulativ belønning.'
+      riktig: true
+      forklaring: 'Det er den optimale policyen.'
+    - tekst: 'Policyen oppdaterer Q-verdiene etter hvert steg.'
+      forklaring: 'Det gjør læringsalgoritmen.'
+  forklaring: |
+    I Q-læring er policyen typisk ε-greedy ut fra den nåværende Q-tabellen.
+  husk: 'Policy: deterministisk eller stokastisk. Optimal = maksimerer forventet samlet belønning.'
+
+- id: "7.2-04"
+  del: "7.2"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Q-funksjonen er en avbildning fra et tilstand–handling-par til et reelt tall, $Q: S \times A \to \mathbb{R}$.
+  riktig: true
+  forklaring: |
+    For hvert par $(s, a)$ gir $Q(s, a)$ et tall: forventet samlet fremtidig belønning ved å gjøre $a$ i $s$ og følge policyen deretter. I en tabellagent er det én celle per par.
+  husk: 'Q: (tilstand, handling) → tall. Én celle per par i Q-tabellen.'
+
+- id: "7.2-05"
+  del: "7.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I tilstand $s$ har agenten Q-verdiene $Q(s, \text{opp}) = 2{,}1$, $Q(s, \text{ned}) = -0{,}5$, $Q(s, \text{venstre}) = 3{,}4$ og $Q(s, \text{høyre}) = 3{,}0$. Hva velger en grådig policy?
+  alternativer:
+    - tekst: 'Venstre'
+      riktig: true
+      forklaring: '$\arg\max_a Q(s, a)$ gir venstre med 3,4.'
+    - tekst: 'Høyre'
+      forklaring: '3,0 er lavere enn 3,4.'
+    - tekst: 'Opp, fordi den kommer først'
+      forklaring: 'Rekkefølgen spiller ingen rolle, verdien gjør.'
+    - tekst: 'En tilfeldig handling'
+      forklaring: 'En grådig policy utforsker ikke. Det ville vært utforskingsdelen av ε-greedy.'
+  forklaring: |
+    Grådig policy: $\pi(s) = \arg\max_a Q(s, a)$. Med ε-greedy velges venstre med sannsynlighet $1 - \varepsilon$ (pluss sjansen for å trekke den tilfeldig).
+  husk: 'Grådig: velg handlingen med høyest Q.'
+
+- id: "7.2-06"
+  del: "7.2"
+  niva: avansert
+  type: tekst
+  tags: [case]
+  sporsmal: |
+    En robotstøvsuger får +1 for hver støvflekk den suger opp og −10 hvis den kolliderer. Forklar med dette eksempelet forskjellen på belønning, verdi og policy.
+  eksempelsvar: |
+    Belønningen er det miljøet gir for hvert steg: +1 når en flekk suges opp, −10 ved kollisjon, ellers 0. Verdien $Q(s, a)$ er robotens estimat av samlet fremtidig (diskontert) belønning ved å gjøre handlingen $a$ i tilstanden $s$, for eksempel at det å kjøre mot et skittent hjørne har høy verdi selv om neste steg gir 0. Policyen er regelen roboten følger for å velge handling i hver tilstand, for eksempel å velge handlingen med høyest Q-verdi (med litt utforsking). Belønningen er gitt, verdien læres, og policyen bygger på verdien.
+  punkter:
+    - tekst: 'Belønning: umiddelbar, gitt av miljøet (+1, −10).'
+      stikkord: ['belønning', 'reward', '+1', '-10', 'umiddelbar']
+    - tekst: 'Verdi: lært estimat av samlet fremtidig belønning.'
+      stikkord: ['verdi', 'q', 'fremtid', 'samlet']
+    - tekst: 'Policy: regel for handling i hver tilstand.'
+      stikkord: ['policy', 'regel', 'velge']
+  husk: 'Reward er gitt, verdi læres, policy velger handling (ofte ut fra verdi).'
+
+# ---------------------------------------------------------------- 7.3 Q-læring og Bellman
+- id: "7.3-01"
+  del: "7.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva bestemmer diskonteringsfaktoren $\gamma$ i Q-læring?
+  alternativer:
+    - tekst: 'Hvor sterkt fremtidige belønninger påvirker den nåværende Q-verdien'
+      riktig: true
+      forklaring: '$\gamma = 0$: bare umiddelbar belønning. $\gamma$ nær 1: langsiktig.'
+    - tekst: 'Hvor ofte agenten utforsker'
+      forklaring: 'Det er $\varepsilon$.'
+    - tekst: 'Hvor mye Q-verdien flyttes mot target i hver oppdatering'
+      forklaring: 'Det er læringsraten $\alpha$.'
+    - tekst: 'Om policyen er deterministisk eller stokastisk'
+      forklaring: '$\gamma$ har ingenting med det å gjøre.'
+  forklaring: |
+    I Bellman-oppdateringen ganges beste fremtidige Q-verdi med $\gamma$. En belønning $k$ steg frem teller $\gamma^k$.
+  husk: 'γ = vekt på fremtiden. α = steglengde. ε = utforsking.'
+
+- id: "7.3-02"
+  del: "7.3"
+  niva: middels
+  type: tall
+  tags: [regning, prosjekt-4]
+  sporsmal: |
+    En Q-agent har $Q(S_t, A_t) = 1$, $\alpha = 0{,}2$ og $\gamma = 0{,}95$. Den får belønning $R_{t+1} = -1$, og den beste Q-verdien i neste tilstand er $\max_A Q(S_{t+1}, A) = 6$.
+  deler:
+    - sporsmal: 'TD-target $R_{t+1} + \gamma \max_A Q(S_{t+1}, A)$'
+      svar: 4.7
+      toleranse: 0.002
+    - sporsmal: 'Ny $Q(S_t, A_t)$'
+      svar: 1.74
+      toleranse: 0.002
+  losning: |
+    TD-target $= -1 + 0{,}95 \cdot 6 = -1 + 5{,}7 = 4{,}7$.
+
+    $Q^{\text{new}} = (1 - 0{,}2) \cdot 1 + 0{,}2 \cdot 4{,}7 = 0{,}8 + 0{,}94 = 1{,}74$.
+
+    Med TD-feilen: $1 + 0{,}2 \cdot (4{,}7 - 1) = 1 + 0{,}74 = 1{,}74$. Q flyttes 20 % av veien mot target.
+  husk: 'Q ← (1 − α)Q + α(R + γ max Q′). Regn TD-target først.'
+
+- id: "7.3-03"
+  del: "7.3"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Agenten tar en handling som avslutter episoden og får belønning 10. Gammel $Q(S_t, A_t) = 1$ og $\alpha = 0{,}2$. Hva blir ny Q-verdi?
+  alternativer:
+    - tekst: '2,8'
+      riktig: true
+      forklaring: 'Episoden er ferdig, så fremtidig verdi er 0: target $= 10$, og $0{,}8 \cdot 1 + 0{,}2 \cdot 10 = 2{,}8$.'
+    - tekst: '10'
+      forklaring: 'Det ville vært riktig med $\alpha = 1$.'
+    - tekst: 'Det avhenger av $\max_A Q(S_{t+1}, A)$'
+      forklaring: 'Det finnes ingen neste tilstand å fortsette fra når episoden er ferdig.'
+    - tekst: '11'
+      forklaring: 'Q-verdien legges ikke til belønningen. Den vektes med $1 - \alpha$.'
+  forklaring: |
+    I kode: `td_target = reward if done else reward + gamma * max(Q[next_state])`.
+  husk: 'Ved slutten av en episode er fremtidig verdi 0: target = R.'
+
+- id: "7.3-04"
+  del: "7.3"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om hyperparametrene i Bellman-oppdateringen stemmer?
+  alternativer:
+    - tekst: 'Med $\alpha = 0$ lærer agenten ingenting.'
+      riktig: true
+      forklaring: 'Q-verdien endres ikke.'
+    - tekst: 'Med $\alpha = 1$ erstattes den gamle Q-verdien helt med target, noe som kan gi ustabil læring.'
+      riktig: true
+      forklaring: 'All tidligere erfaring kastes i hver oppdatering.'
+    - tekst: 'Med $\gamma = 0$ bryr agenten seg bare om umiddelbar belønning.'
+      riktig: true
+      forklaring: 'Fremtidsleddet forsvinner.'
+    - tekst: 'Med $\gamma = 0$ utforsker agenten aldri.'
+      forklaring: 'Utforsking styres av $\varepsilon$.'
+  forklaring: |
+    $\alpha$ styrer hvor raskt Q oppdateres, $\gamma$ hvor langt frem agenten ser.
+  husk: 'α = 0: ingen læring. α = 1: glemmer alt gammelt. γ = 0: kortsiktig.'
+
+- id: "7.3-05"
+  del: "7.3"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En agent får belønning 0 i tre steg og 10 i det fjerde, og episoden slutter. $\gamma = 0{,}9$.
+  deler:
+    - sporsmal: 'Diskontert verdi, sett fra starttilstanden, av belønningen 10 (to desimaler)'
+      svar: 7.29
+      toleranse: 0.005
+  losning: |
+    Belønningen kommer fire steg frem: $R_1 + \gamma R_2 + \gamma^2 R_3 + \gamma^3 R_4 = 0 + 0 + 0 + 0{,}9^3 \cdot 10 = 7{,}29$.
+
+    Jo lengre vei til målet, jo mer diskonteres belønningen. Det er derfor agenten foretrekker korteste vei selv når hvert steg gir 0.
+  husk: 'En belønning k steg unna teller γ^k. Diskontering gir korteste vei.'
+
+- id: "7.3-06"
+  del: "7.3"
+  niva: avansert
+  type: pastand
+  tags: [prosjekt-4]
+  sporsmal: |
+    **Påstand:** I TrondheimEnv fra prosjekt 4 gir hvert steg belønning 0 og målet en positiv belønning. Med $\gamma = 1$ har agenten ingen grunn til å foretrekke korteste vei fremfor en lang omvei.
+  riktig: true
+  forklaring: |
+    Med $\gamma = 1$ er den samlede belønningen den samme uansett hvor mange steg agenten bruker, så lengden på veien påvirker ikke Q-verdiene. Med $\gamma < 1$ diskonteres målbelønningen mer jo lenger unna den er, så kortere veier får høyere verdi.
+  husk: 'γ < 1 gjør at kortere vei gir høyere verdi når stegene er gratis.'
+
+- id: "7.3-07"
+  del: "7.3"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Skriv Bellman-oppdateringen for Q-læring og forklar hvert ledd.
+  eksempelsvar: |
+    $$Q^{\text{new}}(S_t, A_t) \leftarrow (1 - \alpha)\,Q(S_t, A_t) + \alpha\left(R_{t+1} + \gamma \max_A Q(S_{t+1}, A)\right)$$
+
+    - $Q(S_t, A_t)$: nåværende estimat for handlingen i tilstanden.
+    - $\alpha$: læringsrate, hvor stor del av veien mot det nye estimatet vi går.
+    - $R_{t+1}$: belønningen fra miljøet for handlingen.
+    - $\gamma$: diskonteringsfaktor, hvor mye fremtiden teller.
+    - $\max_A Q(S_{t+1}, A)$: beste estimerte verdi fra neste tilstand (0 hvis episoden er ferdig).
+    - Parentesen er TD-target. Formen $Q + \alpha(\text{target} - Q)$ viser at Q flyttes mot target, som i gradient descent.
+  punkter:
+    - tekst: 'Riktig formel (en av de to formene).'
+      stikkord: ['1-α', '1 - α', '1−α', '(1-alpha', 'td-target', 'td target', 'q +']
+    - tekst: 'Forklarer $\alpha$ som læringsrate.'
+      stikkord: ['læringsrate', 'alpha', 'α']
+    - tekst: 'Forklarer $\gamma$ som diskontering av fremtiden.'
+      stikkord: ['diskont', 'gamma', 'γ']
+    - tekst: 'Forklarer max-leddet som beste Q i neste tilstand (0 ved slutt).'
+      stikkord: ['max', 'neste tilstand', 'beste']
+  husk: 'Q ← (1 − α)Q + α(R + γ max_A Q(S′, A)). Kan skrives Q + α(TD-target − Q).'
+
+# ---------------------------------------------------------------- 7.4 Environments og Q-tabell
+- id: "7.4-01"
+  del: "7.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    Hva returnerer `env.step(action)` i RL-løkka slik kurset bruker den?
+  alternativer:
+    - tekst: '`next_state, reward, done, info`'
+      riktig: true
+      forklaring: 'Ny tilstand, belønning, om episoden er ferdig, og eventuell ekstra informasjon.'
+    - tekst: 'Den optimale handlingen'
+      forklaring: 'Miljøet vet ikke hva som er optimalt.'
+    - tekst: 'Den nye Q-tabellen'
+      forklaring: 'Q-tabellen tilhører agenten og oppdateres i `learn`.'
+    - tekst: 'Bare belønningen'
+      forklaring: 'Agenten trenger også neste tilstand og om episoden er ferdig.'
+  forklaring: |
+    `env.reset()` starter en ny episode og gir starttilstanden. `env.step(action)` utfører handlingen.
+  husk: 'reset → starttilstand. step → (next_state, reward, done, info).'
+
+- id: "7.4-02"
+  del: "7.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    I RL-løkka under, hva er riktig rekkefølge inne i `while`-løkka?
+
+    ```python
+    state, info = env.reset()
+    done = False
+    while not done:
+        ...
+    agent.update_exp_factor()
+    ```
+  alternativer:
+    - tekst: 'Velg handling, ta steg i miljøet, la agenten lære av overgangen, sett `state = next_state`'
+      riktig: true
+      forklaring: 'Agenten må ha neste tilstand og belønning før den kan oppdatere Q.'
+    - tekst: 'La agenten lære, velg handling, ta steg'
+      forklaring: 'Agenten kan ikke lære av en overgang som ikke har skjedd ennå.'
+    - tekst: 'Oppdater ε, velg handling, ta steg'
+      forklaring: 'ε oppdateres etter hver episode, utenfor løkka.'
+    - tekst: 'Ta steg med tilfeldig handling, lær, og velg handling til slutt'
+      forklaring: 'Handlingen må velges før steget tas.'
+  forklaring: |
+    `action = agent.choose_action(state)`, `next_state, reward, done, info = env.step(action)`, `agent.learn(state, action, reward, next_state, done)`, `state = next_state`.
+  husk: 'choose_action → step → learn → state = next_state. update_exp_factor etter episoden.'
+
+- id: "7.4-03"
+  del: "7.4"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Q-tabellen må fylles ut med riktige verdier før agenten begynner å trene.
+  riktig: false
+  forklaring: |
+    Q-tabellen starter typisk med nuller (eller tom) og fylles gjennom erfaring: hver gang agenten gjør en handling i en tilstand, oppdateres den tilhørende cellen med Bellman-oppdateringen.
+  husk: 'Q-tabellen starter med nuller og læres gjennom erfaring.'
+
+- id: "7.4-04"
+  del: "7.4"
+  niva: middels
+  type: flervalg
+  tags: [prosjekt-4]
+  sporsmal: |
+    Hvilke elementer hører til en tabellbasert Q-agent som i prosjekt 4?
+  alternativer:
+    - tekst: 'En Q-tabell med én rad per tilstand og én kolonne per handling'
+      riktig: true
+      forklaring: 'Én celle per $(s, a)$-par.'
+    - tekst: 'Hyperparametrene $\alpha$, $\gamma$ og $\varepsilon$'
+      riktig: true
+      forklaring: 'Læringsrate, diskontering og utforsking.'
+    - tekst: 'Metodene `choose_action`, `learn` og `update_exp_factor`'
+      riktig: true
+      forklaring: 'Velge handling, oppdatere Q og trappe ned ε.'
+    - tekst: 'En kopi av miljøets belønningsfunksjon'
+      forklaring: 'Agenten kjenner ikke belønningsfunksjonen. Den ser bare belønningene den får.'
+  forklaring: |
+    Agenten lærer bare fra overgangene $(s, a, r, s', \text{done})$ den opplever.
+  husk: 'Tabellagent: Q-tabell, α, γ, ε, choose_action, learn, update_exp_factor.'
+
+- id: "7.4-05"
+  del: "7.4"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Et tre-på-rad-spill gir belønning +1 for seier, −1 for tap og 0 ellers, og bare når spillet er over. Hvordan lærer agenten likevel verdien av trekk tidlig i spillet?
+  alternativer:
+    - tekst: 'Gjennom Bellman-oppdateringen forplanter verdien fra sluttilstandene seg bakover til tidligere tilstander over mange episoder'
+      riktig: true
+      forklaring: 'Leddet $\gamma\max Q(S_{t+1}, \cdot)$ tar med verdien fra neste tilstand.'
+    - tekst: 'Agenten får belønning for hvert trekk'
+      forklaring: 'Belønningen kommer bare når spillet er over.'
+    - tekst: 'Agenten lærer bare det siste trekket'
+      forklaring: 'Tidligere trekk får verdi gjennom Q-verdien i tilstanden etter.'
+    - tekst: 'Det kan den ikke, den trenger belønning per trekk'
+      forklaring: 'Q-læring er laget nettopp for forsinkede belønninger.'
+  forklaring: |
+    Først lærer agenten verdien av trekk rett før spillslutt. Når de tilstandene har fått verdi, kan trekkene før dem læres, og så videre.
+  husk: 'Forsinket belønning sprer seg bakover via γ·max Q(S′, ·).'
+
+- id: "7.4-06"
+  del: "7.4"
+  niva: middels
+  type: tekst
+  tags: [prosjekt-4]
+  sporsmal: |
+    Beskriv hva som skjer i én episode når en tabellbasert Q-agent trener i et miljø som TrondheimEnv, fra `reset` til episoden er ferdig.
+  eksempelsvar: |
+    `env.reset()` gir starttilstanden. I hvert steg velger agenten handling med ε-greedy: tilfeldig med sannsynlighet ε, ellers handlingen med høyest Q-verdi i tilstanden. `env.step(action)` gir neste tilstand, belønning og om episoden er ferdig. Agenten oppdaterer Q-verdien for $(s, a)$ med Bellman-oppdateringen: target er belønningen pluss $\gamma$ ganger beste Q i neste tilstand (bare belønningen hvis episoden er ferdig), og Q flyttes en andel $\alpha$ mot target. Så settes tilstanden til neste tilstand. Når episoden er ferdig, trappes ε ned med `update_exp_factor`.
+  punkter:
+    - tekst: 'reset gir starttilstand, løkke til done.'
+      stikkord: ['reset', 'done', 'start']
+    - tekst: 'ε-greedy valg av handling.'
+      stikkord: ['ε', 'epsilon', 'greedy', 'tilfeldig']
+    - tekst: 'step og Bellman-oppdatering av Q.'
+      stikkord: ['step', 'bellman', 'oppdater', 'learn']
+    - tekst: 'ε trappes ned etter episoden.'
+      stikkord: ['update_exp_factor', 'decay', 'trappe', 'nedtrapping']
+  husk: 'reset → (ε-greedy → step → Bellman → next state)* → senk ε.'
+
+# ---------------------------------------------------------------- 7.5 Exploration og exploitation
+- id: "7.5-01"
+  del: "7.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva er hensikten med ε i en ε-greedy policy?
+  alternativer:
+    - tekst: 'Å la agenten av og til velge en tilfeldig handling, slik at den utforsker i stedet for alltid å velge det den tror er best'
+      riktig: true
+      forklaring: 'Utforsking trengs for å oppdage handlinger som kanskje er bedre.'
+    - tekst: 'Å tvinge agenten til alltid å velge handlingen med høyest Q-verdi'
+      forklaring: 'Det er $\varepsilon = 0$, ren utnyttelse.'
+    - tekst: 'Å få agenten til å ignorere fremtidige belønninger'
+      forklaring: 'Det er $\gamma = 0$.'
+    - tekst: 'Å garantere at agenten finner optimal policy uten feil'
+      forklaring: 'ε gir ingen garanti, bare en sjanse til å utforske.'
+  forklaring: |
+    Med sannsynlighet ε: tilfeldig handling (exploration). Med sannsynlighet $1 - \varepsilon$: grådig handling (exploitation).
+  husk: 'ε = andel tilfeldige handlinger. Utforsk vs utnytt.'
+
+- id: "7.5-02"
+  del: "7.5"
+  niva: middels
+  type: tall
+  tags: [regning, prosjekt-4]
+  sporsmal: |
+    ε starter på 1,0 og ganges med 0,99 etter hver episode.
+  deler:
+    - sporsmal: 'ε etter 200 episoder (tre desimaler)'
+      svar: 0.134
+      toleranse: 0.002
+    - sporsmal: 'Etter hvor mange episoder har ε første gang kommet under 0,05?'
+      svar: 299
+      toleranse: 0
+  losning: |
+    - $1{,}0 \cdot 0{,}99^{200} \approx 0{,}134$
+    - $0{,}99^n < 0{,}05 \iff n > \ln 0{,}05/\ln 0{,}99 \approx 298{,}07$, altså $n = 299$.
+
+    Figuren i 7.5 lar deg utforske hvordan start, decay og minimum påvirker kurven.
+  husk: 'ε_n = ε₀ · decay^n. Løs decay^n = mål/ε₀ med logaritmer.'
+
+- id: "7.5-03"
+  del: "7.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [prosjekt-4]
+  sporsmal: |
+    En agent trenes med $\varepsilon = 0$ fra første episode, og alle Q-verdiene starter på 0. Hva skjer typisk?
+  alternativer:
+    - tekst: 'Agenten velger den første handlingen som har gitt positiv verdi om og om igjen og oppdager aldri bedre alternativer'
+      riktig: true
+      forklaring: 'Uten utforsking blir den sittende fast i det første som virket.'
+    - tekst: 'Agenten lærer optimal policy raskere'
+      forklaring: 'Den lærer bare om handlingene den tilfeldigvis prøver.'
+    - tekst: 'Agenten slutter å ta handlinger'
+      forklaring: 'Den tar fortsatt handlinger, bare alltid grådig.'
+    - tekst: 'Q-verdiene oppdateres ikke'
+      forklaring: 'Q oppdateres for handlingene som tas, men mange par blir aldri prøvd.'
+  forklaring: |
+    Med like Q-verdier avgjør tie-breaking hva den velger først, og deretter forsterker den bare det. Høy ε tidlig lar agenten oppdage gode tilstander før Q-tabellen er pålitelig.
+  husk: 'ε = 0 fra start: ingen utforsking, agenten låses til første gode valg.'
+
+- id: "7.5-04"
+  del: "7.5"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Det er vanlig å starte med høy ε og trappe den ned etter hvert som agenten lærer.
+  riktig: true
+  forklaring: |
+    Tidlig er Q-verdiene upålitelige, så utforsking er verdifullt. Senere vet agenten mer, og utnyttelse lønner seg. ε-decay: $\varepsilon \leftarrow \max(\varepsilon_{\min}, \varepsilon \cdot \text{decay})$ etter hver episode.
+  husk: 'Høy ε tidlig, lav ε sent, gjerne med et minimum.'
+
+- id: "7.5-05"
+  del: "7.5"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor beholder man ofte en liten ε (for eksempel 0,01) også etter at treningen er ferdig?
+  alternativer:
+    - tekst: 'Fordi miljøet kan endre seg eller agenten kan sitte fast i en løkke, og litt tilfeldighet hjelper den videre'
+      riktig: true
+      forklaring: 'En helt deterministisk policy kan gå i ring hvis Q-verdiene ikke er perfekte.'
+    - tekst: 'Fordi Q-læring ikke virker med $\varepsilon = 0$'
+      forklaring: 'Policyen kan bruke $\varepsilon = 0$. Spørsmålet er om det er lurt.'
+    - tekst: 'Fordi ε bestemmer læringsraten'
+      forklaring: 'Læringsraten er $\alpha$.'
+    - tekst: 'Fordi det gjør belønningen høyere'
+      forklaring: 'Tilfeldige handlinger gir i snitt litt lavere belønning, men mer robusthet.'
+  forklaring: |
+    Exploration–exploitation-avveiningen har ingen generell løsning. En liten ε er et pragmatisk kompromiss.
+  husk: 'Liten ε etter trening: robusthet mot løkker og endringer.'
+
+- id: "7.5-06"
+  del: "7.5"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar exploration–exploitation-avveiningen og hvordan ε-greedy med decay håndterer den.
+  eksempelsvar: |
+    Agenten må velge mellom å utnytte det den allerede vet (velge handlingen med høyest Q-verdi) og å utforske nye handlinger som kanskje er bedre. Utnytter den for tidlig, kan den låse seg til en dårlig strategi; utforsker den for mye, kaster den bort tid på dårlige handlinger. ε-greedy velger en tilfeldig handling med sannsynlighet ε og den grådige ellers. Med decay starter ε høyt, slik at agenten utforsker mye mens Q-verdiene er upålitelige, og senkes gradvis mot et minimum, slik at agenten utnytter mer etter hvert som den har lært.
+  punkter:
+    - tekst: 'Exploitation: velge beste kjente. Exploration: prøve nytt.'
+      stikkord: ['utnytt', 'exploit', 'utforsk', 'explor']
+    - tekst: 'Risiko ved hver ytterlighet.'
+      stikkord: ['låse', 'fast', 'kaste bort', 'dårlig']
+    - tekst: 'ε-greedy: tilfeldig med sannsynlighet ε.'
+      stikkord: ['ε', 'epsilon', 'tilfeldig']
+    - tekst: 'Decay: høy ε tidlig, lav sent.'
+      stikkord: ['decay', 'trappe', 'senke', 'nedtrapp']
+  husk: 'Utforsk tidlig, utnytt sent. ε-greedy + decay.'
+
+# ---------------------------------------------------------------- 7.6 DQN
+- id: "7.6-01"
+  del: "7.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor erstatter Deep Q-Networks Q-tabellen med et nevralt nettverk?
+  alternativer:
+    - tekst: 'Fordi tilstandsrommet kan være for stort for en tabell, og nettet kan generalisere til tilstander det ikke har sett'
+      riktig: true
+      forklaring: 'For eksempel bilder fra et spill, der antall mulige tilstander er enormt.'
+    - tekst: 'Fordi nettet fjerner behovet for belønninger'
+      forklaring: 'Belønningene trengs fortsatt i Bellman-målet.'
+    - tekst: 'Fordi nettet fjerner behovet for $\gamma$'
+      forklaring: 'Bellman-målet bruker fortsatt $\gamma$.'
+    - tekst: 'Fordi tabeller ikke kan lagre negative verdier'
+      forklaring: 'Tabeller kan lagre alle tall.'
+  forklaring: |
+    Nettet tar inn tilstanden og gir én Q-verdi per handling. Fordi vektene er delte, påvirker en oppdatering mange Q-verdier, også for lignende tilstander.
+  husk: 'DQN: nett i stedet for tabell, for store tilstandsrom og generalisering.'
+
+- id: "7.6-02"
+  del: "7.6"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I DQN brukes et separat target-nettverk som oppdateres sjeldnere enn hovednettet. Hva er hensikten?
+  alternativer:
+    - tekst: 'Å holde treningsmålene $r + \gamma\max Q_{\text{target}}$ stabile, slik at nettet ikke jager et mål som flytter seg for hvert steg'
+      riktig: true
+      forklaring: 'Dette er «moving target»-problemet.'
+    - tekst: 'Å legge til støy i Q-verdiene for å oppmuntre til utforsking'
+      forklaring: 'Utforsking styres av ε.'
+    - tekst: 'Å hindre overtilpasning til replay buffer'
+      forklaring: 'Det er replay buffer som motvirker korrelasjon og overtilpasning til nylige data.'
+    - tekst: 'Å velge hvilken handling agenten tar'
+      forklaring: 'Handlingen velges med hovednettet (og ε-greedy).'
+  forklaring: |
+    Uten target-nett ville hver vektoppdatering endre både prediksjonen og målet, noe som kan gi ustabil trening.
+  husk: 'Target-nett: stabile mål. Replay buffer: mindre korrelerte data og mindre glemsel.'
+
+- id: "7.6-03"
+  del: "7.6"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En overgang i DQN har belønning $r = 1$ og $\gamma = 0{,}9$. Target-nettet gir Q-verdiene $(2;\ 5;\ 3)$ for de tre handlingene i neste tilstand. Hovednettet predikerer $Q(s, a) = 4{,}2$ for handlingen som ble tatt.
+  deler:
+    - sporsmal: 'Treningsmålet $y$ når episoden ikke er ferdig'
+      svar: 5.5
+      toleranse: 0.002
+    - sporsmal: 'Kvadratfeilen for denne overgangen'
+      svar: 1.69
+      toleranse: 0.003
+    - sporsmal: 'Treningsmålet hvis overgangen avsluttet episoden'
+      svar: 1
+      toleranse: 0.001
+  losning: |
+    $y = r + \gamma\max_{a'} Q_{\text{target}}(s', a') = 1 + 0{,}9 \cdot 5 = 5{,}5$.
+
+    Kvadratfeil: $(5{,}5 - 4{,}2)^2 = 1{,}3^2 = 1{,}69$.
+
+    Er episoden ferdig, er fremtidig verdi 0, så $y = r = 1$. Tapet regnes bare for handlingen som ble tatt.
+  husk: 'DQN-mål: y = r + γ max Q_target(s′, ·), eller bare r ved done. Tap = (y − Q(s, a))².'
+
+- id: "7.6-04"
+  del: "7.6"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om replay buffer i DQN stemmer?
+  alternativer:
+    - tekst: 'Den lagrer overganger $(s, a, r, s\prime, \text{done})$, og nettet trenes på tilfeldige batcher fra den.'
+      riktig: true
+      forklaring: 'Tilfeldig trekking bryter korrelasjonen mellom etterfølgende steg.'
+    - tekst: 'Den motvirker catastrophic forgetting fordi gamle overganger trekkes igjen.'
+      riktig: true
+      forklaring: 'Nettet øver fortsatt på situasjoner det så for lenge siden.'
+    - tekst: 'Den gjør utforsking unødvendig.'
+      forklaring: 'Agenten må fortsatt utforske for å fylle bufferen med nyttige data.'
+    - tekst: 'Den garanterer at alle overganger trekkes like mange ganger.'
+      forklaring: 'Trekkingen er tilfeldig.'
+  forklaring: |
+    Etterfølgende steg i en episode er svært like. Trener vi på dem i rekkefølge, overtilpasser nettet til det den nettopp har sett og glemmer resten.
+  husk: 'Replay buffer: tilfeldige batcher av lagrede overganger → mindre korrelasjon, mindre glemsel.'
+
+- id: "7.6-05"
+  del: "7.6"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** I DQN regnes tapet for alle handlingene i hver tilstand, ikke bare for handlingen som ble tatt.
+  riktig: false
+  forklaring: |
+    Vi kjenner bare belønningen og neste tilstand for handlingen som faktisk ble tatt, så bare den Q-verdien har et treningsmål. I koden plukkes den ut med `torch.gather(q_network(states), 1, actions)`.
+  husk: 'DQN-tapet gjelder bare den valgte handlingen.'
+
+- id: "7.6-06"
+  del: "7.6"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar de to problemene «moving target» og «catastrophic forgetting» i DQN, og hvordan target-nettverk og replay buffer løser dem.
+  eksempelsvar: |
+    **Moving target:** treningsmålet $r + \gamma\max Q(s', \cdot)$ regnes med det samme nettet som trenes. Hver oppdatering endrer derfor også målet, og nettet jager et mål som flytter seg, noe som kan gi ustabil trening. Et target-nettverk, en kopi som oppdateres sjelden, brukes til å regne målene, slik at de holder seg stabile en stund.
+
+    **Catastrophic forgetting:** trener nettet på overganger i den rekkefølgen de skjer, er dataene sterkt korrelerte, og nettet overtilpasser til det siste det har sett og glemmer tidligere situasjoner. Replay buffer lagrer mange overganger og trener på tilfeldige batcher, slik at dataene blir mindre korrelerte og gamle erfaringer brukes igjen.
+  punkter:
+    - tekst: 'Moving target: målet endres når nettet oppdateres.'
+      stikkord: ['moving target', 'mål+flytt', 'målet endr', 'jager']
+    - tekst: 'Target-nett: sjelden oppdatert kopi som gir stabile mål.'
+      stikkord: ['target-nett', 'target nett', 'kopi', 'stabil']
+    - tekst: 'Catastrophic forgetting: korrelerte data, glemmer gamle situasjoner.'
+      stikkord: ['glem', 'forgetting', 'korrel']
+    - tekst: 'Replay buffer: tilfeldige batcher fra lagrede overganger.'
+      stikkord: ['replay', 'buffer', 'tilfeldig']
+  husk: 'Moving target → target-nett. Catastrophic forgetting → replay buffer.'
+
+# ---------------------------------------------------------------- 7.7 Loss vs reward og reward hacking
+- id: "7.7-01"
+  del: "7.7"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva er reward hacking?
+  alternativer:
+    - tekst: 'At agenten finner en måte å få høy belønning på som utnytter svakheter i belønningsfunksjonen, uten å gjøre det vi egentlig ønsket'
+      riktig: true
+      forklaring: 'Agenten optimerer det vi målte, ikke det vi mente.'
+    - tekst: 'At noen manipulerer agentens kode for å gi den mer belønning'
+      forklaring: 'Reward hacking handler om agentens egen atferd innenfor reglene.'
+    - tekst: 'En feil i Bellman-oppdateringen'
+      forklaring: 'Oppdateringsregelen virker som den skal. Belønningen er feil designet.'
+    - tekst: 'At agenten bare lærer av umiddelbar belønning'
+      forklaring: 'Det er et spørsmål om $\gamma$, ikke reward hacking.'
+  forklaring: |
+    Klassisk eksempel: en båtagent i et spill som får poeng for å treffe mål underveis, og som lærer å kjøre i ring for å samle poeng i stedet for å fullføre løpet.
+  husk: 'Reward hacking: belønningen har en svakhet som agenten utnytter.'
+
+- id: "7.7-02"
+  del: "7.7"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Under trening av en DQN-agent synker tapet jevnt, men samlet belønning per episode øker ikke. Hva er den beste tolkningen?
+  alternativer:
+    - tekst: 'Tapet måler bare hvor godt nettet passer Bellman-målene, så lavt tap betyr ikke nødvendigvis at agenten spiller godt'
+      riktig: true
+      forklaring: 'Nettet kan bli flink til å forutsi verdiene av en dårlig policy.'
+    - tekst: 'Agenten må gjøre det bra, fordi tapet synker'
+      forklaring: 'Belønning er målet. Tapet er et hjelpemiddel.'
+    - tekst: 'Tapet og belønningen er alltid omvendt proporsjonale'
+      forklaring: 'De trenger ikke henge sammen i det hele tatt.'
+    - tekst: 'Belønningsfunksjonen er feil kodet'
+      forklaring: 'Det kan ikke konkluderes fra dette. Det er helt normalt at tap og belønning utvikler seg ulikt.'
+  forklaring: |
+    I veiledet læring er tapet målet. I RL er belønningen målet, og tapet bare et verktøy for å lære Q-verdier.
+  husk: 'RL: følg med på belønningen, ikke bare tapet.'
+
+- id: "7.7-03"
+  del: "7.7"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke er eksempler på ulike måter å gi belønning på?
+  alternativer:
+    - tekst: 'Per hendelse, for eksempel +1 for hver mynt som plukkes opp'
+      riktig: true
+      forklaring: 'Belønning knyttet til konkrete hendelser.'
+    - tekst: 'Per episode, for eksempel +1 for seier og −1 for tap når spillet er over'
+      riktig: true
+      forklaring: 'Sparsom, forsinket belønning.'
+    - tekst: 'Per tidssteg, for eksempel −1 for hvert steg for å oppmuntre til korte løsninger'
+      riktig: true
+      forklaring: 'En liten straff per steg gir et insentiv til å bli ferdig fort.'
+    - tekst: 'Per oppdatering av Q-tabellen'
+      forklaring: 'Belønningen kommer fra miljøet, ikke fra læringsalgoritmen.'
+  forklaring: |
+    Valget påvirker hva agenten lærer. Sparsomme belønninger er vanskelige å lære av, mens tette belønninger lettere kan hackes.
+  husk: 'Belønning per hendelse, episode eller tidssteg. Designet styrer atferden.'
+
+- id: "7.7-04"
+  del: "7.7"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Reward hacking skyldes at agenten ikke klarer å håndtere flere mål samtidig.
+  riktig: false
+  forklaring: |
+    Reward hacking skyldes at belønningsfunksjonen har utilsiktede svakheter. Agenten gjør nøyaktig det den er trent til, å maksimere belønningen, og finner en snarvei vi ikke forutså.
+  husk: 'Reward hacking: feil i belønningsdesignet, ikke i agenten.'
+
+- id: "7.7-05"
+  del: "7.7"
+  niva: avansert
+  type: enkeltvalg
+  tags: [case]
+  sporsmal: |
+    En ryddebot får +1 for hver gjenstand den legger i en kurv. Etter trening tar den gjenstander ut av kurven og legger dem inn igjen. Hvilken endring av belønningen adresserer problemet best?
+  alternativer:
+    - tekst: 'Gi belønning for antall gjenstander som ligger i kurven ved slutten av episoden, i stedet for per innlegging'
+      riktig: true
+      forklaring: 'Da gir det ingen gevinst å ta ut og legge inn igjen.'
+    - tekst: 'Øke belønningen til +10 per innlegging'
+      forklaring: 'Det forsterker det uønskede insentivet.'
+    - tekst: 'Senke læringsraten'
+      forklaring: 'Problemet er belønningen, ikke læringen.'
+    - tekst: 'Øke ε slik at boten utforsker mer'
+      forklaring: 'Mer utforsking endrer ikke hva som lønner seg.'
+  forklaring: |
+    Belønn sluttresultatet vi faktisk ønsker, ikke en indikator som kan manipuleres. Det kan gjøre læringen tregere (sparsommere belønning), men fjerner snarveien.
+  husk: 'Belønn målet, ikke en indikator som kan spilles.'
+
+- id: "7.7-06"
+  del: "7.7"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar forskjellen på loss og reward i deep reinforcement learning, og hvorfor de ikke trenger å henge sammen.
+  eksempelsvar: |
+    Reward er det miljøet gir agenten for handlingene, og målet er å maksimere samlet belønning. Loss er MSE mellom nettets Q-prediksjon og Bellman-målet $r + \gamma\max Q_{\text{target}}$, og måler bare hvor godt nettet passer sine egne verdiestimater. Nettet kan bli flink til å forutsi verdiene for en dårlig policy (lavt tap, lav belønning), og tapet kan øke når agenten oppdager nye, bedre strategier fordi målene endrer seg (høyere tap, høyere belønning). Derfor må vi følge med på belønningen for å vurdere agenten.
+  punkter:
+    - tekst: 'Reward: fra miljøet, det som skal maksimeres.'
+      stikkord: ['reward', 'belønning', 'miljø', 'maksimer']
+    - tekst: 'Loss: MSE mot Bellman-målet, hvor godt nettet passer målene.'
+      stikkord: ['mse', 'bellman', 'mål', 'loss', 'tap']
+    - tekst: 'Eksempel på at de går hver sin vei.'
+      stikkord: ['dårlig policy', 'lavt tap', 'øker', 'ikke henge sammen', 'uavhengig']
+  husk: 'Reward = målet. Loss = verktøy. Vurder agenten på belønning.'

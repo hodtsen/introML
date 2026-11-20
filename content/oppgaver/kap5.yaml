@@ -1,0 +1,712 @@
+# Oppgaver til kapittel 5: Nevrale nettverk
+
+# ---------------------------------------------------------------- 5.1 Perceptronet
+- id: "5.1-01"
+  del: "5.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Et perceptron regner ut en vektet sum og bruker Heaviside-funksjonen. Hvilken egenskap ved Heaviside gjør den uegnet for gradientbasert optimering?
+  alternativer:
+    - tekst: 'Den er ikke deriverbar i hoppet og har derivert 0 overalt ellers'
+      riktig: true
+      forklaring: 'Gradienten gir da ingen informasjon om hvilken vei vektene bør endres.'
+    - tekst: 'Den gir negative verdier'
+      forklaring: 'Heaviside gir bare 0 eller 1.'
+    - tekst: 'Den gir verdier utenfor $[0, 1]$'
+      forklaring: 'Verdiene er nettopp 0 og 1.'
+    - tekst: 'Den er for treg å regne ut'
+      forklaring: 'Den er svært rask. Problemet er den deriverte.'
+  forklaring: |
+    Gradient descent trenger en derivert som sier hvor mye tapet endres når vi endrer en vekt litt. Med Heaviside er svaret 0 nesten overalt. Derfor bruker moderne nett kontinuerlige aktiveringer som sigmoid og ReLU.
+  husk: 'Heaviside: derivert 0 nesten overalt og udefinert i hoppet. Uegnet for gradient descent.'
+
+- id: "5.1-02"
+  del: "5.1"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et perceptron har $\mathbf{w} = (0{,}2;\ -0{,}4)$, $b = 0{,}1$ og læringsrate $\eta = 0{,}5$. Det får treningspunktet $\mathbf{x} = (1, 1)$ med $y = 1$. Bruk $H(z) = 1$ for $z \geq 0$ og Rosenblatts regel.
+  deler:
+    - sporsmal: 'Hva predikerer perceptronet før oppdateringen (0 eller 1)?'
+      svar: 0
+      toleranse: 0
+    - sporsmal: 'Ny $w_1$'
+      svar: 0.7
+      toleranse: 0.001
+    - sporsmal: 'Ny $w_2$'
+      svar: 0.1
+      toleranse: 0.001
+    - sporsmal: 'Ny $b$'
+      svar: 0.6
+      toleranse: 0.001
+  losning: |
+    $z = 0{,}2 - 0{,}4 + 0{,}1 = -0{,}1 < 0$, så $\hat{y} = 0$. Feilen er $y - \hat{y} = 1$.
+
+    - $w_1 \leftarrow 0{,}2 + 0{,}5 \cdot 1 \cdot 1 = 0{,}7$
+    - $w_2 \leftarrow -0{,}4 + 0{,}5 \cdot 1 \cdot 1 = 0{,}1$
+    - $b \leftarrow 0{,}1 + 0{,}5 \cdot 1 = 0{,}6$
+
+    Nå er $z = 0{,}7 + 0{,}1 + 0{,}6 = 1{,}4 \geq 0$, så punktet blir riktig klassifisert.
+  husk: 'Perceptronregelen: w ← w + η(y − ŷ)x. Ingen endring når prediksjonen er riktig.'
+
+- id: "5.1-03"
+  del: "5.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Et perceptron med to input, vekter $w_1 = w_2 = 1$ og Heaviside skal implementere logisk AND. Hvilken bias fungerer?
+  alternativer:
+    - tekst: '$b = -1{,}5$'
+      riktig: true
+      forklaring: 'Bare $(1, 1)$ gir $z = 0{,}5 \geq 0$. De andre gir $z < 0$.'
+    - tekst: '$b = -0{,}5$'
+      forklaring: 'Da gir også $(1, 0)$ og $(0, 1)$ $z = 0{,}5$, og vi får OR.'
+    - tekst: '$b = 0$'
+      forklaring: 'Da gir $(0, 0)$ $z = 0$, som gir output 1.'
+    - tekst: '$b = -2{,}5$'
+      forklaring: 'Da gir også $(1, 1)$ $z = -0{,}5$, og outputen er alltid 0.'
+  forklaring: |
+    For AND må summen bare passere terskelen når begge input er 1: $1 + 1 + b \geq 0$ og $1 + b < 0$, altså $-2 \leq b < -1$.
+  husk: 'AND: w = (1, 1), b mellom −2 og −1. OR: b mellom −1 og 0.'
+
+- id: "5.1-04"
+  del: "5.1"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Et enkelt perceptron kan ikke lære XOR fordi XOR-dataene ikke er lineært separerbare.
+  riktig: true
+  forklaring: |
+    Perceptronet lager én lineær grense. Punktene $(0,1)$ og $(1,0)$ (klasse 1) og $(0,0)$ og $(1,1)$ (klasse 0) kan ikke skilles av én rett linje. Med flere perceptroner i lag (for eksempel OR og NAND kombinert med AND) kan XOR løses.
+  husk: 'XOR er ikke lineært separerbart. Ett perceptron kan ikke, flere lag kan.'
+
+- id: "5.1-05"
+  del: "5.1"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et perceptron for flerklasseklassifisering har 4 input og 3 output-noder (én per klasse). Hvor mange parametre har det?
+  alternativer:
+    - tekst: '15'
+      riktig: true
+      forklaring: '$4 \cdot 3 = 12$ vekter pluss 3 bias-verdier.'
+    - tekst: '12'
+      forklaring: 'Glemmer én bias per output-node.'
+    - tekst: '7'
+      forklaring: 'Antall input pluss output er ikke antall parametre.'
+    - tekst: '16'
+      forklaring: 'Det er $4 \cdot 4$. Det er tre output-noder, ikke fire.'
+  forklaring: |
+    Hver output-node $j$ har én vekt $w_{i,j}$ fra hvert input $i$ og sin egen bias.
+  husk: 'Parametre = n_inn · n_ut + n_ut.'
+
+- id: "5.1-06"
+  del: "5.1"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar Rosenblatts læringsregel for perceptronet, og hvordan den skiller seg fra gradient descent på logistisk regresjon.
+  eksempelsvar: |
+    Regelen er $w_i \leftarrow w_i + \eta(y - \hat{y})x_i$ og $b \leftarrow b + \eta(y - \hat{y})$, der $\hat{y}$ er 0 eller 1. Er prediksjonen riktig, skjer ingenting. Er den feil, flyttes vektene i retning av inputen (eller bort fra den), slik at punktet havner på riktig side. Formen ligner gradienten for logistisk regresjon, $(y_{\text{pred}} - y)x_j$, men der er $y_{\text{pred}}$ en kontinuerlig sannsynlighet, så også riktige, men usikre punkter gir små oppdateringer. Perceptronregelen er ikke gradient descent på en deriverbar tapsfunksjon, fordi Heaviside ikke er deriverbar.
+  punkter:
+    - tekst: 'Skriver regelen $w \leftarrow w + \eta(y - \hat{y})x$.'
+      stikkord: ['y - ŷ', 'y−ŷ', 'y - y_hat', '(y-', 'feil']
+    - tekst: 'Ingen endring når prediksjonen er riktig.'
+      stikkord: ['riktig', 'ingen endring', 'uendret', 'null']
+    - tekst: 'Forskjell: binær output (Heaviside) mot kontinuerlig sannsynlighet.'
+      stikkord: ['heaviside', 'binær', 'kontinuerlig', 'sigmoid', 'sannsynlighet']
+    - tekst: 'Perceptronregelen er ikke gradient descent på et deriverbart tap.'
+      stikkord: ['deriverbar', 'gradient']
+  husk: 'Perceptron: oppdater bare ved feil. Logistisk regresjon: alle punkter bidrar via kontinuerlig feil.'
+
+# ---------------------------------------------------------------- 5.2 Aktiveringsfunksjoner
+- id: "5.2-01"
+  del: "5.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvilken aktivering bør output-laget ha i et nevralt nett som skal predikere boligpriser?
+  alternativer:
+    - tekst: 'Lineær (ingen aktivering)'
+      riktig: true
+      forklaring: 'Outputen må kunne bli et hvilket som helst reelt tall.'
+    - tekst: 'Sigmoid'
+      forklaring: 'Sigmoid låser outputen til $(0, 1)$.'
+    - tekst: 'Softmax'
+      forklaring: 'Softmax gir en sannsynlighetsfordeling over klasser.'
+    - tekst: 'Heaviside'
+      forklaring: 'Heaviside gir bare 0 eller 1 og kan ikke trenes med gradienter.'
+  forklaring: |
+    Regresjon: lineær output. Binær klassifisering: sigmoid. Flere klasser: softmax. ReLU er standard i skjulte lag.
+  husk: 'Output: lineær for regresjon, sigmoid for binær, softmax for flere klasser.'
+
+- id: "5.2-02"
+  del: "5.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Output-laget har verdiene $\mathbf{z} = (1, 2, 3)$ før softmax. Hva er softmax-sannsynligheten for klasse 3?
+  alternativer:
+    - tekst: 'Omtrent 0,67'
+      riktig: true
+      forklaring: '$e^3/(e^1 + e^2 + e^3) = 20{,}09/30{,}19 \approx 0{,}665$.'
+    - tekst: '0,5'
+      forklaring: 'Det er $3/(1 + 2 + 3)$, en vanlig normalisering, ikke softmax.'
+    - tekst: '1'
+      forklaring: 'Softmax gir ikke all sannsynligheten til den største. De andre klassene får også noe.'
+    - tekst: 'Omtrent 0,95'
+      forklaring: 'Det er $\sigma(3)$, sigmoid av én verdi, ikke softmax over tre klasser.'
+  forklaring: |
+    $\text{softmax}(\mathbf{z})_i = e^{z_i}/\sum_j e^{z_j}$ gir $(0{,}090;\ 0{,}245;\ 0{,}665)$, som summerer til 1. Prøv glidebryterne i figuren i 5.2.
+  husk: 'Softmax: eksponensier og normaliser. Summerer til 1, størst z får mest.'
+
+- id: "5.2-03"
+  del: "5.2"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvorfor bruker vi ikke-lineære aktiveringsfunksjoner i de skjulte lagene?
+  alternativer:
+    - tekst: 'Uten dem ville flere lag etter hverandre bare blitt én lineær transformasjon.'
+      riktig: true
+      forklaring: 'Et produkt av matriser er én matrise.'
+    - tekst: 'De gjør det mulig å lære ikke-lineære sammenhenger, som XOR.'
+      riktig: true
+      forklaring: 'Ikke-linearitet i skjulte lag lar nettet lage nye, krumme grenser.'
+    - tekst: 'Kontinuerlige og deriverbare aktiveringer gjør at nettet kan trenes med gradient descent.'
+      riktig: true
+      forklaring: 'Det er grunnen til å bytte ut Heaviside.'
+    - tekst: 'Ikke-lineære aktiveringer gjør at nettet trenger færre treningsdata.'
+      forklaring: 'De gjør nettet mer fleksibelt, som ofte krever mer data, ikke mindre.'
+  forklaring: |
+    To egenskaper trengs: ikke-linearitet (for å kunne lære komplekse sammenhenger) og deriverbarhet (for å kunne trene).
+  husk: 'Skjulte lag trenger ikke-linearitet (ellers bare lineær modell) og deriverbarhet (for trening).'
+
+- id: "5.2-04"
+  del: "5.2"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Et nevron med sigmoid-aktivering gir alltid enten 0 eller 1 som output.
+  riktig: false
+  forklaring: |
+    Sigmoid gir kontinuerlige verdier i $(0, 1)$. Det er Heaviside som gir bare 0 eller 1. Sigmoid nærmer seg 0 og 1 for store $|z|$, men når dem aldri.
+  husk: 'Sigmoid: (0, 1), kontinuerlig. Heaviside: {0, 1}.'
+
+- id: "5.2-05"
+  del: "5.2"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Den deriverte av sigmoid er $\sigma'(z) = \sigma(z)(1 - \sigma(z))$. Hva er den største verdien den deriverte kan ha, og hva betyr det for dype nett med sigmoid i alle lag?
+  alternativer:
+    - tekst: '0,25 i $z = 0$. Gradienter som går bakover gjennom mange sigmoid-lag, ganges med små tall og kan bli svært små'
+      riktig: true
+      forklaring: 'Derfor brukes ReLU, med derivert 1 for positive $z$, i skjulte lag.'
+    - tekst: '1 i $z = 0$. Gradientene blir bevart gjennom alle lag'
+      forklaring: '$\sigma(0) = 0{,}5$ gir $0{,}5 \cdot 0{,}5 = 0{,}25$.'
+    - tekst: '0,5 i $z = 0$. Det har ingen betydning for dype nett'
+      forklaring: '0,5 er $\sigma(0)$, ikke den deriverte.'
+    - tekst: 'Den deriverte er uendelig i $z = 0$'
+      forklaring: 'Sigmoid er glatt overalt.'
+  forklaring: |
+    I backpropagation ganges deriverte fra hvert lag sammen. Mange faktorer på høyst 0,25 gir en gradient som krymper eksponentielt med antall lag.
+  husk: 'σ′ ≤ 0,25. ReLU har derivert 1 for z > 0 og er derfor standard i skjulte lag.'
+
+- id: "5.2-06"
+  del: "5.2"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Et nettverk skal klassifisere bilder i 10 klasser. Beskriv hvilke aktiveringsfunksjoner du ville brukt i de skjulte lagene og i output-laget, og begrunn valgene.
+  eksempelsvar: |
+    I de skjulte lagene ville jeg brukt ReLU, $\max(0, z)$: den er ikke-lineær, billig å regne ut og har derivert 1 for positive verdier, så gradientene krymper ikke gjennom mange lag. I output-laget ville jeg brukt softmax med 10 noder, som gjør output-verdiene om til sannsynligheter som summerer til 1, én per klasse. Dette passer med categorical cross-entropy som tap. Predikert klasse er den med høyest sannsynlighet.
+  punkter:
+    - tekst: 'ReLU i skjulte lag, med begrunnelse.'
+      stikkord: ['relu']
+    - tekst: 'Softmax i output med 10 noder.'
+      stikkord: ['softmax']
+    - tekst: 'Sannsynligheter som summerer til 1 / predikert klasse = høyest.'
+      stikkord: ['summer', 'sannsynlighet', 'høyest']
+    - tekst: 'Kobler til cross-entropy som tap.'
+      stikkord: ['cross-entropy', 'cross entropy', 'kryssentropi']
+  husk: 'Bildeklassifisering: ReLU i skjulte lag, softmax i output, cross-entropy som tap.'
+
+# ---------------------------------------------------------------- 5.3 Arkitektur
+- id: "5.3-01"
+  del: "5.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva bestemmer antall noder i input-laget og output-laget i et fullt koblet nevralt nett?
+  alternativer:
+    - tekst: 'Antall features i dataene og formen på target (for eksempel antall klasser)'
+      riktig: true
+      forklaring: 'Disse er gitt av problemet. Bare de skjulte lagene velger vi fritt.'
+    - tekst: 'Begge er hyperparametre vi velger fritt'
+      forklaring: 'Bare størrelsen på de skjulte lagene er fri.'
+    - tekst: 'Antall treningspunkter'
+      forklaring: 'Antall datapunkter påvirker ikke formen på nettet.'
+    - tekst: 'Batch size'
+      forklaring: 'Batch size er en treningsinnstilling.'
+  forklaring: |
+    Input-laget er bare dataene (én node per feature). Output-laget har én node per klasse (eller én for binær klassifisering og én per regresjonsverdi).
+  husk: 'Input = antall features. Output = målformen. Skjulte lag = hyperparametre.'
+
+- id: "5.3-02"
+  del: "5.3"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et fullt koblet nett har 10 input-features, to skjulte lag med 32 og 16 noder, og et output-lag med 3 noder.
+  deler:
+    - sporsmal: 'Antall parametre i første skjulte lag'
+      svar: 352
+      toleranse: 0
+    - sporsmal: 'Totalt antall parametre i nettet'
+      svar: 931
+      toleranse: 0
+  losning: |
+    Parametre per lag $= n_{\text{inn}} \cdot n_{\text{ut}} + n_{\text{ut}}$:
+
+    - Lag 1: $10 \cdot 32 + 32 = 352$
+    - Lag 2: $32 \cdot 16 + 16 = 528$
+    - Output: $16 \cdot 3 + 3 = 51$
+
+    Totalt $352 + 528 + 51 = 931$. Input-laget har ingen parametre.
+  husk: 'Hvert lag: n_inn · n_ut vekter + n_ut biaser. Input-laget har ingen.'
+
+- id: "5.3-03"
+  del: "5.3"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Laget $l$ har 3 noder og forrige lag har 2 noder. På matriseform er $\mathbf{a}^{(l)} = g(W\mathbf{a}^{(l-1)} + \mathbf{b})$. Hvilken form har $W$?
+  alternativer:
+    - tekst: '$3 \times 2$'
+      riktig: true
+      forklaring: 'Den må gjøre en vektor med 2 elementer om til en med 3.'
+    - tekst: '$2 \times 3$'
+      forklaring: 'Med $W\mathbf{a}$ og $\mathbf{a}$ som kolonnevektor må antall kolonner være lik antall input, 2.'
+    - tekst: '$3 \times 3$'
+      forklaring: 'Antall kolonner må passe med forrige lag, som har 2 noder.'
+    - tekst: '$1 \times 6$'
+      forklaring: 'Vektene er ordnet som en matrise, én rad per node i laget.'
+  forklaring: |
+    Rad $j$ i $W$ inneholder vektene inn til node $j$. Hver node har også en bias, så $\mathbf{b}$ har 3 elementer. Totalt $6 + 3 = 9$ parametre.
+  husk: 'W har form (noder i dette laget) × (noder i forrige lag).'
+
+- id: "5.3-04"
+  del: "5.3"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om et fullt koblet feedforward-nett (MLP) stemmer?
+  alternativer:
+    - tekst: 'Hver node i ett lag er koblet til alle nodene i neste lag.'
+      riktig: true
+      forklaring: 'Det er det «fullt koblet» betyr.'
+    - tekst: 'Hver node i et skjult lag har sin egen bias.'
+      riktig: true
+      forklaring: 'Bias må telles med i antall parametre.'
+    - tekst: 'Noder i samme lag sender informasjon til hverandre.'
+      forklaring: 'Informasjon går bare fra ett lag til det neste.'
+    - tekst: 'Input-laget har vekter og aktiveringsfunksjon.'
+      forklaring: 'Input-laget er bare dataene.'
+  forklaring: |
+    Feedforward betyr at informasjonen går én vei, fra input via skjulte lag til output.
+  husk: 'MLP: fullt koblet mellom lag, ingen koblinger innad, bias i hver node utenom input.'
+
+- id: "5.3-05"
+  del: "5.3"
+  niva: avansert
+  type: pastand
+  sporsmal: |
+    **Påstand:** De skjulte lagene i et nevralt nett kan sees som automatisk feature engineering: de lærer nye representasjoner av dataene som gjør oppgaven lettere for output-laget.
+  riktig: true
+  forklaring: |
+    Hvert skjulte lag gjør en ikke-lineær transformasjon av forrige lag. For XOR kan for eksempel ett skjult lag lære features som gjør klassene lineært separerbare, slik at output-laget (som i seg selv er som logistisk regresjon) kan skille dem. I kapittel 1 og 3 laget vi slike features for hånd.
+  husk: 'Skjulte lag lærer egne features. Output-laget er en lineær modell på disse.'
+
+- id: "5.3-06"
+  del: "5.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [prosjekt-4]
+  sporsmal: |
+    MLP-en i XAI-delen av prosjekt 4 har arkitekturen 784 → 128 → 64 → 10 for MNIST. Hvorfor har input-laget 784 noder og output-laget 10?
+  alternativer:
+    - tekst: 'Bildene er 28 × 28 = 784 piksler, og det er 10 siffer å klassifisere'
+      riktig: true
+      forklaring: 'Input-laget har én node per feature og output-laget én per klasse.'
+    - tekst: '784 og 10 er hyperparametre som ble valgt med kryssvalidering'
+      forklaring: 'De er gitt av dataene og oppgaven.'
+    - tekst: 'Det er 784 treningsbilder og 10 epoker'
+      forklaring: 'Antall bilder og epoker påvirker ikke formen på nettet.'
+    - tekst: '784 er antall parametre i første lag'
+      forklaring: 'Første skjulte lag har $784 \cdot 128 + 128 = 100\,480$ parametre.'
+  forklaring: |
+    Bare 128 og 64 er valgt fritt. Totalt har nettet $100\,480 + 8\,256 + 650 = 109\,386$ parametre.
+  husk: 'Input = antall piksler (features). Output = antall klasser.'
+
+# ---------------------------------------------------------------- 5.4 Backpropagation
+- id: "5.4-01"
+  del: "5.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva gjør backpropagation?
+  alternativer:
+    - tekst: 'Den regner ut hvordan tapet endres med hver vekt (gradienten) ved å bruke kjerneregelen bakover gjennom nettet'
+      riktig: true
+      forklaring: 'Gradientene brukes deretter i gradient descent.'
+    - tekst: 'Den søker tilfeldig etter vekter som gir lavere tap'
+      forklaring: 'Backprop er systematisk, ikke tilfeldig.'
+    - tekst: 'Den fjerner skjulte lag som ikke bidrar'
+      forklaring: 'Backprop endrer ikke arkitekturen.'
+    - tekst: 'Den setter aktiveringene i de skjulte lagene direkte'
+      forklaring: 'Aktiveringene kan bare endres gjennom vektene og biasene.'
+  forklaring: |
+    Først går vi forover og regner ut prediksjon og tap. Så går vi bakover og regner ut $\partial\mathcal{L}/\partial w$ for alle vekter, lag for lag. Til slutt oppdateres vektene med $\theta \leftarrow \theta - \eta\,\partial\mathcal{L}/\partial\theta$.
+  husk: 'Backprop = effektiv utregning av gradienten med kjerneregelen, bakover lag for lag.'
+
+- id: "5.4-02"
+  del: "5.4"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I backpropagation er $\dfrac{\partial \mathcal{L}}{\partial w_{ij}^{(l)}} = \dfrac{\partial \mathcal{L}}{\partial a_j^{(l)}}\, g'(z_j^{(l)})\, a_i^{(l-1)}$. Hva sier faktoren $a_i^{(l-1)}$ intuitivt?
+  alternativer:
+    - tekst: 'Jo større aktiveringen inn til vekten er, jo større effekt har en endring i vekten på tapet'
+      riktig: true
+      forklaring: 'En vekt som ganges med en stor aktivering, påvirker summen mye.'
+    - tekst: 'Jo større aktivering, jo mindre bør vekten endres'
+      forklaring: 'Det er motsatt: stor aktivering gir stor gradient.'
+    - tekst: 'Den bestemmer læringsraten for laget'
+      forklaring: 'Læringsraten er en egen hyperparameter.'
+    - tekst: 'Den er feilen i output-laget'
+      forklaring: 'Feilinformasjonen ligger i $\partial\mathcal{L}/\partial a_j^{(l)}$.'
+  forklaring: |
+    Samme intuisjon som for logistisk regresjon, der gradienten er feil ganget med input. Første faktor er hvor mye vi ønsker å endre $a_j$, og den regnes ut fra laget etter, derfor går vi bakover.
+  husk: '«Jo større a, jo større effekt av w.» Ønsket endring regnes ut fra laget etter.'
+
+- id: "5.4-03"
+  del: "5.4"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om trening av nevrale nett med backpropagation stemmer?
+  alternativer:
+    - tekst: 'Gradienten er et snitt over alle treningspunktene, eller over en batch.'
+      riktig: true
+      forklaring: 'Hvert punkt «ønsker» ulike endringer, og ønskene midles.'
+    - tekst: 'Hver vekt får sin egen oppdatering.'
+      riktig: true
+      forklaring: 'Gradienten har én komponent per parameter.'
+    - tekst: 'Backprop krever at aktiveringsfunksjonene er deriverbare (nesten overalt).'
+      riktig: true
+      forklaring: 'Kjerneregelen bruker $g\prime(z)$.'
+    - tekst: 'Etter backprop er alle nevronene i et lag like.'
+      forklaring: 'Vektene starter tilfeldig og oppdateres individuelt, så nevronene blir ulike.'
+  forklaring: |
+    Backprop er bare kjerneregelen, organisert slik at hver mellomregning brukes mange ganger.
+  husk: 'Backprop: kjerneregel bakover, snitt over batch, én oppdatering per parameter.'
+
+- id: "5.4-04"
+  del: "5.4"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Backpropagation og gradient descent er to navn på samme ting.
+  riktig: false
+  forklaring: |
+    Backpropagation er metoden for å *regne ut* gradienten i et nevralt nett. Gradient descent (eller SGD, Adam osv.) er metoden for å *bruke* gradienten til å oppdatere parametrene.
+  husk: 'Backprop regner ut gradienten. Gradient descent bruker den.'
+
+- id: "5.4-05"
+  del: "5.4"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor må backpropagation gå *bakover* fra output-laget?
+  alternativer:
+    - tekst: 'Fordi hvor mye en aktivering i et lag bør endres, avhenger av hvordan den påvirker de senere lagene og til slutt tapet'
+      riktig: true
+      forklaring: 'Leddet $\partial\mathcal{L}/\partial a_j^{(l)}$ regnes ut fra lag $l + 1$, som igjen trenger lag $l + 2$, osv.'
+    - tekst: 'Fordi vektene i output-laget alltid er viktigst'
+      forklaring: 'Rekkefølgen handler om avhengigheter i utregningen, ikke viktighet.'
+    - tekst: 'Fordi forward pass ødelegger informasjonen i de første lagene'
+      forklaring: 'Aktiveringene fra forward pass lagres og brukes i backward pass.'
+    - tekst: 'Det er bare en konvensjon, man kunne like gjerne gått forover'
+      forklaring: 'Kjerneregelen krever at vi kjenner effekten på tapet, som bare er kjent i enden.'
+  forklaring: |
+    Tapet er en funksjon av output, som er en funksjon av forrige lag, osv. Kjerneregelen må derfor startes i enden og føres bakover.
+  husk: 'Tapet sitter i enden. Effekten på tapet må føres bakover lag for lag.'
+
+- id: "5.4-06"
+  del: "5.4"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar intuitivt hvordan backpropagation finner ut hvordan vektene i et skjult lag bør endres, uten å bruke formler.
+  eksempelsvar: |
+    Etter forward pass sammenligner vi outputen med target. Hver output-node «ønsker» å bli høyere eller lavere. Disse ønskene kan oppfylles ved å endre vektene inn til output-noden (mest for vekter som kommer fra store aktiveringer) eller ved å endre aktiveringene i laget før. Ønskene om endrede aktiveringer samles for hver node i det skjulte laget, vektet med hvor sterkt noden påvirker outputen, og sendes videre bakover. Slik får hvert lag vite hvordan det bør endre seg, og hver vekt får en oppdatering. Ønskene fra alle treningspunktene i en batch midles.
+  punkter:
+    - tekst: 'Starter med feilen i output og hva output-nodene «ønsker».'
+      stikkord: ['output', 'feil', 'ønsk']
+    - tekst: 'Vekter fra store aktiveringer har størst effekt.'
+      stikkord: ['stor aktivering', 'store aktiveringer', 'størst effekt', 'jo større']
+    - tekst: 'Ønskede endringer sendes bakover lag for lag.'
+      stikkord: ['bakover', 'lag for lag', 'forrige lag']
+    - tekst: 'Snitt over treningspunktene / batch.'
+      stikkord: ['snitt', 'batch', 'alle punkt']
+  husk: 'Backprop-intuisjon: output-ønsker → fordelt på vekter og forrige lags aktiveringer → bakover.'
+
+# ---------------------------------------------------------------- 5.5 SGD, batch size og epoker
+- id: "5.5-01"
+  del: "5.5"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Du trener et nevralt nett med 12 000 treningspunkter, batch size 32 og 20 epoker.
+  deler:
+    - sporsmal: 'Antall oppdateringer (iterasjoner) per epoke'
+      svar: 375
+      toleranse: 0
+    - sporsmal: 'Totalt antall oppdateringer'
+      svar: 7500
+      toleranse: 0
+  losning: |
+    $N/B = 12\,000/32 = 375$ oppdateringer per epoke, og $375 \cdot 20 = 7500$ totalt. Går ikke divisjonen opp, blir siste batch mindre, og antall iterasjoner rundes opp.
+  husk: 'Mini-batch: N/B oppdateringer per epoke. GD: 1. SGD: N.'
+
+- id: "5.5-02"
+  del: "5.5"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hva er den typiske konsekvensen av å bruke svært liten batch size (for eksempel 1)?
+  alternativer:
+    - tekst: 'Gradientene blir støyete, så tapet hopper mer fra steg til steg'
+      riktig: true
+      forklaring: 'Gradienten estimeres fra få punkter og varierer mye.'
+    - tekst: 'Gradientene blir mindre støyete'
+      forklaring: 'Det er motsatt. Større batch gir mer presise gradientestimater.'
+    - tekst: 'Modellen overtilpasser alltid'
+      forklaring: 'Overtilpasning er ikke den typiske konsekvensen av liten batch.'
+    - tekst: 'Gradienten blir systematisk skjev'
+      forklaring: 'SGD-gradienten er støyete, men forventningsrett.'
+  forklaring: |
+    Liten batch gir mange billige, men støyete steg. Stor batch gir få, presise, men dyre steg. Batch size er en hyperparameter.
+  husk: 'Liten batch: mer støy, flere oppdateringer. Gradienten er forventningsrett uansett.'
+
+- id: "5.5-03"
+  del: "5.5"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Hvilke koblinger er riktige?
+  alternativer:
+    - tekst: 'Gradient descent (batch): én oppdatering per epoke'
+      riktig: true
+      forklaring: 'Hele datasettet brukes per steg.'
+    - tekst: 'Stochastic gradient descent: én oppdatering per datapunkt'
+      riktig: true
+      forklaring: 'Batch size 1.'
+    - tekst: 'Mini-batch: $N/B$ oppdateringer per epoke'
+      riktig: true
+      forklaring: 'Kompromisset som brukes i praksis.'
+    - tekst: 'En epoke er én batch'
+      forklaring: 'En epoke er alle treningspunktene én gang.'
+  forklaring: |
+    Antall oppdateringer per epoke: 1, $N$ og $N/B$.
+  husk: 'GD: 1, SGD: N, mini-batch: N/B oppdateringer per epoke.'
+
+- id: "5.5-04"
+  del: "5.5"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Med batch size $B = N$ (hele treningssettet) er mini-batch gradient descent det samme som vanlig gradient descent.
+  riktig: true
+  forklaring: |
+    Da brukes alle punktene i hver oppdatering, og det blir én oppdatering per epoke. Tilsvarende er $B = 1$ det samme som SGD. Mini-batch er altså en familie som har begge som ytterpunkter.
+  husk: 'B = N: GD. B = 1: SGD. Mellom: mini-batch.'
+
+- id: "5.5-05"
+  del: "5.5"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Du har 50 000 treningsbilder og batch size 128. Hvor mange iterasjoner blir det per epoke i Keras, og hvorfor?
+  alternativer:
+    - tekst: '391, fordi 50 000/128 = 390,6 og den siste, ufullstendige batchen også gir en oppdatering'
+      riktig: true
+      forklaring: '390 fulle batcher og én batch med 80 bilder.'
+    - tekst: '390, fordi ufullstendige batcher droppes'
+      forklaring: 'Keras bruker også siste batch som standard.'
+    - tekst: '128'
+      forklaring: 'Det er batch size, ikke antall iterasjoner.'
+    - tekst: '50 000'
+      forklaring: 'Det ville vært SGD med batch size 1.'
+  forklaring: |
+    $\lceil N/B \rceil$ iterasjoner per epoke. Keras viser dette tallet i fremdriftslinjen under `fit`.
+  husk: 'Iterasjoner per epoke = N/B rundet opp.'
+
+- id: "5.5-06"
+  del: "5.5"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar fordeler og ulemper ved mini-batch gradient descent sammenlignet med gradient descent på hele datasettet og SGD med ett punkt om gangen.
+  eksempelsvar: |
+    Gradient descent på hele datasettet gir presise gradienter, men hvert steg er dyrt, og det blir bare én oppdatering per epoke. SGD med ett punkt gir mange billige oppdateringer, men gradientene er svært støyete, og maskinvaren utnyttes dårlig. Mini-batch er et kompromiss: gradienten er et snitt over $B$ punkter, så støyen er moderat, og det blir $N/B$ oppdateringer per epoke. Batchene kan regnes effektivt parallelt. Litt støy kan også hjelpe treningen ut av dårlige områder. Batch size er en hyperparameter.
+  punkter:
+    - tekst: 'GD: presis, men dyr og få oppdateringer.'
+      stikkord: ['presis', 'dyr', 'treg', 'én oppdatering']
+    - tekst: 'SGD: mange oppdateringer, mye støy.'
+      stikkord: ['støy', 'mange oppdateringer']
+    - tekst: 'Mini-batch: kompromiss, N/B oppdateringer.'
+      stikkord: ['kompromiss', 'n/b', 'mellomting', 'balanse']
+    - tekst: 'Batch size er en hyperparameter (eller effektiv parallell utregning).'
+      stikkord: ['hyperparameter', 'parallell', 'gpu']
+  husk: 'GD presis men treg, SGD rask men støyete, mini-batch i midten.'
+
+# ---------------------------------------------------------------- 5.6 Keras
+- id: "5.6-01"
+  del: "5.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    Hvor mange parametre har modellen under?
+
+    ```python
+    model = keras.Sequential([
+        keras.Input(shape=(784,)),
+        layers.Dense(64, activation="relu"),
+        layers.Dense(10, activation="softmax"),
+    ])
+    ```
+  alternativer:
+    - tekst: '50 890'
+      riktig: true
+      forklaring: '$784 \cdot 64 + 64 = 50\,240$ og $64 \cdot 10 + 10 = 650$, totalt 50 890.'
+    - tekst: '50 816'
+      forklaring: 'Glemmer bias i begge lagene ($784 \cdot 64 + 64 \cdot 10$).'
+    - tekst: '858'
+      forklaring: 'Det er antall noder, ikke parametre.'
+    - tekst: '51 674'
+      forklaring: '`keras.Input` er ikke et lag og har ingen parametre.'
+  forklaring: |
+    `model.summary()` viser 50 240 og 650 parametre for de to Dense-lagene.
+  husk: 'Dense(m) etter n input: n·m + m parametre. Input-objektet har ingen.'
+
+- id: "5.6-02"
+  del: "5.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Du kjører `model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)`. Hva betyr `validation_split=0.2`?
+  alternativer:
+    - tekst: 'De siste 20 % av treningsdataene holdes utenfor treningen og brukes til å regne ut valideringstap etter hver epoke'
+      riktig: true
+      forklaring: 'Keras tar ut valideringsdataene før treningen starter.'
+    - tekst: 'Modellen trenes på 20 % av dataene'
+      forklaring: 'Den trenes på de andre 80 %.'
+    - tekst: '20 % av testdataene brukes til validering'
+      forklaring: 'Argumentet virker på dataene som sendes til `fit`, altså treningsdataene.'
+    - tekst: 'Læringsraten reduseres med 20 % hver epoke'
+      forklaring: 'Det har ingenting med læringsraten å gjøre.'
+  forklaring: |
+    Valideringstapet (`val_loss`) kan overvåkes, for eksempel med early stopping (`monitor="val_loss"`).
+  husk: 'validation_split tar en andel av treningsdataene til validering. Test bruker du med evaluate.'
+
+- id: "5.6-03"
+  del: "5.6"
+  niva: middels
+  type: flervalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    Hvilke påstander om Keras-arbeidsflyten stemmer?
+  alternativer:
+    - tekst: '`compile` bestemmer optimizer, tapsfunksjon og metrikker.'
+      riktig: true
+      forklaring: 'For eksempel `optimizer="adam", loss="sparse_categorical_crossentropy", metrics=["accuracy"]`.'
+    - tekst: '`evaluate` på testdata gir resultatet vi rapporterer.'
+      riktig: true
+      forklaring: 'Treningsaccuracy er ikke et ærlig mål.'
+    - tekst: '`sparse_categorical_crossentropy` er cross-entropy for labels gitt som heltall (0, 1, 2, …).'
+      riktig: true
+      forklaring: 'Med one-hot-labels brukes `categorical_crossentropy`.'
+    - tekst: 'En `Sequential`-modell har vekter med en gang lagene er lagt til, også uten input-form.'
+      forklaring: 'Vektene opprettes først når input-formen er kjent.'
+  forklaring: |
+    Flyten er: bygg modellen, `compile`, `fit` (med `batch_size` og `epochs`), `evaluate` og `predict`. `save` og `load_model` lagrer og laster modellen.
+  husk: 'Bygg → compile (optimizer, loss, metrics) → fit → evaluate på test → predict.'
+
+- id: "5.6-04"
+  del: "5.6"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Et Dense-lag med 16 noder som får en batch på 32 datapunkter med 8 features, gir output med form `(32, 16)`.
+  riktig: true
+  forklaring: |
+    $(32 \times 8) \cdot (8 \times 16) + (16) \to (32 \times 16)$. Batch-dimensjonen beholdes, og feature-dimensjonen blir antall noder.
+  husk: 'Dense(m) på (B, n) gir (B, m).'
+
+- id: "5.6-05"
+  del: "5.6"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    I øving 3 skal et nett løse en regresjonsoppgave. En student skriver:
+
+    ```python
+    model = keras.Sequential([
+        keras.Input(shape=(1,)),
+        layers.Dense(32, activation="relu"),
+        layers.Dense(1, activation="sigmoid"),
+    ])
+    model.compile(optimizer="adam", loss="mse")
+    ```
+
+    Targetene ligger mellom −20 og 40. Hva er problemet?
+  alternativer:
+    - tekst: 'Sigmoid i output låser prediksjonene til $(0, 1)$, så nettet kan aldri treffe targetene'
+      riktig: true
+      forklaring: 'Output-laget for regresjon skal ha lineær aktivering.'
+    - tekst: 'MSE kan ikke brukes for regresjon'
+      forklaring: 'MSE er standard tap for regresjon.'
+    - tekst: 'ReLU kan ikke brukes i skjulte lag for regresjon'
+      forklaring: 'ReLU i skjulte lag er helt vanlig også for regresjon.'
+    - tekst: 'Input-formen skal være `(32,)`'
+      forklaring: 'Input-formen er antall features, her 1.'
+  forklaring: |
+    Bytt til `layers.Dense(1)` (lineær aktivering som standard). Skalering av targetene kan også hjelpe treningen.
+  husk: 'Regresjon: Dense(1) uten aktivering i output, MSE som tap.'
+
+- id: "5.6-06"
+  del: "5.6"
+  niva: middels
+  type: tekst
+  tags: [oving-3]
+  sporsmal: |
+    Du trener et nevralt nett i Keras. Beskriv hvordan du ville brukt valideringsdata og early stopping, og hvilket tall du ville rapportert som modellens ytelse.
+  eksempelsvar: |
+    Jeg ville holdt av et valideringssett (for eksempel med `validation_split` eller egne valideringsdata) og latt `fit` regne ut `val_loss` etter hver epoke. Med en `EarlyStopping`-callback med `monitor="val_loss"` (og gjerne `restore_best_weights=True`) stopper treningen når valideringstapet ikke lenger blir bedre, og vektene fra beste epoke beholdes. Til slutt ville jeg rapportert resultatet fra `model.evaluate` på et testsett som ikke er brukt til noe valg underveis, ikke trenings- eller valideringsaccuracy.
+  punkter:
+    - tekst: 'Valideringsdata og val_loss per epoke.'
+      stikkord: ['validering', 'val_loss', 'validation']
+    - tekst: 'Early stopping som overvåker val_loss og beholder beste vekter.'
+      stikkord: ['earlystopping', 'early stopping', 'restore', 'beste']
+    - tekst: 'Rapporterer evaluate på urørt testsett.'
+      stikkord: ['evaluate', 'test']
+  husk: 'Velg epoke på validering (early stopping), rapporter evaluate på test.'
