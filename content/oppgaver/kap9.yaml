@@ -1,0 +1,688 @@
+# Oppgaver til kapittel 9: AI Act og etiske prinsipper
+# Fakta per november 2026, etter Digital Omnibus (forordning (EU) 2026/1744).
+
+# ---------------------------------------------------------------- 9.1 Rettslig form og tidslinje
+- id: "9.1-01"
+  del: "9.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvilken rettslig form har AI Act, (EU) 2024/1689?
+  alternativer:
+    - tekst: 'En forordning, som gjelder direkte i alle EU-land'
+      riktig: true
+      forklaring: 'En forordning trenger ikke gjennomføres i nasjonal lov i EU-landene.'
+    - tekst: 'Et direktiv, som hvert land må gjennomføre i egen lov'
+      forklaring: 'AI Act er en forordning, ikke et direktiv.'
+    - tekst: 'En frivillig anbefaling'
+      forklaring: 'AI Act er bindende, med bøter ved brudd.'
+    - tekst: 'En internasjonal FN-avtale'
+      forklaring: 'Det er en EU-rettsakt.'
+  forklaring: |
+    For Norge er det annerledes: forordningen må først tas inn i EØS-avtalen og gjennomføres i norsk lov (9.3).
+  husk: 'AI Act = forordning (EU) 2024/1689, gjelder direkte i EU.'
+
+- id: "9.1-02"
+  del: "9.1"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    AI Act trådte i kraft 1.8.2024. Når gjelder kravene til høyrisikosystemer i Anneks 3-områder (som utdanning og rekruttering) etter Digital Omnibus?
+  alternativer:
+    - tekst: 'Fra 2.12.2027'
+      riktig: true
+      forklaring: 'Digital Omnibus utsatte dem fra den opprinnelige datoen 2.8.2026.'
+    - tekst: 'Fra 1.8.2024'
+      forklaring: 'Det er datoen forordningen trådte i kraft. Pliktene gjelder gradvis.'
+    - tekst: 'Fra 2.8.2026'
+      forklaring: 'Det var den opprinnelige datoen, før Digital Omnibus.'
+    - tekst: 'Fra 2.8.2028'
+      forklaring: 'Det gjelder høyrisiko i produkter regulert av Anneks 1.'
+  forklaring: |
+    Forbudene har gjeldt siden 2.2.2025 og GPAI-reglene siden 2.8.2025. Høyrisiko: Anneks 3 fra 2.12.2027, Anneks 1 fra 2.8.2028.
+  husk: 'Ikrafttredelse ≠ gjelder. Høyrisiko: 2.12.2027 (Anneks 3) og 2.8.2028 (Anneks 1).'
+
+- id: "9.1-03"
+  del: "9.1"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke endringer kom med Digital Omnibus i 2026?
+  alternativer:
+    - tekst: 'Utsatte høyrisikokrav'
+      riktig: true
+      forklaring: 'Anneks 3 til 2.12.2027 og Anneks 1 til 2.8.2028.'
+    - tekst: 'Nye forbud mot «nudify»-apper og systemer som lager overgrepsmateriale av barn'
+      riktig: true
+      forklaring: 'Gjelder fra 2.12.2026.'
+    - tekst: 'Svakere krav til KI-kompetanse (artikkel 4)'
+      riktig: true
+      forklaring: 'Tilbydere og brukere skal støtte kompetanseutvikling, uten å garantere et bestemt nivå.'
+    - tekst: 'Opphevelse av alle forbud i artikkel 5'
+      forklaring: 'Forbudene ble tvert imot utvidet.'
+  forklaring: |
+    Bakgrunnen var at standardene og retningslinjene ikke var ferdige, og at EU hadde satt forenkling høyt på dagsordenen.
+  husk: 'Omnibus: utsatt høyrisiko, nye forbud, svakere art. 4, mer sentralisert tilsyn.'
+
+- id: "9.1-04"
+  del: "9.1"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Alle pliktene i AI Act har gjeldt fullt ut siden forordningen trådte i kraft 1.8.2024.
+  riktig: false
+  forklaring: |
+    Forordningen trådte i kraft da, men pliktene innføres gradvis: forbud fra 2.2.2025, GPAI-regler fra 2.8.2025, transparenskrav fra 2.8.2026 og høyrisikokrav fra 2.12.2027 og 2.8.2028.
+  husk: 'Gradvis innføring: forbud → GPAI → transparens → høyrisiko.'
+
+- id: "9.1-05"
+  del: "9.1"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor trådte Digital Omnibus i kraft bare tre dager etter publisering i juli 2026?
+  alternativer:
+    - tekst: 'Fordi den opprinnelige fristen 2.8.2026 for høyrisikokrav lå like rundt hjørnet, og utsettelsen måtte gjelde før den'
+      riktig: true
+      forklaring: 'Ellers ville kravene formelt ha begynt å gjelde.'
+    - tekst: 'Fordi den var et direktiv som ikke trengte gjennomføring'
+      forklaring: 'Den ble vedtatt som forordning, (EU) 2026/1744.'
+    - tekst: 'Fordi Norge krevde det'
+      forklaring: 'Norge er ikke EU-medlem og styrer ikke EU-lovgivningen.'
+    - tekst: 'Fordi den opphevet hele AI Act'
+      forklaring: 'Den endret og utsatte deler av AI Act.'
+  forklaring: |
+    Digital Omnibus ble foreslått 19.11.2025 og trådte i kraft 27.7.2026.
+  husk: 'Omnibus i kraft 27.7.2026, rett før den opprinnelige fristen 2.8.2026.'
+
+- id: "9.1-06"
+  del: "9.1"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar hvorfor EU vedtok Digital Omnibus og gjengi argumenter fra både kritikere og tilhengere.
+  eksempelsvar: |
+    Tidsplanen holdt ikke: de harmoniserte standardene som skulle konkretisere kravene, var ikke ferdige, og Kommisjonens retningslinjer for høyrisiko kom sent. Samtidig hadde EU, blant annet etter Draghi-rapporten, satt forenkling og konkurranseevne høyt. Omnibus utsatte derfor høyrisikokravene og forenklet flere regler, men innførte også nye forbud. Kritikere, som digitale rettighetsorganisasjoner og enkelte partier, mente EU ga etter for press fra industrien. Tilhengere pekte på at det er lite meningsfullt å kreve etterlevelse før standardene finnes.
+  punkter:
+    - tekst: 'Standarder og retningslinjer var ikke ferdige.'
+      stikkord: ['standard', 'retningslinj', 'ikke ferdig', 'tidsplan']
+    - tekst: 'Forenkling og konkurranseevne (Draghi).'
+      stikkord: ['forenkl', 'konkurranse', 'draghi']
+    - tekst: 'Kritikk: EU ga etter for press.'
+      stikkord: ['kritik', 'press', 'lobby', 'ga etter']
+    - tekst: 'Tilhengere: lite meningsfullt å kreve etterlevelse uten standarder.'
+      stikkord: ['tilhenger', 'meningsfull', 'etterlev']
+  husk: 'Omnibus: manglende standarder + forenkling. Kritikk: ga etter for press.'
+
+# ---------------------------------------------------------------- 9.2 Formål, virkeområde og håndheving
+- id: "9.2-01"
+  del: "9.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Et amerikansk selskap uten kontorer i EU tilbyr et KI-system til kunder i Tyskland. Gjelder AI Act?
+  alternativer:
+    - tekst: 'Ja, fordi AI Act gjelder alle som tilbyr eller bruker KI-systemer i EU, uansett hvor de er etablert'
+      riktig: true
+      forklaring: 'Virkeområdet (artikkel 2) avhenger av markedet, ikke hovedsetet.'
+    - tekst: 'Nei, fordi selskapet ikke har hovedsete i EU'
+      forklaring: 'Hovedsetet avgjør ikke.'
+    - tekst: 'Bare hvis systemet er høyrisiko'
+      forklaring: 'Om forordningen gjelder, er et annet spørsmål enn hvilken risikokategori systemet havner i.'
+    - tekst: 'Nei, fordi USA har egne regler'
+      forklaring: 'Amerikanske regler endrer ikke hva som gjelder i EU.'
+  forklaring: |
+    Det samme gjelder norske selskaper som tilbyr i EU, selv om forordningen ennå ikke er norsk rett.
+  husk: 'AI Act gjelder alle som tilbyr i EU, uansett hvor de holder til.'
+
+- id: "9.2-02"
+  del: "9.2"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et selskap med global årsomsetning på 2 milliarder euro bryter et forbud i artikkel 5. Maksimal bot er det høyeste av 35 millioner euro og 7 % av global årsomsetning.
+  deler:
+    - sporsmal: 'Maksimal bot i millioner euro'
+      svar: 140
+      toleranse: 0.5
+    - sporsmal: 'Maksimal bot i millioner euro for et selskap med 200 millioner euro i omsetning som begår samme brudd'
+      svar: 35
+      toleranse: 0.5
+  losning: |
+    - 2 milliarder: $0{,}07 \cdot 2000 = 140$ millioner, som er mer enn 35 millioner. Maks bot 140 millioner euro.
+    - 200 millioner: $0{,}07 \cdot 200 = 14$ millioner, som er mindre enn 35 millioner. Maks bot 35 millioner euro.
+
+    For de fleste andre brudd er taket 15 millioner euro eller 3 %.
+  husk: 'Forbud: maks(35 mill. €, 7 %). Andre brudd: maks(15 mill. €, 3 %).'
+
+- id: "9.2-03"
+  del: "9.2"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et privat selskap utvikler et KI-system for droneovervåking utelukkende for et lands forsvar. Senere selges det samme systemet til politiet for sivil bruk. Hvordan stiller AI Act seg?
+  alternativer:
+    - tekst: 'Unntatt så lenge det bare brukes militært, men omfattet når det tas i sivil bruk'
+      riktig: true
+      forklaring: 'Unntaket gjelder bare rent militær bruk, og opphører ved sivil bruk.'
+    - tekst: 'Unntatt for alltid, fordi det ble utviklet for militæret'
+      forklaring: 'Unntaket følger bruken, ikke opprinnelsen.'
+    - tekst: 'Omfattet fra starten, fordi utvikleren er privat'
+      forklaring: 'Unntaket gjelder uansett om aktøren er offentlig eller privat.'
+    - tekst: 'Aldri omfattet, fordi droner er produkter'
+      forklaring: 'KI-systemer i produkter er tvert imot ofte omfattet.'
+  forklaring: |
+    Artikkel 2 unntar systemer som *utelukkende* brukes til militære formål, forsvar eller nasjonal sikkerhet.
+  husk: 'Militærunntaket: bare ved rent militær bruk, opphører ved sivil bruk.'
+
+- id: "9.2-04"
+  del: "9.2"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Det er mer presist å kalle AI Act verdens første *omfattende og horisontale* KI-regulering enn verdens første KI-regulering.
+  riktig: true
+  forklaring: |
+    Kina innførte smalere regler for blant annet anbefalingsalgoritmer og generativ KI allerede i 2022 og 2023. AI Act er den første som dekker KI bredt på tvers av sektorer.
+  husk: 'AI Act: første omfattende og horisontale, ikke første KI-regulering.'
+
+- id: "9.2-05"
+  del: "9.2"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om AI Act sitt formål og mottakelse stemmer?
+  alternativer:
+    - tekst: 'Den er bygget som produktsikkerhetsregelverk.'
+      riktig: true
+      forklaring: 'Kravene er knyttet til KI-systemer som produkter på markedet.'
+    - tekst: 'Kritikere mener en eventuell Brussels-effekt også kan eksportere svakhetene, fordi grunnleggende rettigheter bare delvis beskyttes.'
+      riktig: true
+      forklaring: 'Argumentet til Almada og Radu (2024).'
+    - tekst: 'Etterlevelse kan være særlig kostbart for små bedrifter.'
+      riktig: true
+      forklaring: 'Det var en drivkraft bak endringene i 2026 og bakgrunnen for sandkasser.'
+    - tekst: 'Den gjelder bare offentlig sektor.'
+      forklaring: 'Den gjelder både private og offentlige aktører.'
+  forklaring: |
+    Brussels-effekten er idéen om at EU-regler blir global standard fordi selskaper heller tilpasser seg enn å forlate markedet, slik GDPR gjorde.
+  husk: 'Produktsikkerhetsregelverk, Brussels-effekt (omdiskutert), dyrt for små aktører.'
+
+- id: "9.2-06"
+  del: "9.2"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Forklar hva Brussels-effekten er, og diskuter kort om AI Act kan få en slik effekt.
+  eksempelsvar: |
+    Brussels-effekten er at EU-regler blir en global standard fordi EU er et stort marked med stor kjøpekraft: det er enklere for selskaper å følge én (streng) standard overalt enn å lage egne versjoner. GDPR er det klassiske eksempelet. For AI Act er det omdiskutert. Selskaper kan velge å tilby færre funksjoner i EU i stedet for å endre produktene globalt, slik at europeiske brukere får andre tjenester enn amerikanske. Kritikere som Almada og Radu peker også på at fordi AI Act er bygget som produktregulering og bare delvis beskytter grunnleggende rettigheter, kan en eventuell Brussels-effekt eksportere svakhetene.
+  punkter:
+    - tekst: 'Definisjon: EU-regler blir global standard pga. markedsmakt.'
+      stikkord: ['global', 'standard', 'marked', 'kjøpekraft']
+    - tekst: 'GDPR som eksempel.'
+      stikkord: ['gdpr']
+    - tekst: 'Usikkert for AI Act: selskaper kan tilby mindre i EU.'
+      stikkord: ['omdiskutert', 'usikker', 'færre funksjoner', 'tilpasse']
+    - tekst: 'Kritikk: kan eksportere svakheter.'
+      stikkord: ['svakhet', 'rettigheter', 'almada', 'produktregulering']
+  husk: 'Brussels-effekt: EU-regler som global standard. For AI Act: omdiskutert.'
+
+# ---------------------------------------------------------------- 9.3 Norge
+- id: "9.3-01"
+  del: "9.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Gjelder AI Act som norsk lov per november 2026?
+  alternativer:
+    - tekst: 'Nei. Forordningen må først tas inn i EØS-avtalen og gjennomføres i en norsk KI-lov'
+      riktig: true
+      forklaring: 'Lovarbeidet pågår, med ny høring høsten 2026.'
+    - tekst: 'Ja, automatisk fordi Norge er med i EØS'
+      forklaring: 'EØS-regler må tas inn i avtalen og gjennomføres nasjonalt.'
+    - tekst: 'Ja, fordi det er en forordning'
+      forklaring: 'Forordninger gjelder direkte i EU-land, ikke i EØS-land.'
+    - tekst: 'Nei, og den vil aldri gjelde i Norge'
+      forklaring: 'Regjeringen arbeider med å gjennomføre den.'
+  forklaring: |
+    Norske virksomheter som tilbyr KI-systemer i EU, må likevel følge forordningen der.
+  husk: 'Ikke norsk rett ennå (nov. 2026), men gjelder norske aktører som tilbyr i EU.'
+
+- id: "9.3-02"
+  del: "9.3"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hvilken etat har regjeringen besluttet skal være koordinerende tilsyn for KI i Norge?
+  alternativer:
+    - tekst: 'Nkom (Nasjonal kommunikasjonsmyndighet)'
+      riktig: true
+      forklaring: 'Sektormyndigheter som Datatilsynet får ansvar innenfor sine områder.'
+    - tekst: 'Datatilsynet'
+      forklaring: 'Datatilsynet får ansvar innenfor sitt område, men er ikke koordinerende tilsyn.'
+    - tekst: 'Forbrukertilsynet'
+      forklaring: 'Ikke utpekt som koordinerende tilsyn for KI.'
+    - tekst: 'NTNU'
+      forklaring: 'Et universitet fører ikke tilsyn.'
+  forklaring: |
+    DFØ anbefalte Nkom. Den regulatoriske sandkassen legges til KI Norge i Digdir, i samarbeid med Nkom og Datatilsynet.
+  husk: 'Nkom = koordinerende tilsyn. Sandkasse i KI Norge (Digdir).'
+
+- id: "9.3-03"
+  del: "9.3"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** En norsk virksomhet som bare selger et KI-system til kunder i Norge, må i dag (november 2026) følge pliktene i AI Act.
+  riktig: false
+  forklaring: |
+    Forordningen er verken tatt inn i EØS-avtalen eller gjennomført i norsk lov, så pliktene gjelder ikke for virksomheter som bare opererer i Norge. Tilbyr virksomheten i EU, gjelder forordningen der.
+  husk: 'Bare Norge: ingen plikter ennå. Tilbyr i EU: forordningen gjelder.'
+
+- id: "9.3-04"
+  del: "9.3"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om det norske lovarbeidet stemmer?
+  alternativer:
+    - tekst: 'Et utkast til KI-lov var på høring i 2025.'
+      riktig: true
+      forklaring: 'Høringen startet 30.6.2025.'
+    - tekst: 'Etter EU-endringene sendte regjeringen ut en ny høring høsten 2026.'
+      riktig: true
+      forklaring: 'Sendt 30.10.2026 med frist 11.12.2026.'
+    - tekst: 'Målet om at loven skulle gjelde fra sensommeren 2026, ble ikke nådd.'
+      riktig: true
+      forklaring: 'Ambisjonen nå er å fremme lovforslaget våren 2027.'
+    - tekst: 'KI-loven trådte i kraft 1.8.2024 samtidig med AI Act.'
+      forklaring: 'Det finnes ingen norsk KI-lov i kraft ennå.'
+  forklaring: |
+    Parallelt forhandles det om å ta forordningen inn i EØS-avtalen.
+  husk: 'Høring 2025, ny høring høst 2026, lovforslag planlagt våren 2027.'
+
+- id: "9.3-05"
+  del: "9.3"
+  niva: avansert
+  type: enkeltvalg
+  tags: [case]
+  sporsmal: |
+    Et norsk oppstartsselskap tilbyr et KI-verktøy for rekruttering til bedrifter i Sverige fra 2028. Hva gjelder?
+  alternativer:
+    - tekst: 'AI Act gjelder fordi verktøyet tilbys i EU, og rekruttering er et Anneks 3-område med høyrisikokrav fra 2.12.2027'
+      riktig: true
+      forklaring: 'Både virkeområdet og risikokategorien peker mot strenge krav.'
+    - tekst: 'Ingenting, fordi selskapet er norsk'
+      forklaring: 'Etableringssted avgjør ikke når systemet tilbys i EU.'
+    - tekst: 'Bare transparenskravene i artikkel 50'
+      forklaring: 'Rekruttering er høyrisiko, ikke bare begrenset risiko.'
+    - tekst: 'Verktøyet er forbudt'
+      forklaring: 'Rekrutteringsverktøy er høyrisiko, ikke forbudt (følelsesgjenkjenning på jobb er forbudt).'
+  forklaring: |
+    Selskapet må blant annet ha risikostyring, datastyring, dokumentasjon, logging, transparens og menneskelig tilsyn (artikkel 9–15).
+  husk: 'Norsk aktør i EU + Anneks 3-område = høyrisikokrav.'
+
+- id: "9.3-06"
+  del: "9.3"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Beskriv veien fra EU-forordning til gjeldende rett i Norge for AI Act, og hvem som får ansvar for tilsyn.
+  eksempelsvar: |
+    Fordi Norge ikke er EU-medlem, gjelder ikke forordningen automatisk. Den må først tas inn i EØS-avtalen (med eventuelle tilpasninger) og deretter gjennomføres i norsk lov, her en egen KI-lov. Et lovutkast var på høring i 2025, og etter EU-endringene i 2026 er det sendt ut en ny høring, med mål om å fremme forslaget våren 2027. Nkom blir koordinerende tilsynsmyndighet, mens sektormyndigheter som Datatilsynet har ansvar på sine områder. En regulatorisk sandkasse legges til KI Norge i Digdir.
+  punkter:
+    - tekst: 'Må tas inn i EØS-avtalen.'
+      stikkord: ['eøs']
+    - tekst: 'Gjennomføres i norsk lov (KI-lov).'
+      stikkord: ['norsk lov', 'ki-lov', 'lov']
+    - tekst: 'Nkom som koordinerende tilsyn.'
+      stikkord: ['nkom']
+    - tekst: 'Sektormyndigheter / sandkasse i Digdir (KI Norge).'
+      stikkord: ['datatilsynet', 'digdir', 'sandkasse', 'ki norge']
+  husk: 'EU-forordning → EØS-avtalen → norsk KI-lov. Nkom koordinerer.'
+
+# ---------------------------------------------------------------- 9.4 Risikokategoriene
+- id: "9.4-01"
+  del: "9.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvilket av disse KI-systemene er **forbudt** etter artikkel 5?
+  alternativer:
+    - tekst: 'Et system som gjenkjenner ansattes følelser på arbeidsplassen for å vurdere innsatsen deres'
+      riktig: true
+      forklaring: 'Følelsesgjenkjenning på arbeidsplassen og i utdanning er forbudt (unntatt medisinske og sikkerhetsmessige formål).'
+    - tekst: 'Et system som rangerer jobbsøkere'
+      forklaring: 'Rekruttering er høyrisiko, ikke forbudt.'
+    - tekst: 'En chatbot på en nettbutikk'
+      forklaring: 'Chatboter har transparenskrav (artikkel 50).'
+    - tekst: 'Et kredittvurderingssystem i en bank'
+      forklaring: 'Kredittvurdering er høyrisiko.'
+  forklaring: |
+    Andre forbudte praksiser: manipulerende teknikker, utnyttelse av sårbarheter, sosial scoring, prediksjon av lovbrudd bare basert på profilering, ukritisk innsamling av ansiktsbilder, biometrisk kategorisering for sensitive egenskaper og (med unntak) sanntids biometrisk fjernidentifisering for politiet på offentlige steder.
+  husk: 'Forbudt: sosial scoring, manipulering, følelsesgjenkjenning på jobb/skole, m.fl.'
+
+- id: "9.4-02"
+  del: "9.4"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke bruksområder gjør et KI-system til høyrisiko etter Anneks 3?
+  alternativer:
+    - tekst: 'Opptak og vurdering i utdanning'
+      riktig: true
+      forklaring: 'Utdanning er et Anneks 3-område.'
+    - tekst: 'Rekruttering og forfremmelse'
+      riktig: true
+      forklaring: 'Arbeidsliv er et Anneks 3-område.'
+    - tekst: 'Kredittvurdering og prising av livs- og helseforsikring'
+      riktig: true
+      forklaring: 'Tilgang til viktige tjenester er et Anneks 3-område.'
+    - tekst: 'Spamfiltre for e-post'
+      forklaring: 'Spamfiltre har ingen særskilte krav.'
+  forklaring: |
+    Den andre veien inn i høyrisiko er Anneks 1: KI i produkter regulert av annen EU-lovgivning (medisinsk utstyr, leketøy, heiser) som krever tredjepartsvurdering.
+  husk: 'Anneks 3: biometri, kritisk infrastruktur, utdanning, arbeidsliv, viktige tjenester, rettshåndhevelse, migrasjon, rettspleie/demokrati.'
+
+- id: "9.4-03"
+  del: "9.4"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et KI-system brukes i et Anneks 3-område, men gjør bare en snever, prosedyremessig oppgave og profilerer ingen. Hva sier artikkel 6(3)?
+  alternativer:
+    - tekst: 'Systemet kan unntas fra høyrisiko, men tilbyderen må dokumentere vurderingen og registrere systemet'
+      riktig: true
+      forklaring: 'Unntaket gjelder aldri systemer som profilerer enkeltpersoner.'
+    - tekst: 'Systemet er alltid høyrisiko fordi det er i et Anneks 3-område'
+      forklaring: 'Artikkel 6(3) gir et unntak.'
+    - tekst: 'Systemet blir forbudt'
+      forklaring: 'Unntaket fører ut av høyrisiko, ikke inn i forbudt.'
+    - tekst: 'Systemet trenger ingen dokumentasjon'
+      forklaring: 'Vurderingen må dokumenteres.'
+  forklaring: |
+    Kommisjonen publiserte utkast til retningslinjer med eksempler i mai 2026.
+  husk: 'Art. 6(3): unntak for snevre oppgaver, aldri ved profilering, krever dokumentasjon.'
+
+- id: "9.4-04"
+  del: "9.4"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Høyrisikosystemer er forbudt i EU.
+  riktig: false
+  forklaring: |
+    Høyrisikosystemer er tillatt, men må oppfylle strenge krav (artikkel 9–15): risikostyring, datastyring, teknisk dokumentasjon, logging, transparens, menneskelig tilsyn og treffsikkerhet, robusthet og cybersikkerhet. Det er systemer med uakseptabel risiko som er forbudt.
+  husk: 'Høy risiko = tillatt med krav. Uakseptabel risiko = forbudt.'
+
+- id: "9.4-05"
+  del: "9.4"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Artikkel 10 i AI Act stiller krav til data og datastyring for høyrisikosystemer. Hvilken kobling til pensum i maskinlæring er mest direkte?
+  alternativer:
+    - tekst: 'Krav om at trenings-, validerings- og testdata er relevante og representative, slik at modellen ikke diskriminerer'
+      riktig: true
+      forklaring: 'Kobler til splitting i trening/validering/test (kapittel 3) og ubalanserte data (kapittel 2).'
+    - tekst: 'Krav om at modellen bruker gradient descent'
+      forklaring: 'Forordningen regulerer ikke treningsalgoritmer.'
+    - tekst: 'Krav om at alle modeller er lineære'
+      forklaring: 'Ingen slike krav.'
+    - tekst: 'Krav om at testdata brukes til å velge hyperparametre'
+      forklaring: 'Det strider mot god praksis, og forordningen krever det ikke.'
+  forklaring: |
+    Artikkel 15 (treffsikkerhet, robusthet, cybersikkerhet) kobler også til pensum, blant annet beskyttelse mot data poisoning og adversarial examples.
+  husk: 'Art. 10: representative trenings-, validerings- og testdata. Art. 15: robusthet mot blant annet poisoning.'
+
+- id: "9.4-06"
+  del: "9.4"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Plasser disse systemene i riktig risikokategori etter AI Act, og begrunn kort: (a) et system som gir innbyggere en «sosial score» som påvirker tilgang til offentlige tjenester, (b) et system som vurderer eksamensbesvarelser, (c) en kundeservice-chatbot.
+  eksempelsvar: |
+    (a) **Uakseptabel risiko, forbudt** (artikkel 5): sosial scoring basert på atferd eller egenskaper som fører til urimelig negativ behandling.
+    (b) **Høy risiko** (Anneks 3, utdanning): vurdering av studenter kan påvirke livssjanser sterkt. Tillatt, men med kravene i artikkel 9–15.
+    (c) **Begrenset risiko / transparenskrav** (artikkel 50): brukeren skal få vite at de snakker med et KI-system, med mindre det er åpenbart.
+  punkter:
+    - tekst: '(a) forbudt, sosial scoring.'
+      stikkord: ['forbudt', 'uakseptabel', 'artikkel 5', 'art. 5']
+    - tekst: '(b) høy risiko, utdanning (Anneks 3).'
+      stikkord: ['høy risiko', 'høyrisiko', 'anneks 3', 'utdanning']
+    - tekst: '(c) transparenskrav, artikkel 50.'
+      stikkord: ['transparens', 'artikkel 50', 'art. 50', 'begrenset']
+  husk: 'Sosial scoring: forbudt. Utdanning: høy risiko. Chatbot: transparens.'
+
+# ---------------------------------------------------------------- 9.5 Transparens og GPAI
+- id: "9.5-01"
+  del: "9.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Når antas en GPAI-modell å ha systemisk risiko etter AI Act?
+  alternativer:
+    - tekst: 'Når treningen brukte mer enn $10^{25}$ FLOP (eller Kommisjonen utpeker den etter kriteriene i Anneks 13)'
+      riktig: true
+      forklaring: 'Terskelen er en antakelse basert på treningsberegning.'
+    - tekst: 'Når modellen brukes i et høyrisikoområde'
+      forklaring: 'Systemisk risiko er en egen GPAI-kategori, ikke det samme som høy risiko.'
+    - tekst: 'Når modellen har åpen kildekode'
+      forklaring: 'Åpen kildekode gir tvert imot visse unntak, men ikke ved systemisk risiko.'
+    - tekst: 'Når modellen har over én million brukere'
+      forklaring: 'Antall brukere er ett av kriteriene Kommisjonen kan vurdere, men ikke den faste terskelen.'
+  forklaring: |
+    Modeller med systemisk risiko har ekstra krav (artikkel 55), blant annet evaluering, risikovurdering og hendelsesrapportering.
+  husk: 'Systemisk risiko: > 10^25 FLOP eller utpekt av Kommisjonen.'
+
+- id: "9.5-02"
+  del: "9.5"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke plikter har *alle* tilbydere av GPAI-modeller etter artikkel 53?
+  alternativer:
+    - tekst: 'Teknisk dokumentasjon av modellen'
+      riktig: true
+      forklaring: 'Trening, testing og evaluering, til bruk for tilsynet.'
+    - tekst: 'Informasjon til dem som bygger systemer på modellen'
+      riktig: true
+      forklaring: 'Slik at de kan oppfylle sine egne plikter.'
+    - tekst: 'Retningslinjer for å overholde opphavsretten'
+      riktig: true
+      forklaring: 'En av de to opphavsrettspliktene.'
+    - tekst: 'Et publisert sammendrag av treningsinnholdet'
+      riktig: true
+      forklaring: 'Den andre opphavsrettsplikten.'
+  forklaring: |
+    Alle fire gjelder. Åpne modeller uten systemisk risiko er unntatt de to dokumentasjonspliktene, men ikke opphavsrettspliktene.
+  husk: 'Art. 53: dokumentasjon, info til nedstrøms, opphavsrett, sammendrag av treningsdata.'
+
+- id: "9.5-03"
+  del: "9.5"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et norsk selskap slipper en GPAI-modell med åpen kildekode uten systemisk risiko og markedsfører den mot virksomheter i EU. Må selskapet publisere et sammendrag av innholdet modellen er trent på?
+  alternativer:
+    - tekst: 'Ja, fordi opphavsrettspliktene gjelder også for åpne modeller'
+      riktig: true
+      forklaring: 'Åpen kildekode gir bare unntak fra dokumentasjonspliktene.'
+    - tekst: 'Nei, fordi åpne modeller er unntatt alle krav'
+      forklaring: 'Unntaket gjelder bare dokumentasjonskravene.'
+    - tekst: 'Nei, fordi forordningen ikke gjelder i Norge'
+      forklaring: 'Den gjelder når selskapet tilbyr i EU.'
+    - tekst: 'Bare hvis modellen har systemisk risiko'
+      forklaring: 'Sammendraget kreves av alle GPAI-tilbydere.'
+  forklaring: |
+    Selskapet kan også bøtelegges av Kommisjonen hvis det ikke oppfyller kravene.
+  husk: 'Åpen kildekode: unntak fra dokumentasjon, ikke fra opphavsrett (inkl. sammendrag).'
+
+- id: "9.5-04"
+  del: "9.5"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Etter artikkel 50 skal en chatbot opplyse brukeren om at de samhandler med et KI-system, med mindre det er åpenbart.
+  riktig: true
+  forklaring: |
+    Artikkel 50 gir transparenskrav fra 2.8.2026. I tillegg skal generative systemer merke output maskinlesbart, og deepfakes skal merkes.
+  husk: 'Art. 50: si fra om chatbot, merk generert innhold, merk deepfakes.'
+
+- id: "9.5-05"
+  del: "9.5"
+  niva: avansert
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et selskap trener en språkmodell med $3 \cdot 10^{24}$ FLOP. Et annet trener en modell med 4 ganger så mye beregning som det første.
+  deler:
+    - sporsmal: 'Hvor mange FLOP brukte det andre selskapet, i enheter av $10^{24}$?'
+      svar: 12
+      toleranse: 0.001
+    - sporsmal: 'Antas modellen til det andre selskapet å ha systemisk risiko? Skriv 1 for ja og 0 for nei.'
+      svar: 1
+      toleranse: 0
+  losning: |
+    $4 \cdot 3 \cdot 10^{24} = 12 \cdot 10^{24} = 1{,}2 \cdot 10^{25}$ FLOP, som er over terskelen $10^{25}$. Modellen antas derfor å ha systemisk risiko og får ekstra krav etter artikkel 55. Det første selskapet ($3 \cdot 10^{24}$) er under terskelen, men kan likevel utpekes av Kommisjonen.
+  husk: 'Terskel 10^25 FLOP = 10 · 10^24.'
+
+- id: "9.5-06"
+  del: "9.5"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar forskjellen på «systemisk risiko» for GPAI-modeller og «høy risiko» for KI-systemer i AI Act.
+  eksempelsvar: |
+    Høy risiko er en kategori for KI-*systemer* basert på bruksområdet: systemer i Anneks 3-områder (som rekruttering og utdanning) eller sikkerhetskomponenter i produkter under Anneks 1. De må oppfylle kravene i artikkel 9–15. Systemisk risiko gjelder GPAI-*modeller*, altså generelle modeller som kan brukes til mange formål, og bestemmes av størrelse og kapasitet, typisk mer enn $10^{25}$ FLOP i trening eller utpeking av Kommisjonen. De får ekstra krav etter artikkel 55. En GPAI-modell er en egen kategori, men et system bygget på den kan i tillegg være høyrisiko.
+  punkter:
+    - tekst: 'Høy risiko: systemer, bestemt av bruksområde (Anneks 1/3).'
+      stikkord: ['bruksområde', 'anneks', 'system']
+    - tekst: 'Systemisk risiko: GPAI-modeller, bestemt av kapasitet / 10^25 FLOP.'
+      stikkord: ['flop', '10^25', 'gpai', 'modell', 'kapasitet']
+    - tekst: 'Ulike krav (art. 9–15 mot art. 55).'
+      stikkord: ['9–15', '9-15', '55', 'krav']
+    - tekst: 'System bygget på GPAI-modell kan i tillegg være høyrisiko.'
+      stikkord: ['bygget på', 'i tillegg', 'nedstrøms']
+  husk: 'Høy risiko: systemer etter bruk. Systemisk risiko: GPAI-modeller etter kapasitet.'
+
+# ---------------------------------------------------------------- 9.6 Etiske prinsipper
+- id: "9.6-01"
+  del: "9.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Floridi og Cowls bygger på fire prinsipper fra bioetikken og legger til ett nytt. Hvilket er det nye?
+  alternativer:
+    - tekst: 'Explicability (forklarbarhet)'
+      riktig: true
+      forklaring: 'Det trengs fordi KI-systemer har egenskaper medisinsk etikk ikke har måttet håndtere.'
+    - tekst: 'Beneficence (velgjørenhet)'
+      forklaring: 'Fra bioetikken (Beauchamp og Childress).'
+    - tekst: 'Justice (rettferdighet)'
+      forklaring: 'Fra bioetikken.'
+    - tekst: 'Autonomy (autonomi)'
+      forklaring: 'Fra bioetikken.'
+  forklaring: |
+    De fem prinsippene: beneficence, non-maleficence, autonomy, justice og explicability.
+  husk: 'Fire fra bioetikken + explicability (nytt for KI).'
+
+- id: "9.6-02"
+  del: "9.6"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hva er forskjellen på beneficence og non-maleficence?
+  alternativer:
+    - tekst: 'Beneficence handler om å gjøre godt, non-maleficence om å ikke gjøre skade, heller ikke utilsiktet'
+      riktig: true
+      forklaring: 'Å unnlate skade er ikke det samme som å gjøre godt.'
+    - tekst: 'De betyr det samme'
+      forklaring: 'De er to ulike prinsipper.'
+    - tekst: 'Non-maleficence gjelder bare bevisst skade'
+      forklaring: 'Skade fra feil, dårlig sikkerhet eller bivirkninger bryter også med prinsippet.'
+    - tekst: 'Beneficence handler om forklarbarhet'
+      forklaring: 'Det er explicability.'
+  forklaring: |
+    Et system kan være ufarlig (oppfylle non-maleficence) uten å gjøre noe godt (beneficence).
+  husk: 'Beneficence: gjør godt. Non-maleficence: ikke skad, heller ikke ved uhell.'
+
+- id: "9.6-03"
+  del: "9.6"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om prinsippene stemmer?
+  alternativer:
+    - tekst: 'Explicability har to komponenter: intelligibility (forståelighet) og accountability (ansvarlighet).'
+      riktig: true
+      forklaring: '«Hvordan virker det?» og «hvem er ansvarlig?».'
+    - tekst: 'Meta-autonomi betyr at mennesker skal bestemme hvilke beslutninger som overlates til maskinen, og kunne trekke det tilbake.'
+      riktig: true
+      forklaring: 'Autonomi handler om menneskers autonomi.'
+    - tekst: 'Justice er bredere enn fairness: det handler også om å rette opp urett og fordele godene.'
+      riktig: true
+      forklaring: 'Fairness (ikke diskriminere) er bare én del.'
+    - tekst: 'Autonomi betyr at KI-systemet skal være så autonomt som mulig.'
+      forklaring: 'Det handler om menneskers autonomi, ikke maskinens.'
+  forklaring: |
+    Explicability er som oftest en forutsetning for de fire andre: vi må forstå et system for å vurdere det etter dem.
+  husk: 'Explicability = forståelighet + ansvarlighet. Autonomi = menneskers. Justice > fairness.'
+
+- id: "9.6-04"
+  del: "9.6"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Artikkel 14 i AI Act om menneskelig tilsyn med høyrisikosystemer speiler autonomiprinsippet.
+  riktig: true
+  forklaring: |
+    Menneskelig tilsyn sikrer at mennesker kan forstå, overvåke, overstyre og stanse systemet, altså at beslutningsmakten overlates på menneskers premisser. Artikkel 86 (rett til forklaring) speiler explicability.
+  husk: 'Art. 14 ↔ autonomi. Art. 86 ↔ explicability.'
+
+- id: "9.6-05"
+  del: "9.6"
+  niva: avansert
+  type: enkeltvalg
+  tags: [case]
+  sporsmal: |
+    Et KI-system for å fordele sykehjemsplasser gir systematisk færre plasser til eldre i distriktene enn i byene, uten at noen kan forklare hvorfor. Hvilke prinsipper er mest åpenbart brutt?
+  alternativer:
+    - tekst: 'Justice (urettferdig fordeling) og explicability (ingen kan forklare eller stå til ansvar)'
+      riktig: true
+      forklaring: 'Systematisk forskjellsbehandling og manglende forståelse og ansvar.'
+    - tekst: 'Bare beneficence'
+      forklaring: 'Systemet kan gjøre noe godt totalt sett, men fordeler urettferdig.'
+    - tekst: 'Ingen, fordi systemet ikke er bevisst'
+      forklaring: 'Prinsippene gjelder virkningene, ikke intensjonen.'
+    - tekst: 'Bare autonomi'
+      forklaring: 'Autonomi kan også være relevant, men justice og explicability er mest åpenbart brutt.'
+  forklaring: |
+    Uten explicability kan vi heller ikke vurdere om systemet bryter de andre prinsippene, eller rette det opp.
+  husk: 'Skjev fordeling: justice. Uforklarlig og uten ansvar: explicability.'
+
+- id: "9.6-06"
+  del: "9.6"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Nevn de fem etiske prinsippene for KI og gi et kort eksempel på et system som bryter hvert av dem.
+  eksempelsvar: |
+    - **Beneficence:** et system som optimerer for tid brukt i en app på bekostning av brukernes velferd.
+    - **Non-maleficence:** et medisinsk system med dårlig sikkerhet som lekker pasientdata.
+    - **Autonomy:** et system som tar beslutninger om folks liv uten at noen kan overstyre det.
+    - **Justice:** en rekrutteringsmodell som systematisk nedprioriterer kvinner.
+    - **Explicability:** et kredittsystem der verken kunden eller banken kan forklare avslaget, og der det er uklart hvem som har ansvaret.
+  punkter:
+    - tekst: 'Beneficence med eksempel.'
+      stikkord: ['beneficence', 'velgjørenhet', 'gjøre godt']
+    - tekst: 'Non-maleficence med eksempel.'
+      stikkord: ['non-maleficence', 'ikke-skade', 'skade']
+    - tekst: 'Autonomy med eksempel.'
+      stikkord: ['autonom', 'selvråd']
+    - tekst: 'Justice med eksempel.'
+      stikkord: ['justice', 'rettferd', 'diskrimin']
+    - tekst: 'Explicability med eksempel.'
+      stikkord: ['explicability', 'forklar', 'ansvar']
+  husk: 'Beneficence, non-maleficence, autonomy, justice, explicability.'
