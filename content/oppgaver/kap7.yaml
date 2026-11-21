@@ -833,3 +833,113 @@
     - tekst: 'Eksempel på at de går hver sin vei.'
       stikkord: ['dårlig policy', 'lavt tap', 'øker', 'ikke henge sammen', 'uavhengig']
   husk: 'Reward = målet. Loss = verktøy. Vurder agenten på belønning.'
+
+- id: "7.3-08"
+  del: "7.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    I `learn`-metoden til en tabellbasert Q-agent (som i prosjekt 4) er `q` Q-tabellen, `alpha` læringsraten og `gamma` diskonteringsfaktoren. Hvilken linje implementerer Q-læringsoppdateringen riktig for en overgang som ikke avslutter episoden?
+  alternativer:
+    - tekst: '`q[s, a] += alpha * (reward + gamma * np.max(q[next_s]) - q[s, a])`'
+      riktig: true
+      forklaring: 'Q-verdien flyttes en andel $\alpha$ mot TD-targetet $R + \gamma\max_{A} Q(S_{t+1}, A)$.'
+    - tekst: '`q[s, a] = alpha * (reward + gamma * np.max(q[next_s]))`'
+      forklaring: 'Her forsvinner den gamle verdien. Riktig er $(1-\alpha)Q + \alpha\cdot\text{target}$.'
+    - tekst: '`q[s, a] += alpha * (reward + gamma * np.max(q[s]) - q[s, a])`'
+      forklaring: 'Maksimum skal tas over handlingene i *neste* tilstand, ikke den nåværende.'
+    - tekst: '`q[s, a] += alpha * (gamma * reward + np.max(q[next_s]) - q[s, a])`'
+      forklaring: 'Det er fremtidig verdi som diskonteres, ikke den umiddelbare belønningen.'
+  forklaring: |
+    Bellman-oppdateringen i Q-læring er $Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha\bigl(R_{t+1} + \gamma\max_A Q(S_{t+1}, A) - Q(S_t, A_t)\bigr)$, som er det samme som $(1-\alpha)Q + \alpha\cdot\text{target}$. Avslutter overgangen episoden, er det ingen fremtidig verdi, og targetet blir bare belønningen.
+  husk: 'Q += α·(r + γ·max Q(neste) − Q). Max over neste tilstand, γ på fremtiden.'
+
+- id: "7.5-07"
+  del: "7.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    En agent har fire handlinger og velger handling slik, med `epsilon = 0.2`:
+
+    ```python
+    if np.random.rand() < epsilon:
+        action = np.random.randint(4)            # tilfeldig av de fire
+    else:
+        action = np.argmax(q_table[state])
+    ```
+
+    Anta at én handling har klart høyest Q-verdi i tilstanden. Hva er sannsynligheten for at agenten velger den?
+  alternativer:
+    - tekst: '0,85'
+      riktig: true
+      forklaring: '$0{,}8 + 0{,}2 \cdot \tfrac14 = 0{,}85$. Den tilfeldige handlingen kan også bli den beste.'
+    - tekst: '0,8'
+      forklaring: 'Du har glemt at den tilfeldige handlingen treffer den beste med sannsynlighet 1/4.'
+    - tekst: '0,2'
+      forklaring: 'Det er sannsynligheten for å utforske, ikke for å velge den beste handlingen.'
+    - tekst: '0,05'
+      forklaring: 'Det er bare bidraget fra utforskingen, $0{,}2 \cdot \tfrac14$.'
+  forklaring: |
+    Med sannsynlighet $1 - \varepsilon$ velger agenten grådig. Med sannsynlighet $\varepsilon$ velger den uniformt blant alle handlingene, også den beste. Totalt: $(1 - \varepsilon) + \varepsilon/|A|$.
+  husk: 'ε-greedy: P(beste) = 1 − ε + ε/|A|.'
+
+- id: "7.6-07"
+  del: "7.6"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    Fra DQN-koden i prosjekt 4:
+
+    ```python
+    next_target_q = target_network(next_states).max(dim=1, keepdim=True).values
+    next_target_q = torch.where(dones, torch.zeros_like(next_target_q), next_target_q)
+    y_train = rewards + discount * next_target_q
+    ```
+
+    Hva gjør linjen med `torch.where`?
+  alternativer:
+    - tekst: 'For overganger som avslutter episoden settes fremtidig verdi til 0, så treningsmålet blir bare belønningen'
+      riktig: true
+      forklaring: 'Etter en sluttilstand kommer det ingen flere belønninger å diskontere.'
+    - tekst: 'Den fjerner overganger som avslutter episoden fra replay bufferen'
+      forklaring: 'Overgangene brukes fortsatt i treningen, bare med et annet mål.'
+    - tekst: 'Den kopierer vektene fra hovednettet til target-nettet'
+      forklaring: 'Kopieringen skjer et annet sted, med en gitt frekvens.'
+    - tekst: 'Den setter belønningen til 0 når episoden er over'
+      forklaring: 'Belønningen beholdes. Det er $\max_{a''} Q_{\text{target}}(s'', a'')$ som nulles ut.'
+  forklaring: |
+    DQN-målet er $y = r$ hvis overgangen avslutter episoden, og ellers $y = r + \gamma\max_{a'} Q_{\text{target}}(s', a')$. `torch.where` gjør dette for en hel batch på én gang. Target-nettet gir stabile mål, og tapet er MSE mellom `y_train` og hovednettets Q-verdi for handlingen som ble tatt.
+  husk: 'DQN-mål: r hvis done, ellers r + γ·max Q_target(s′). Bare tatt handling inngår i tapet.'
+
+- id: "7.6-08"
+  del: "7.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [figur]
+  figur:
+    type: linje
+    tittel: Samlet belønning per episode under DQN-trening
+    xlabel: episode
+    ylabel: belønning (glidende snitt)
+    x: [0, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
+    serier:
+      - navn: Belønning
+        y: [12, 30, 75, 130, 172, 195, 198, 22, 35, 60, 84]
+  sporsmal: |
+    En DQN-agent lærer oppgaven godt, men rundt episode 700 faller belønningen plutselig til nesten samme nivå som i starten. Hva heter fenomenet, og hva brukes i DQN for å motvirke det?
+  alternativer:
+    - tekst: 'Catastrophic forgetting. Replay buffer (og target-nettverk) gjør treningen mer stabil'
+      riktig: true
+      forklaring: 'Nettet glemmer det det har lært når det trenes på nye, korrelerte erfaringer. Å trene på tilfeldige batcher av gamle overganger motvirker det.'
+    - tekst: 'Reward hacking. Agenten har funnet en snarvei i belønningsfunksjonen'
+      forklaring: 'Reward hacking gir høy belønning for uønsket oppførsel, ikke et plutselig fall i belønning.'
+    - tekst: 'For lav diskonteringsfaktor. Øk $\gamma$ til 1'
+      forklaring: 'En lav $\gamma$ gir en kortsiktig agent, men forklarer ikke at en god policy plutselig kollapser.'
+    - tekst: 'Overtilpasning til testsettet. Bruk kryssvalidering'
+      forklaring: 'RL har ikke et testsett på denne måten, og fenomenet oppstår under treningen.'
+  forklaring: |
+    I DQN deler alle tilstander vektene i nettet. En oppdatering for én tilstand endrer derfor Q-verdiene for mange andre. Trener vi bare på de siste, korrelerte overgangene, kan nettet overskrive det det har lært. Replay buffer bryter korrelasjonen ved å trekke tilfeldige batcher av gamle og nye overganger, og target-nettet holder målene stabile.
+  husk: 'Plutselig kollaps i belønning: catastrophic forgetting. Motvirkes med replay buffer og target-nett.'

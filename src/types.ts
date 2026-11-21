@@ -107,6 +107,7 @@ export interface FigurData {
   x?: number[];
   serier?: { navn: string; y: number[] }[];
   punkter?: { x: number; y: number; klasse?: number | string }[];
+  klassenavn?: Record<string, string>;
   kategorier?: string[];
   verdier?: number[];
   ymin?: number;

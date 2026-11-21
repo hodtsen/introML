@@ -90,7 +90,9 @@ export default function OppgaveFigur({ data }: { data: FigurData }) {
             })
           }
         </Plot>
-        {klasser.length > 1 && <Forklaring elementer={klasser.map((k, i) => ({ navn: `Klasse ${k}`, klasse: `serie-${(i % 5) + 1}` }))} />}
+        {klasser.length > 1 && (
+          <Forklaring elementer={klasser.map((k, i) => ({ navn: data.klassenavn?.[k] ?? `Klasse ${k}`, klasse: `serie-${(i % 5) + 1}`, form: i === 1 ? "firkant" : undefined }))} />
+        )}
       </figure>
     );
   }

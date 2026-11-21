@@ -31,6 +31,13 @@ describe("oppgavebanken", () => {
     for (const k of KAPITLER)
       for (const d of k.delkapitler) expect(OPPGAVER.filter((o) => o.del === d.nr).length, d.nr).toBeGreaterThanOrEqual(6);
   });
+  it("har kode- og figuroppgaver i de fleste kapitler", () => {
+    const kode = OPPGAVER.filter((o) => o.tags.includes("kode"));
+    const figur = OPPGAVER.filter((o) => o.tags.includes("figur"));
+    expect(kode.length).toBeGreaterThanOrEqual(20);
+    expect(figur.length).toBeGreaterThanOrEqual(10);
+    expect(new Set(kode.map((o) => o.kap)).size).toBeGreaterThanOrEqual(7);
+  });
   it("har alle tre nivåer og alle fem typer", () => {
     expect(new Set(OPPGAVER.map((o) => o.niva)).size).toBe(3);
     expect(new Set(OPPGAVER.map((o) => o.type)).size).toBe(5);

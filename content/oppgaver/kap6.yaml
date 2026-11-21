@@ -137,8 +137,8 @@
     - tekst: 'Fordi inertia øker med $k$'
       forklaring: 'Den synker med $k$.'
   forklaring: |
-    I albuemetoden ser vi etter $k$ der inertia slutter å synke raskt. Silhouette og Calinski–Harabasz tar også hensyn til avstanden mellom klyngene.
-  husk: 'Inertia synker alltid med k. Se etter albuen, eller bruk silhouette/CH.'
+    Inertia måler bare hvor kompakte klyngene er, og den letteste måten å «hacke» den på er å legge en sentroide på hvert datapunkt ($k = n$). Silhouette og Calinski–Harabasz tar også hensyn til avstanden mellom klyngene, og kan derfor brukes til å sammenligne ulike $k$.
+  husk: 'Inertia synker alltid med k og er 0 for k = n. Sammenlign heller flere k med silhouette og Calinski–Harabasz.'
 
 - id: "6.2-02"
   del: "6.2"
@@ -164,30 +164,31 @@
   del: "6.2"
   niva: middels
   type: enkeltvalg
-  figur:
-    type: linje
-    tittel: Inertia for ulike k
-    xlabel: antall klynger k
-    ylabel: inertia
-    x: [1, 2, 3, 4, 5, 6, 7, 8]
-    serier:
-      - navn: Inertia
-        y: [1800, 920, 380, 330, 290, 260, 235, 215]
   sporsmal: |
-    Figuren viser inertia for k-means med ulike $k$. Hvilken $k$ foreslår albuemetoden?
+    Du har et datasett uten labels og tilpasser k-means for flere verdier av $k$. Tabellen viser tre metrikker.
+
+    | $k$ | Inertia | Silhouette | Calinski–Harabasz |
+    |---|---|---|---|
+    | 2 | 920 | 0,52 | 410 |
+    | 3 | 380 | 0,71 | 980 |
+    | 4 | 330 | 0,58 | 760 |
+    | 5 | 290 | 0,49 | 640 |
+    | 6 | 260 | 0,44 | 590 |
+
+    Hvilken $k$ er best begrunnet ut fra metrikkene?
   alternativer:
-    - tekst: '$k = 3$'
+    - tekst: '$k = 3$, fordi både silhouette og Calinski–Harabasz er høyest der'
       riktig: true
-      forklaring: 'Inertia faller bratt fram til $k = 3$ og flater deretter ut.'
-    - tekst: '$k = 8$'
-      forklaring: 'Lavest inertia er ikke målet. Den synker alltid med $k$.'
-    - tekst: '$k = 1$'
-      forklaring: 'Med én klynge er inertia høyest.'
-    - tekst: '$k = 5$'
-      forklaring: 'Etter $k = 3$ gir hver ny klynge bare liten forbedring.'
+      forklaring: 'For begge metrikkene er høy verdi bra, og de peker på samme $k$.'
+    - tekst: '$k = 6$, fordi inertia er lavest der'
+      forklaring: 'Inertia synker alltid når $k$ øker. Lavest inertia får du med $k = n$.'
+    - tekst: '$k = 2$, fordi færrest klynger alltid er best'
+      forklaring: 'Både silhouette og Calinski–Harabasz er klart bedre for $k = 3$.'
+    - tekst: '$k = 5$, fordi silhouette er nærmest 0 der'
+      forklaring: 'Silhouette nær 0 betyr at punktene ligger på grensen mellom klynger. Nær 1 er best.'
   forklaring: |
-    Albuen er punktet der gevinsten av flere klynger blir liten. Bekreft gjerne med silhouette eller Calinski–Harabasz, fordi albuen ikke alltid er tydelig.
-  husk: 'Albuemetoden: velg k der kurven knekker, ikke der inertia er lavest.'
+    Inertia kan ikke brukes alene til å velge $k$, fordi den alltid blir lavere med flere klynger. Silhouette (nær 1 er best) og Calinski–Harabasz (høy er best) belønner både kompakte og godt adskilte klynger. Når flere metrikker peker på samme $k$, er valget godt begrunnet. Peker de i ulike retninger, må du vurdere dataene og formålet nærmere.
+  husk: 'Silhouette: høy er bra (maks 1). CH: høy er bra. Inertia: lav er bra, men synker alltid med k.'
 
 - id: "6.2-04"
   del: "6.2"
@@ -566,7 +567,7 @@
     - tekst: 'Retningene med mest varians er alltid de mest nyttige for klassifisering.'
       forklaring: 'Ikke nødvendigvis. Klasseforskjellen kan ligge i en retning med lite varians.'
   forklaring: |
-    PCA er en lineær metode. Den fungerer godt når strukturen i dataene er lineær (som S-kurven i 3D projisert til 2D), men dårlig for for eksempel MNIST i 2D.
+    PCA er en lineær metode. Den fungerer godt når strukturen i dataene er lineær (som S-kurven i 3D projisert til 2D), men dårlig for eksempelvis MNIST projisert til 2D.
   husk: 'PCA: uveiledet, lineær, egenverdi 0 = ingen varians. Fit på trening.'
 
 - id: "6.5-05"
@@ -853,3 +854,164 @@
     - tekst: 'Mange trær gir robusthet mot tilfeldighet.'
       stikkord: ['robust', 'mange trær', 'tilfeldighet']
   husk: 'Tilfeldige splitter, kort sti = anomali, snitt over mange trær for robusthet.'
+
+- id: "6.3-07"
+  del: "6.3"
+  niva: avansert
+  type: enkeltvalg
+  tags: [figur]
+  figur:
+    type: punkter
+    tittel: Resultat av DBSCAN med eps = 0,35 og min_samples = 5
+    xlabel: x1
+    ylabel: x2
+    klassenavn: {"0": "Label 0", "-1": "Label −1 (outlier)"}
+    punkter:
+      - {x: 2.09, y: 2.21, klasse: 0}
+      - {x: 2.08, y: 1.67, klasse: 0}
+      - {x: 2.23, y: 2.11, klasse: 0}
+      - {x: 1.87, y: 2.15, klasse: 0}
+      - {x: 2.09, y: 2.07, klasse: 0}
+      - {x: 2.01, y: 2.14, klasse: 0}
+      - {x: 1.82, y: 1.96, klasse: 0}
+      - {x: 1.88, y: 2.15, klasse: 0}
+      - {x: 2.01, y: 1.93, klasse: 0}
+      - {x: 1.8, y: 1.94, klasse: 0}
+      - {x: 2.0, y: 1.93, klasse: 0}
+      - {x: 2.32, y: 2.25, klasse: 0}
+      - {x: 1.32, y: 1.53, klasse: -1}
+      - {x: 1.96, y: 1.89, klasse: 0}
+      - {x: 2.05, y: 2.05, klasse: 0}
+      - {x: 2.53, y: 1.72, klasse: 0}
+      - {x: 1.91, y: 2.51, klasse: 0}
+      - {x: 2.16, y: 2.17, klasse: 0}
+      - {x: 1.87, y: 1.59, klasse: 0}
+      - {x: 2.04, y: 2.03, klasse: 0}
+      - {x: 1.69, y: 1.83, klasse: 0}
+      - {x: 1.98, y: 1.76, klasse: 0}
+      - {x: 1.98, y: 2.02, klasse: 0}
+      - {x: 2.01, y: 1.87, klasse: 0}
+      - {x: 2.15, y: 2.22, klasse: 0}
+      - {x: 2.08, y: 1.8, klasse: 0}
+      - {x: 2.18, y: 1.87, klasse: 0}
+      - {x: 2.22, y: 1.73, klasse: 0}
+      - {x: 2.23, y: 1.99, klasse: 0}
+      - {x: 1.69, y: 1.92, klasse: 0}
+      - {x: 6.06, y: 5.3, klasse: -1}
+      - {x: 4.92, y: 3.78, klasse: -1}
+      - {x: 6.22, y: 4.49, klasse: -1}
+      - {x: 6.26, y: 5.84, klasse: -1}
+      - {x: 4.19, y: 5.28, klasse: -1}
+      - {x: 7.35, y: 4.67, klasse: -1}
+      - {x: 5.11, y: 5.83, klasse: -1}
+      - {x: 6.28, y: 5.99, klasse: -1}
+      - {x: 5.62, y: 3.37, klasse: -1}
+      - {x: 5.88, y: 4.51, klasse: -1}
+      - {x: 6.85, y: 5.21, klasse: -1}
+      - {x: 4.21, y: 3.69, klasse: -1}
+      - {x: 6.97, y: 5.75, klasse: -1}
+      - {x: 5.3, y: 5.0, klasse: -1}
+      - {x: 6.49, y: 5.52, klasse: -1}
+      - {x: 6.96, y: 5.28, klasse: -1}
+      - {x: 5.9, y: 4.72, klasse: -1}
+      - {x: 7.16, y: 2.52, klasse: -1}
+  sporsmal: |
+    Figuren viser labelene DBSCAN ga et datasett. Visuelt ser det ut til å være to grupper: en tett nede til venstre og en mer spredt oppe til høyre. Hva er den beste forklaringen på resultatet?
+  alternativer:
+    - tekst: 'ε passer for den tette gruppen, men er for liten for den spredte. Fordi ε og `min_samples` gjelder for hele datasettet, blir ingen punkter i den spredte gruppen kjernepunkter'
+      riktig: true
+      forklaring: 'DBSCAN har én global tetthetsterskel og sliter når klyngene har ulik tetthet.'
+    - tekst: 'ε er for stor, så alt slås sammen til én klynge'
+      forklaring: 'Med for stor ε ville også den spredte gruppen blitt en klynge, kanskje slått sammen med den tette. Her er den merket som outliers.'
+    - tekst: 'DBSCAN fant to klynger, fordi den alltid finner like mange klynger som det er grupper i dataene'
+      forklaring: 'Figuren viser bare label 0 og −1, altså én klynge pluss outliers.'
+    - tekst: 'DBSCAN trenger antall klynger som input, og det ble satt til 1'
+      forklaring: 'DBSCAN tar ikke antall klynger som input. Den bruker ε og `min_samples`.'
+  forklaring: |
+    Et punkt er kjernepunkt hvis det har minst `min_samples` punkter (seg selv medregnet) innenfor avstand ε. I den spredte gruppen er avstandene større enn 0,35, så ingen punkter blir kjernepunkter, og alle får label −1. Øker vi ε nok til å fange den spredte gruppen, risikerer vi å slå sammen klynger andre steder. Dette er en kjent svakhet ved DBSCAN: ε og `min_samples` er globale.
+  husk: 'DBSCAN har én global tetthet (ε, min_samples) og sliter når klyngene har ulik tetthet.'
+
+- id: "6.3-08"
+  del: "6.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    Etter `dbscan.fit(X)` er
+
+    ```python
+    labels = dbscan.labels_      # array([0, 0, 1, -1, 1, 2, 2, -1, 0])
+    n_klynger = len(set(labels)) - (1 if -1 in labels else 0)
+    ```
+
+    Hva er `n_klynger`, og hva betyr den?
+  alternativer:
+    - tekst: '3, antall klynger DBSCAN fant, uten outliers'
+      riktig: true
+      forklaring: 'Labelene er {0, 1, 2, −1}. Label −1 er ikke en klynge og trekkes fra.'
+    - tekst: '4, antall ulike labels'
+      forklaring: 'Koden trekker fra én fordi −1 betyr outlier, ikke klynge.'
+    - tekst: '2, antall outliers'
+      forklaring: 'Antall outliers ville vært `(labels == -1).sum()`, som også er 2, men det er ikke det koden regner ut.'
+    - tekst: '9, antall punkter'
+      forklaring: '`set(labels)` fjerner duplikater, så lengden er antall ulike labels.'
+  forklaring: |
+    DBSCAN velger antall klynger selv. Klyngene får labels 0, 1, 2, …, og punkter som verken er kjernepunkter eller innenfor ε av et kjernepunkt, får −1. Outliers hentes ut med `dbscan.labels_ == -1`.
+  husk: 'DBSCAN: label −1 = outlier, ikke en klynge.'
+
+- id: "6.5-08"
+  del: "6.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [figur]
+  figur:
+    type: stolper
+    tittel: Andel forklart varians per prinsipalkomponent
+    xlabel: komponent
+    ylabel: andel av variansen
+    kategorier: [PC1, PC2, PC3, PC4, PC5, PC6]
+    verdier: [0.48, 0.27, 0.12, 0.06, 0.04, 0.03]
+  sporsmal: |
+    PCA på et datasett med seks features gir andelene forklart varians, $\lambda_i / \sum_j \lambda_j$, i figuren. Hvor mange komponenter må du minst beholde for å bevare minst 90 % av variansen?
+  alternativer:
+    - tekst: '4'
+      riktig: true
+      forklaring: 'Kumulativt: 0,48, 0,75, 0,87 og 0,93. Først med fire komponenter passerer vi 0,90.'
+    - tekst: '3'
+      forklaring: 'Tre komponenter gir $0{,}48 + 0{,}27 + 0{,}12 = 0{,}87$.'
+    - tekst: '2'
+      forklaring: 'To komponenter gir 0,75.'
+    - tekst: '6'
+      forklaring: 'Alle seks gir 100 %, men fire er nok for 90 %.'
+  forklaring: |
+    Egenverdien til en prinsipalkomponent er variansen langs den, og andelen forklart varians er egenverdien delt på summen av alle egenverdiene. Komponentene er sortert etter synkende egenverdi, så vi summerer fra PC1 til vi når ønsket andel. Husk at mye varians ikke er det samme som mye nyttig informasjon for en bestemt oppgave.
+  husk: 'Andel forklart varians = λᵢ/Σλⱼ. Summer kumulativt fra PC1.'
+
+- id: "6.5-09"
+  del: "6.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    `X_train` har form `(800, 20)` og `X_test` har form `(200, 20)`.
+
+    ```python
+    pca = PCA(n_components=3)
+    pca.fit(X_train)
+    X_pca = pca.transform(X_test)
+    ```
+
+    Hvilken form har `X_pca`?
+  alternativer:
+    - tekst: '`(200, 3)`'
+      riktig: true
+      forklaring: 'Hvert av de 200 testpunktene projiseres på de 3 prinsipalkomponentene.'
+    - tekst: '`(800, 3)`'
+      forklaring: 'Det er testdataene som transformeres, og de har 200 punkter.'
+    - tekst: '`(200, 20)`'
+      forklaring: 'Med `n_components=3` beholdes bare tre dimensjoner.'
+    - tekst: '`(3, 20)`'
+      forklaring: 'Det er formen på selve komponentene (tre retninger i det opprinnelige 20-dimensjonale rommet), ikke på de transformerte dataene.'
+  forklaring: |
+    PCA er parametrisk: PC-ene finnes med `fit` på treningsdataene og kan deretter brukes på nye data med `transform`. Hver prinsipalkomponent er en retning i det opprinnelige featurerommet, og hvert punkt får én koordinat per komponent.
+  husk: 'PCA: fit på trening, transform på test. Form ut: (antall punkter, n_components).'

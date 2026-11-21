@@ -262,7 +262,7 @@
   type: tall
   tags: [regning]
   sporsmal: |
-    Du har 2000 datapunkter. Først settes 15 % av side som testdata. Deretter settes 20 % av resten av til validering.
+    Du har 2000 datapunkter. Først settes 15 % av dataene til side som testdata. Deretter brukes 20 % av resten til validering.
   deler:
     - sporsmal: 'Hvor mange punkter blir treningsdata?'
       svar: 1360
@@ -713,3 +713,64 @@
     - tekst: 'Klassifiseringstre bruker Gini/entropi og flertallsklasse.'
       stikkord: ['gini', 'entropi', 'flertall', 'klasse']
   husk: 'Regresjonstre: varians som kriterium, snitt som prediksjon. Klassifiseringstre: Gini/entropi, flertallsklasse.'
+
+- id: "3.3-07"
+  del: "3.3"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Du har 1000 datapunkter og kjører
+
+    ```python
+    X_tv, X_test, y_tv, y_test = train_test_split(X, y, test_size=0.2)
+    X_train, X_val, y_train, y_val = train_test_split(X_tv, y_tv, test_size=0.25)
+    ```
+
+    Hvor mange punkter havner i trening, validering og test?
+  alternativer:
+    - tekst: '600, 200 og 200'
+      riktig: true
+      forklaring: '20 % av 1000 er 200 til test. 25 % av de 800 som er igjen, er 200 til validering.'
+    - tekst: '800, 200 og 200'
+      forklaring: 'Valideringsdataene tas fra de 800, så det blir ikke 800 igjen til trening.'
+    - tekst: '600, 150 og 250'
+      forklaring: '`test_size=0.25` i andre kall gjelder de 800 punktene, ikke hele datasettet.'
+    - tekst: '550, 250 og 200'
+      forklaring: '25 % av 800 er 200, ikke 250.'
+  forklaring: |
+    Andre splitt deler bare det som er igjen etter at testsettet er lagt til side. $0{,}25 \cdot 800 = 200$, så fordelingen blir 60/20/20. Testsettet røres ikke før den endelige evalueringen.
+  husk: 'test_size i andre splitt gjelder resten, ikke hele datasettet.'
+
+- id: "3.2-07"
+  del: "3.2"
+  niva: middels
+  type: flervalg
+  tags: [figur]
+  figur:
+    type: linje
+    tittel: Trenings- og valideringsfeil for polynomer av ulik grad
+    xlabel: polynomgrad
+    ylabel: MSE
+    x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    serier:
+      - navn: Treningsfeil
+        y: [9.1, 5.2, 2.1, 1.6, 1.3, 1.0, 0.8, 0.6, 0.45, 0.3]
+      - navn: Valideringsfeil
+        y: [9.5, 5.6, 2.6, 2.3, 2.5, 3.0, 3.8, 5.0, 6.9, 9.4]
+  sporsmal: |
+    Figuren viser trenings- og valideringsfeil for polynomisk regresjon med ulik grad. Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'Grad 4 er det beste valget ut fra figuren.'
+      riktig: true
+      forklaring: 'Valideringsfeilen er lavest der (2,3).'
+    - tekst: 'Grad 1 og 2 undertilpasser, fordi både trenings- og valideringsfeilen er høye.'
+      riktig: true
+      forklaring: 'Høy feil på begge er tegn på høy bias.'
+    - tekst: 'Grad 10 er best, fordi den har lavest treningsfeil.'
+      forklaring: 'Lav treningsfeil sammen med høy valideringsfeil er overtilpasning.'
+    - tekst: 'Testfeilen for grad 4 blir nøyaktig 2,3.'
+      forklaring: 'Valideringsfeilen ble brukt til å velge graden, så den er litt optimistisk. Testfeilen må måles på et eget testsett.'
+  forklaring: |
+    Treningsfeilen synker alltid når modellen blir mer fleksibel. Valideringsfeilen synker først (bias går ned) og stiger så (variansen går opp). Vi velger kompleksiteten der valideringsfeilen er lavest, og rapporterer til slutt feilen på testsettet.
+  husk: 'Velg kompleksitet etter laveste valideringsfeil. Begge høye: bias. Stort gap: varians.'

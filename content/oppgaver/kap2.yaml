@@ -695,3 +695,63 @@
     - tekst: 'Løvnoden predikerer flertallsklassen.'
       stikkord: ['flertall', 'majoritet', 'løvnode', 'løv']
   husk: 'Velg beste splitt, del, gjenta rekursivt, stopp ved ren node, ingen gevinst eller maks dybde.'
+
+- id: "2.4-07"
+  del: "2.4"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Et datasett har 950 negative og 50 positive punkter. En student skriver:
+
+    ```python
+    X_bal, y_bal = oversample(X, y)   # dupliserer positive punkter til 50/50
+    X_train, X_test, y_train, y_test = train_test_split(X_bal, y_bal, test_size=0.2)
+    model.fit(X_train, y_train)
+    print(recall_score(y_test, model.predict(X_test)))
+    ```
+
+    Recall på testsettet blir svært høy. Hva er hovedproblemet?
+  alternativer:
+    - tekst: 'Kopier av de samme positive punktene havner både i trening og test, og testsettet har ikke den virkelige klassefordelingen, så resultatet er for optimistisk'
+      riktig: true
+      forklaring: 'Modellen testes delvis på punkter den har sett, og på en kunstig balansert fordeling.'
+    - tekst: 'Recall kan ikke brukes på ubalanserte data'
+      forklaring: 'Recall er nettopp en nyttig metrikk på ubalanserte data. Problemet er hvordan testsettet ble laget.'
+    - tekst: 'Oversampling gir alltid undertilpasning'
+      forklaring: 'Oversampling kan heller gi overtilpasning, fordi de samme punktene gjentas.'
+    - tekst: 'Koden er riktig. Resampling skal gjøres før splitten, slik at begge delene blir balanserte'
+      forklaring: 'Resampling skal bare gjøres på treningsdataene, etter splitten.'
+  forklaring: |
+    Riktig rekkefølge er å splitte først, og så resample bare treningsdelen. Testsettet skal ligne dataene modellen møter i bruk, med den virkelige, ubalanserte fordelingen. Ellers lekker duplikater fra trening til test, og metrikkene blir for gode.
+  husk: 'Splitt først, resample bare treningsdataene. Testsettet beholder den virkelige fordelingen.'
+
+- id: "2.6-07"
+  del: "2.6"
+  niva: middels
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    Du trener et beslutningstre med
+
+    ```python
+    clf = tree.DecisionTreeClassifier(max_depth=4, criterion="gini")
+    clf.fit(X_train, y_train)
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: '`max_depth=4` begrenser hvor mange splitter treet kan gjøre etter hverandre, og motvirker overtilpasning.'
+      riktig: true
+      forklaring: 'Dybden er den viktigste måten å styre variansen til et tre på.'
+    - tekst: 'Med `criterion="entropy"` velges splitter etter informasjonsgevinst, og treet blir som regel nokså likt.'
+      riktig: true
+      forklaring: 'Gini og entropi gir i hovedsak de samme splittene.'
+    - tekst: '`max_depth` er en hyperparameter som bør velges med validering eller kryssvalidering.'
+      riktig: true
+      forklaring: 'Den læres ikke av `fit`, men settes før treningen.'
+    - tekst: 'Featurene må skaleres før `fit`, ellers velger treet feil splitter.'
+      forklaring: 'Et tre sammenligner én feature med en terskel om gangen, så skalering endrer ikke hvilke splitter som er best.'
+  forklaring: |
+    `criterion` bestemmer hvordan urenhet måles når treet velger splitt, og `max_depth` er en stoppregel. Begge er hyperparametre. Et tre uten dybdegrense vokser til løvnodene er rene, og overtilpasser lett.
+  husk: 'max_depth = hyperparameter mot overtilpasning. Gini ≈ entropi. Trær trenger ikke skalering.'

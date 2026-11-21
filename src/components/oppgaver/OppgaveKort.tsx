@@ -26,7 +26,7 @@ const TAG_NAVN: Record<string, string> = {
   "oving-3": "Øving 3",
   "prosjekt-4": "Prosjekt 4",
   kode: "Kode",
-  figur: "Figur",
+  figur: "Figur/tabell",
   case: "Case",
   regning: "Regning",
   sammenheng: "På tvers",

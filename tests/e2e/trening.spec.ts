@@ -59,13 +59,25 @@ test.describe("eksamenstrening", () => {
     await page.getByRole("button", { name: /^Start \d+ oppgaver$/ }).click();
     await expect(page.locator(".okt-prikk")).toHaveCount(5);
     const kort = page.locator("article.oppgave");
-    // Svar feil med vilje på en flervalgsoppgave hvis den første er det, ellers bare et forsøk
-    await page.goto("#/trening/okt?del=2.5");
-    await kort.locator(".alternativ-knapp").nth(0).click();
-    await kort.locator(".alternativ-knapp").nth(1).click();
+    // Svar garantert feil på den første regneoppgaven (1.1-03) ved å skrive inn et urimelig tall
+    await page.goto("#/trening/okt?modus=tag&tag=regning");
+    const felt = kort.locator(".tallinput input");
+    await expect(felt.first()).toBeVisible();
+    const n = await felt.count();
+    for (let k = 0; k < n; k++) await felt.nth(k).fill("999");
     await kort.getByRole("button", { name: "Sjekk svar" }).click();
     await page.goto("#/trening");
     await expect(page.getByRole("link", { name: /Repeter \d+ oppgaver/ })).toBeVisible();
+  });
+
+  test("kode- og figuroppgaver kan øves samlet", async ({ page }) => {
+    await page.goto("#/trening");
+    await page.getByRole("link", { name: /\d+ kodeoppgaver/ }).click();
+    await expect(page.getByRole("navigation", { name: "Brødsmulesti" })).toContainText("Kodeoppgaver");
+    await expect(page.locator("article.oppgave pre code").first()).toBeVisible();
+    await page.goto("#/trening/okt?modus=tag&tag=figur");
+    await expect(page.getByRole("navigation", { name: "Brødsmulesti" })).toContainText("Figurer og tabeller");
+    await expect(page.locator("article.oppgave .oppgavefigur, article.oppgave table").first()).toBeVisible();
   });
 
   test("tema-listen åpner delkapitler", async ({ page }) => {
