@@ -44,7 +44,9 @@ test.describe("eksamenssimulering", () => {
     await knapp.click();
     await expect(page.locator(".eksamen-topp")).toContainText("1 av 10 besvart");
     await expect(page.getByRole("button", { name: "Fjern svaret" })).toHaveCount(0);
-    await knapp.click();
+    // Valgte svar kan være deaktivert (enkeltvalg) eller bare ikke la seg fjerne (flervalg).
+    // force: true gjør at testen ikke venter på en knapp som med vilje er deaktivert.
+    await knapp.click({ force: true });
     await expect(page.locator(".eksamen-topp")).toContainText("1 av 10 besvart");
   });
 
