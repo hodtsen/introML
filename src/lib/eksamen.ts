@@ -71,18 +71,20 @@ export interface EksamenResultat {
 // Fordeling av 40 spørsmål over kapitlene, omtrent som på eksamen 2024 og 2025.
 export const KVOTER: Record<number, number> = { 1: 6, 2: 5, 3: 5, 4: 4, 5: 5, 6: 6, 7: 4, 8: 3, 9: 2 };
 
-// H25: ti temagrupper med fire spørsmål hver.
-export const H25_GRUPPER: { navn: string; deler: (d: string) => boolean }[] = [
-  { navn: "Data og logistisk regresjon", deler: (d) => d.startsWith("1.") },
-  { navn: "Bayes, ubalanse og beslutningstrær", deler: (d) => d.startsWith("2.") },
-  { navn: "Ensembler", deler: (d) => d.startsWith("4.") },
-  { navn: "Regresjon og validering", deler: (d) => d.startsWith("3.") },
-  { navn: "Nevrale nettverk", deler: (d) => d.startsWith("5.") },
-  { navn: "Klyngeanalyse", deler: (d) => ["6.1", "6.2", "6.3", "6.4"].includes(d) },
-  { navn: "Dimensjonsreduksjon og anomalier", deler: (d) => ["6.5", "6.6", "6.7"].includes(d) },
-  { navn: "Reinforcement learning", deler: (d) => d.startsWith("7.") },
-  { navn: "Forklarbar KI", deler: (d) => d.startsWith("8.") },
-  { navn: "AI Act, etikk og blandet", deler: (d) => d.startsWith("9.") },
+// H25: ti temagrupper med fire spørsmål hver. Del 10 på H25 var Python-kode, så siste
+// gruppe trekkes fra kodeoppgavene i hele pensum. AI Act og etikk (nytt etter H25) deler
+// gruppe med forklarbar KI.
+export const H25_GRUPPER: { navn: string; deler: (o: OppgaveMeta) => boolean }[] = [
+  { navn: "Data og logistisk regresjon", deler: (o) => o.del.startsWith("1.") },
+  { navn: "Bayes, ubalanse og beslutningstrær", deler: (o) => o.del.startsWith("2.") },
+  { navn: "Ensembler", deler: (o) => o.del.startsWith("4.") },
+  { navn: "Regresjon og validering", deler: (o) => o.del.startsWith("3.") },
+  { navn: "Nevrale nettverk", deler: (o) => o.del.startsWith("5.") },
+  { navn: "Klyngeanalyse", deler: (o) => ["6.1", "6.2", "6.3", "6.4"].includes(o.del) },
+  { navn: "Dimensjonsreduksjon og anomalier", deler: (o) => ["6.5", "6.6", "6.7"].includes(o.del) },
+  { navn: "Reinforcement learning", deler: (o) => o.del.startsWith("7.") },
+  { navn: "Forklarbar KI og AI Act", deler: (o) => o.del.startsWith("8.") || o.del.startsWith("9.") },
+  { navn: "Python og kode", deler: (o) => o.tags.includes("kode") },
 ];
 
 const SETT_SEED: Record<Exclude<SettValg, "tilfeldig">, number> = { A: 4172, B: 8231, C: 1912 };
@@ -148,18 +150,33 @@ export function lagEksamen(oppsett: EksamenOppsett, settOppgaver: Set<string>): 
   if (oppsett.modus === "H25") {
     const ut: EksamenSporsmal[] = [];
     const enkelt = pool.filter((o) => o.type === "enkeltvalg");
-    H25_GRUPPER.forEach((g, gi) => {
-      let valgt = trekk(enkelt.filter((o) => g.deler(o.del)), 4, r, settOppgaver, prior, brukt);
+    // Kodegruppen trekkes først, så de andre gruppene ikke bruker opp kodeoppgavene.
+    const valgtPerGruppe = new Map<number, OppgaveMeta[]>();
+    const rekkefolge = [H25_GRUPPER.length - 1, ...H25_GRUPPER.map((_, i) => i).slice(0, -1)];
+    for (const gi of rekkefolge) {
+      const g = H25_GRUPPER[gi];
+      let valgt = trekk(enkelt.filter((o) => g.deler(o)), 4, r, settOppgaver, prior, brukt);
       if (valgt.length < 4) valgt = [...valgt, ...trekk(enkelt, 4 - valgt.length, r, settOppgaver, prior, brukt)];
-      valgt.sort(sorter).forEach((o) => ut.push({ id: o.id, gruppe: gi }));
-    });
+      valgtPerGruppe.set(gi, valgt.sort(sorter));
+    }
+    H25_GRUPPER.forEach((_, gi) => valgtPerGruppe.get(gi)!.forEach((o) => ut.push({ id: o.id, gruppe: gi })));
     return ut;
   }
 
   const kvoter = skalerKvoter(oppsett.antall);
-  let valgt: OppgaveMeta[] = [];
+  // Omtrent hvert tiende spørsmål er en kodeoppgave, som i del 10 på H25. De teller med i
+  // kvoten til kapitlet sitt.
+  let valgt: OppgaveMeta[] = trekk(
+    pool.filter((o) => o.tags.includes("kode")),
+    Math.round(oppsett.antall / 10),
+    r,
+    settOppgaver,
+    prior,
+    brukt
+  );
   for (const [kap, n] of Object.entries(kvoter)) {
-    valgt.push(...trekk(pool.filter((o) => o.kap === Number(kap)), n, r, settOppgaver, prior, brukt));
+    const rest = Math.max(0, n - valgt.filter((o) => o.kap === Number(kap)).length);
+    valgt.push(...trekk(pool.filter((o) => o.kap === Number(kap)), rest, r, settOppgaver, prior, brukt));
   }
   if (valgt.length < oppsett.antall) valgt.push(...trekk(pool, oppsett.antall - valgt.length, r, settOppgaver, prior, brukt));
   valgt = valgt.slice(0, oppsett.antall).sort(sorter);

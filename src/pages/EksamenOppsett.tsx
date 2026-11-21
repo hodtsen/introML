@@ -95,14 +95,14 @@ export default function EksamenOppsettSide() {
               <span>
                 <strong>Kunngjøringen for 2026</strong>
                 Ett riktig svar: +1, feil gir −1/(k−1) slik at gjetting har forventning 0, blankt 0. Flere riktige: +1 per riktig kryss, −1 per feil kryss.
-                Blanding av enkeltvalg og flervalg.
+                Blanding av enkeltvalg og flervalg, og omtrent hvert tiende spørsmål handler om kode.
               </span>
             </label>
             <label className="radiokort">
               <input type="radio" name="modus" checked={o.modus === "H25"} onChange={() => endre({ modus: "H25" })} />
               <span>
                 <strong>Som eksamen 2025</strong>
-                Ti temagrupper med fire enkeltvalg. Riktig +2,5, feil −0,83, blankt 0. En gruppe kan ikke gi under 0. Maks 100 poeng.
+                Ti temagrupper med fire enkeltvalg, der siste gruppe er Python-kode som på H25. Riktig +2,5, feil −0,83, blankt 0. En gruppe kan ikke gi under 0. Maks 100 poeng.
               </span>
             </label>
           </fieldset>

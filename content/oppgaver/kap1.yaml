@@ -832,3 +832,169 @@
     - tekst: 'Kobling til likelihood (min cross-entropy = maks likelihood).'
       stikkord: ['likelihood']
   husk: 'Cross-entropy = forventet overraskelse når vi bruker modellens q på data fra p. Minst når q = p.'
+
+- id: "1.1-07"
+  del: "1.1"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    En student skalerer dataene slik:
+
+    ```python
+    scaler = MinMaxScaler()
+    X_train_s = scaler.fit_transform(X_train)
+    X_test_s = MinMaxScaler().fit_transform(X_test)
+    ```
+
+    Hva er problemet med koden?
+  alternativer:
+    - tekst: 'Testdataene skaleres med sin egen min og maks, så samme råverdi kan få ulik skalert verdi i trening og test'
+      riktig: true
+      forklaring: 'Testdataene skal transformeres med parametrene fra treningsdataene: `scaler.transform(X_test)`.'
+    - tekst: 'Det er ikke noe problem, fordi begge delene havner i intervallet $[0, 1]$'
+      forklaring: 'At begge havner i $[0, 1]$ er nettopp problemet: testdataene er skalert med feil referanse, og modellen ser en annen skala enn den ble trent på.'
+    - tekst: '`fit_transform` på treningsdataene lekker informasjon fra testdataene'
+      forklaring: 'Treningsdelen er riktig. Den bruker bare treningsdataene.'
+    - tekst: 'Min–maks-skalering kan bare brukes på kategoriske features'
+      forklaring: 'Min–maks-skalering er for numeriske features.'
+  forklaring: |
+    Skaleringen er en del av modellen. Den skal læres (`fit`) på treningsdataene og brukes (`transform`) uendret på alt annet. Med egen skalering av testdataene vil for eksempel en testverdi utenfor treningsintervallet ikke lenger havne utenfor $[0, 1]$, og avstander og vekter betyr noe annet enn under treningen.
+  husk: 'fit på trening, transform på test. Aldri fit på testdata.'
+
+- id: "1.4-07"
+  del: "1.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-1]
+  sporsmal: |
+    Treningsløkka for logistisk regresjon under gir et binær cross-entropy-tap som *øker* fra epoke til epoke.
+
+    ```python
+    for epoch in range(epochs):
+        y_pred = sigmoid(np.matmul(X, w) + b)
+        grad_w = np.matmul(X.T, y_pred - y) / len(y)
+        grad_b = np.mean(y_pred - y)
+        w += lr * grad_w
+        b += lr * grad_b
+    ```
+
+    Hva er feilen?
+  alternativer:
+    - tekst: 'Parametrene oppdateres i gradientens retning, så tapet øker. Det skal stå `w -= lr * grad_w` og `b -= lr * grad_b`'
+      riktig: true
+      forklaring: 'Gradienten peker dit tapet øker mest. Gradient descent går motsatt vei.'
+    - tekst: 'Gradientene skal ikke deles på antall datapunkter'
+      forklaring: 'Å dele på $N$ gir snittgradienten og endrer bare steglengden, ikke retningen.'
+    - tekst: 'Sigmoid skal ikke brukes under trening, bare ved prediksjon'
+      forklaring: 'Tapet og gradientene er regnet ut fra sigmoid-outputen, så den må med.'
+    - tekst: 'Biasen kan ikke oppdateres med gradient descent'
+      forklaring: 'Biasen er en parameter som alle andre og oppdateres med sin egen gradient.'
+  forklaring: |
+    Gradientene `grad_w` $= \frac{1}{N}X^T(\hat{\mathbf{y}} - \mathbf{y})$ og `grad_b` er riktige for binær cross-entropy. Oppdateringsregelen er $\theta_{t+1} = \theta_t - \eta\,\partial\mathcal{L}/\partial\theta$. Med pluss gjør koden gradient *ascent*, og tapet vokser.
+  husk: 'Gradient descent: minus gradienten. Pluss gir stigende tap.'
+
+- id: "1.6-07"
+  del: "1.6"
+  niva: middels
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    En modell for å oppdage sykdom gir sannsynligheter med `predict_proba`. Du endrer koden fra
+
+    ```python
+    y_hat = (prob[:, 1] > 0.5).astype(int)
+    ```
+
+    til
+
+    ```python
+    y_hat = (prob[:, 1] > 0.3).astype(int)
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'Recall blir høyere eller den samme.'
+      riktig: true
+      forklaring: 'Alle punkter som var positive ved 0,5, er fortsatt positive, og noen flere kommer til. TP kan bare øke.'
+    - tekst: 'FPR blir høyere eller den samme.'
+      riktig: true
+      forklaring: 'Flere negative punkter kan få score over 0,3, så FP kan bare øke.'
+    - tekst: 'ROC AUC for modellen endres.'
+      forklaring: 'AUC oppsummerer alle terskler og avhenger ikke av terskelen du velger.'
+    - tekst: 'Precision blir garantert høyere.'
+      forklaring: 'Precision synker som regel, fordi flere falske positive kommer med. Den kan i sjeldne tilfeller øke, men ingenting er garantert.'
+  forklaring: |
+    Lavere terskel betyr at flere punkter predikeres positive. Det flytter oss oppover og mot høyre på ROC-kurven: TPR (recall) og FPR øker eller står stille. Det er et fornuftig valg når en oversett syk pasient er dyrere enn en falsk alarm. Selve ROC-kurven og AUC er de samme, fordi de beskriver modellen over alle terskler.
+  husk: 'Lavere terskel: høyere (eller lik) recall og FPR, som regel lavere precision. AUC uendret.'
+
+- id: "1.6-08"
+  del: "1.6"
+  niva: middels
+  type: flervalg
+  tags: [figur]
+  figur:
+    type: linje
+    tittel: ROC-kurver for tre modeller på samme testsett
+    xlabel: FPR
+    ylabel: TPR
+    x: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+    ymin: 0
+    ymax: 1.05
+    serier:
+      - navn: Modell A
+        y: [0, 0.55, 0.74, 0.84, 0.9, 0.94, 0.96, 0.98, 0.99, 1, 1]
+      - navn: Modell B
+        y: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+      - navn: Modell C
+        y: [0, 0.28, 0.45, 0.58, 0.68, 0.76, 0.83, 0.89, 0.94, 0.98, 1]
+  sporsmal: |
+    Figuren viser ROC-kurvene til tre klassifikatorer. Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'Modell A har høyest AUC.'
+      riktig: true
+      forklaring: 'Kurven til A ligger over de andre for alle FPR, så arealet under den er størst.'
+    - tekst: 'Modell B rangerer ikke et tilfeldig positivt punkt over et tilfeldig negativt punkt oftere enn tilfeldig gjetting.'
+      riktig: true
+      forklaring: 'B følger diagonalen, så AUC er omtrent 0,5.'
+    - tekst: 'Ved FPR = 0,2 gir modell C høyere TPR enn modell A.'
+      forklaring: 'Ved FPR = 0,2 har A TPR ≈ 0,74 og C TPR ≈ 0,45.'
+    - tekst: 'Figuren viser at modell A har høyest accuracy med terskel 0,5.'
+      forklaring: 'ROC-kurven viser ikke hvilken terskel som gir hvilket punkt, og accuracy avhenger også av klassebalansen.'
+  forklaring: |
+    Jo nærmere kurven ligger hjørnet $(0, 1)$, jo bedre skiller modellen klassene over alle terskler. AUC er sannsynligheten for at et tilfeldig positivt punkt får høyere score enn et tilfeldig negativt. Diagonalen tilsvarer myntkast (AUC = 0,5). En ROC-kurve sier ingenting direkte om accuracy ved en bestemt terskel.
+  husk: 'Kurve nær (0, 1) = god modell. Diagonal = AUC 0,5. ROC sier ikke noe om accuracy ved én terskel.'
+
+- id: "1.4-08"
+  del: "1.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [figur]
+  figur:
+    type: linje
+    tittel: Treningstap for tre læringsrater
+    xlabel: epoke
+    ylabel: tap
+    x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    serier:
+      - navn: Kjøring 1
+        y: [0.69, 0.68, 0.675, 0.67, 0.664, 0.659, 0.654, 0.649, 0.644, 0.64, 0.635, 0.631]
+      - navn: Kjøring 2
+        y: [0.69, 1.35, 0.88, 1.52, 0.97, 1.41, 1.1, 1.63, 0.92, 1.48, 1.2, 1.57]
+      - navn: Kjøring 3
+        y: [0.69, 0.52, 0.42, 0.35, 0.31, 0.28, 0.26, 0.25, 0.24, 0.235, 0.232, 0.23]
+  sporsmal: |
+    Samme logistiske regresjonsmodell trenes tre ganger med læringsratene 0,001, 0,1 og 5 (i tilfeldig rekkefølge). Figuren viser treningstapet. Hvilken kobling er mest sannsynlig?
+  alternativer:
+    - tekst: 'Kjøring 1: 0,001. Kjøring 2: 5. Kjøring 3: 0,1.'
+      riktig: true
+      forklaring: 'Kjøring 1 synker svært sakte (for små steg), kjøring 2 hopper (stegene skyter over), kjøring 3 synker raskt og flater ut.'
+    - tekst: 'Kjøring 1: 5. Kjøring 2: 0,1. Kjøring 3: 0,001.'
+      forklaring: 'For høy læringsrate gir ikke et jevnt, sakte fall, men hopping.'
+    - tekst: 'Kjøring 1: 0,1. Kjøring 2: 0,001. Kjøring 3: 5.'
+      forklaring: 'Med 0,001 blir stegene små, så tapet kan ikke hoppe slik kjøring 2 gjør.'
+    - tekst: 'Det kan ikke avgjøres, fordi tapet bare avhenger av antall epoker.'
+      forklaring: 'Læringsraten bestemmer steglengden og påvirker tapskurven tydelig.'
+  forklaring: |
+    Læringsraten styrer hvor langt vi går i hvert steg. For liten: stabil, men treg nedgang. For stor: stegene skyter over minimum, og tapet oscillerer eller øker. Passe: rask nedgang som flater ut nær minimum. Læringsraten er en hyperparameter som velges med validering.
+  husk: 'Hopper tapet: for høy læringsrate. Synker det knapt: for lav.'

@@ -119,6 +119,20 @@ describe("eksamenssett fra oppgavebanken", () => {
     for (let g = 0; g < H25_GRUPPER.length; g++) expect(sp.filter((s) => s.gruppe === g)).toHaveLength(4);
     expect(new Set(sp.map((s) => s.id)).size).toBe(40);
   });
+  it("har en egen kodegruppe i H25-modus", () => {
+    const pool = eksamensPool();
+    const sp = lagEksamen({ ...STANDARD_OPPSETT, modus: "H25", sett: "C" }, new Set());
+    const sisteGruppe = sp.filter((s) => s.gruppe === H25_GRUPPER.length - 1);
+    for (const s of sisteGruppe) expect(pool.find((o) => o.id === s.id)?.tags).toContain("kode");
+  });
+  it("tar med omtrent hvert tiende spørsmål om kode i 2026-modus", () => {
+    const pool = eksamensPool();
+    for (const sett of ["A", "B", "C"] as const) {
+      const sp = lagEksamen({ ...STANDARD_OPPSETT, sett }, new Set());
+      const kode = sp.filter((s) => pool.find((o) => o.id === s.id)?.tags.includes("kode"));
+      expect(kode.length).toBeGreaterThanOrEqual(4);
+    }
+  });
   it("skalerer antall spørsmål", () => {
     expect(lagEksamen({ ...STANDARD_OPPSETT, antall: 10 }, new Set())).toHaveLength(10);
     expect(lagEksamen({ ...STANDARD_OPPSETT, antall: 20 }, new Set())).toHaveLength(20);

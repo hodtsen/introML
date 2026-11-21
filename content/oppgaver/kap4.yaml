@@ -700,3 +700,68 @@
     - tekst: 'Kobler til varians (bagging) og bias (boosting).'
       stikkord: ['varians', 'bias']
   husk: 'Bagging: parallelt + snitt. Boosting: sekvensielt + vektet sum. Stacking: metamodell.'
+
+- id: "4.5-07"
+  del: "4.5"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Koden under implementerer gradient boosting for regresjon med MSE-tap.
+
+    ```python
+    F = np.full(len(y), y.mean())          # startmodell
+    trees = []
+    for t in range(T):
+        r = y - F
+        tree = DecisionTreeRegressor(max_depth=2).fit(X, r)
+        F = F + eta * tree.predict(X)
+        trees.append(tree)
+    ```
+
+    Hvilken påstand om koden stemmer?
+  alternativer:
+    - tekst: '`r` er residualene, som er minus gradienten av $\tfrac12(y - F)^2$ med hensyn på $F$, så hvert tre tar et lite steg i retning av lavere tap'
+      riktig: true
+      forklaring: 'Derfor står det pluss: treet er trent på minus gradienten.'
+    - tekst: 'Hvert tre trenes på de opprinnelige targetene `y`, og `F` blir snittet av trærne'
+      forklaring: 'Det ville vært bagging. Her trenes trærne på det ensemblet ennå ikke forklarer.'
+    - tekst: 'Trærne kan trenes parallelt, fordi `r` er den samme i alle runder'
+      forklaring: '`r` endres etter hvert tre, så trærne må trenes etter hverandre.'
+    - tekst: 'Fortegnet er feil, det skal stå `F = F - eta * tree.predict(X)`'
+      forklaring: 'Minus brukes når treet trenes på gradienten (prediksjon minus target), slik notatene skriver det. Her er treet trent på residualen, som har motsatt fortegn.'
+  forklaring: |
+    Med MSE-tap er residualen $y - F_{t-1}(\mathbf{x})$ lik minus gradienten av tapet med hensyn på prediksjonen. Hvert tre tilnærmer denne, og ensemblet oppdateres med $F_t = F_{t-1} + \eta\,h_t$. Notatenes versjon, `new_ensemble = previous_ensemble - learning_rate * new_tree`, er den samme oppdateringen med et tre trent på gradienten i stedet for residualen. Læringsraten `eta` gjør stegene små, og grunne trær gjør hver modell svak.
+  husk: 'Gradient boosting: tren på residual (= minus gradient), legg til η·tre. Sekvensielt.'
+
+- id: "4.5-08"
+  del: "4.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [figur]
+  figur:
+    type: linje
+    tittel: Gradient boosting med læringsrate 0,1
+    xlabel: antall trær
+    ylabel: MSE
+    x: [10, 50, 100, 150, 200, 300, 400, 600, 800, 1000]
+    serier:
+      - navn: Treningsfeil
+        y: [7.6, 3.4, 2.0, 1.5, 1.2, 0.85, 0.62, 0.36, 0.21, 0.12]
+      - navn: Valideringsfeil
+        y: [8.0, 4.1, 2.9, 2.5, 2.4, 2.45, 2.6, 2.9, 3.2, 3.5]
+  sporsmal: |
+    Figuren viser trenings- og valideringsfeil for gradient boosting som funksjon av antall trær. Hva bør du gjøre?
+  alternativer:
+    - tekst: 'Velge rundt 200 trær, der valideringsfeilen er lavest, fordi flere trær etter hvert overtilpasser'
+      riktig: true
+      forklaring: 'Etter omtrent 200 trær fortsetter treningsfeilen å synke, mens valideringsfeilen stiger.'
+    - tekst: 'Velge 1000 trær, fordi treningsfeilen er lavest der'
+      forklaring: 'Treningsfeilen sier ikke hvor godt modellen generaliserer.'
+    - tekst: 'Velge 10 trær, fordi boosting bare reduserer varians'
+      forklaring: 'Boosting reduserer først og fremst bias. Med 10 trær er begge feilene høye (undertilpasning).'
+    - tekst: 'Bytte til bagging, fordi gradient boosting aldri kan overtilpasse'
+      forklaring: 'Figuren viser nettopp at gradient boosting kan overtilpasse når den får for mange trær.'
+  forklaring: |
+    I gradient boosting retter hvert nytt tre opp det ensemblet ennå ikke forklarer. Til slutt begynner trærne å tilpasse seg støyen i treningsdataene. Antall trær (sammen med læringsraten) er derfor en hyperparameter som velges med valideringsdata, på samme måte som early stopping for nevrale nett.
+  husk: 'Antall trær i boosting velges med validering. For mange trær = overtilpasning.'

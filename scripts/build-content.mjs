@@ -335,7 +335,7 @@ for (const fil of oppgFiler) {
       kap,
       niva: o.niva,
       type: o.type,
-      tags: o.tags ?? [],
+      tags: [...new Set([...(o.tags ?? []), ...(o.figur || /\|---/.test(String(o.sporsmal)) ? ["figur"] : []), ...(/```/.test(String(o.sporsmal)) ? ["kode"] : [])])],
       sporsmalHtml: renderMarkdown(o.sporsmal, hvor),
       kort: tilRentekst(String(o.sporsmal ?? "")).slice(0, 170),
       huskHtml: renderMarkdown(o.husk, hvor, { inline: true }),

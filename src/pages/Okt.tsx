@@ -22,6 +22,15 @@ function velgOppgaver(p: URLSearchParams): { ider: string[]; tittel: string; til
     const ider = feiledeOppgaver(t);
     return { ider: stokk(ider), tittel: "Repeter feilede oppgaver", tilbake: { til: "/trening", tekst: "Eksamenstrening" } };
   }
+  if (modus === "tag") {
+    const tag = p.get("tag") ?? "";
+    const titler: Record<string, string> = { kode: "Kodeoppgaver", figur: "Figurer og tabeller" };
+    return {
+      ider: OPPGAVER.filter((o) => o.tags.includes(tag)).sort(sorterTema).map((o) => o.id),
+      tittel: titler[tag] ?? `Oppgaver merket «${tag}»`,
+      tilbake: { til: "/trening", tekst: "Eksamenstrening" },
+    };
+  }
   if (modus === "blandet") {
     const kaps = (kap ?? "").split(",").map(Number).filter(Boolean);
     const nivaer = (p.get("niva") ?? "").split(",");

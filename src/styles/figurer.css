@@ -115,6 +115,9 @@
   background: currentColor;
   display: inline-block;
 }
+.pf-merke.firkant {
+  border-radius: 2px;
+}
 .pf-merke.strek {
   width: 18px;
   height: 3px;

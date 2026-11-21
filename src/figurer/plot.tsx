@@ -162,12 +162,12 @@ export function Glider({
   );
 }
 
-export function Forklaring({ elementer }: { elementer: { navn: ReactNode; klasse: string; strek?: boolean }[] }) {
+export function Forklaring({ elementer }: { elementer: { navn: ReactNode; klasse: string; strek?: boolean; form?: "firkant" }[] }) {
   return (
     <ul className="plot-forklaring">
       {elementer.map((e, i) => (
         <li key={i}>
-          <span className={`pf-merke ${e.klasse} ${e.strek ? "strek" : ""}`} aria-hidden="true" />
+          <span className={`pf-merke ${e.klasse} ${e.strek ? "strek" : ""} ${e.form ?? ""}`} aria-hidden="true" />
           {e.navn}
         </li>
       ))}

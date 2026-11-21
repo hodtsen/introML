@@ -710,3 +710,109 @@
     - tekst: 'Rapporterer evaluate på urørt testsett.'
       stikkord: ['evaluate', 'test']
   husk: 'Velg epoke på validering (early stopping), rapporter evaluate på test.'
+
+- id: "5.1-07"
+  del: "5.1"
+  niva: middels
+  type: flervalg
+  tags: [figur]
+  figur:
+    type: punkter
+    tittel: To klasser i planet
+    xlabel: x1
+    ylabel: x2
+    klassenavn: {"0": "Klasse 0", "1": "Klasse 1"}
+    punkter:
+      - {x: 1.1, y: 1.2, klasse: 0}
+      - {x: 1.4, y: 0.8, klasse: 0}
+      - {x: 0.8, y: 1.5, klasse: 0}
+      - {x: 1.6, y: 1.4, klasse: 0}
+      - {x: -1.2, y: -1.0, klasse: 0}
+      - {x: -0.8, y: -1.4, klasse: 0}
+      - {x: -1.5, y: -0.7, klasse: 0}
+      - {x: -1.1, y: -1.6, klasse: 0}
+      - {x: -1.2, y: 1.1, klasse: 1}
+      - {x: -0.7, y: 1.5, klasse: 1}
+      - {x: -1.6, y: 0.9, klasse: 1}
+      - {x: -1.0, y: 1.6, klasse: 1}
+      - {x: 1.3, y: -1.1, klasse: 1}
+      - {x: 0.9, y: -1.5, klasse: 1}
+      - {x: 1.5, y: -0.8, klasse: 1}
+      - {x: 1.1, y: -1.4, klasse: 1}
+  sporsmal: |
+    Figuren viser et datasett med to klasser. Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'Et enkelt perceptron på $(x_1, x_2)$ kan ikke klassifisere alle punktene riktig.'
+      riktig: true
+      forklaring: 'Dataene har et XOR-mønster og er ikke lineært separerbare, og perceptronet lager en rett linje.'
+    - tekst: 'Et nevralt nett med ett skjult lag med ikke-lineær aktivering kan skille klassene.'
+      riktig: true
+      forklaring: 'De skjulte nodene kan lære nye representasjoner der klassene blir lineært separerbare.'
+    - tekst: 'Med featuren $x_1 x_2$ kan klassene skilles med en lineær modell.'
+      riktig: true
+      forklaring: 'Klasse 0 har $x_1 x_2 > 0$ og klasse 1 har $x_1 x_2 < 0$.'
+    - tekst: 'Perceptronet klarer det hvis det bare trenes i mange nok epoker.'
+      forklaring: 'Perceptronregelen konvergerer bare når dataene er lineært separerbare. Flere epoker hjelper ikke.'
+  forklaring: |
+    Klassen avhenger av om $x_1$ og $x_2$ har samme fortegn, som i XOR. Ingen rett linje skiller klassene. Vi kan løse det med feature engineering ($x_1 x_2$) eller med et flerlags nett med ikke-lineære aktiveringer, som lærer slike features selv.
+  husk: 'XOR er ikke lineært separerbart: krever ny feature eller skjult lag med ikke-lineær aktivering.'
+
+- id: "5.3-07"
+  del: "5.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    model = keras.Sequential()
+    model.add(keras.Input(shape=(10,)))
+    model.add(Dense(32, activation="relu"))
+    out = model(x)          # x har form (64, 10)
+    ```
+
+    Hvor mange parametre har laget, og hvilken form har `out`?
+  alternativer:
+    - tekst: '352 parametre, og `out` har form `(64, 32)`'
+      riktig: true
+      forklaring: '$10 \cdot 32 + 32 = 352$. Hvert av de 64 datapunktene får 32 verdier ut.'
+    - tekst: '320 parametre, og `out` har form `(64, 32)`'
+      forklaring: 'Biasene er med: én per node, altså 32 til.'
+    - tekst: '352 parametre, og `out` har form `(32, 64)`'
+      forklaring: 'Batch-dimensjonen kommer først: (datapunkter, noder).'
+    - tekst: '2368 parametre, og `out` har form `(64, 10)`'
+      forklaring: '$64 \cdot 32 + 320$ blander inn batchstørrelsen, som ikke påvirker antall parametre. Output har like mange kolonner som noder i laget.'
+  forklaring: |
+    Et Dense-lag fra $n$ til $m$ noder har $n \cdot m$ vekter og $m$ bias. Batchstørrelsen påvirker ikke antall parametre. På matriseform er $(B \times n)\cdot(n \times m) + m \to (B \times m)$, her $(64 \times 10)\cdot(10 \times 32) + 32 \to (64 \times 32)$.
+  husk: 'Dense: n·m + m parametre. Output (B, m). Batch påvirker ikke antall parametre.'
+
+- id: "5.6-07"
+  del: "5.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    Et nett skal klassifisere bilder i 10 klasser med labels gitt som heltall 0–9:
+
+    ```python
+    model = keras.Sequential([
+        keras.Input(shape=(784,)),
+        layers.Dense(128, activation="relu"),
+        layers.Dense(10, activation="relu"),
+    ])
+    model.compile(optimizer="sgd", loss="sparse_categorical_crossentropy")
+    ```
+
+    Hva bør endres?
+  alternativer:
+    - tekst: 'Output-laget bør ha `activation="softmax"`, slik at de ti verdiene blir en sannsynlighetsfordeling'
+      riktig: true
+      forklaring: 'Cross-entropy forutsetter sannsynligheter. ReLU gir verdier som ikke summerer til 1 og kan være 0.'
+    - tekst: 'Tapet bør være `"mse"`, fordi labelene er tall'
+      forklaring: 'Labelene er klasser, ikke mengder. Klassifisering bruker cross-entropy.'
+    - tekst: 'Det skjulte laget bør ha softmax i stedet for ReLU'
+      forklaring: 'Softmax hører hjemme i output-laget. Skjulte lag bruker typisk ReLU eller sigmoid.'
+    - tekst: 'Output-laget bør ha 1 node, siden labelen er ett tall'
+      forklaring: 'Med 10 klasser trenger vi én output-node per klasse.'
+  forklaring: |
+    Antall noder i output-laget og aktiveringen der bestemmes av oppgaven. Flerklasseklassifisering: én node per klasse og softmax. Binær klassifisering: én node og sigmoid. Regresjon: lineær output. `sparse_categorical_crossentropy` er cross-entropy for heltallslabels.
+  husk: 'Flere klasser: softmax + (sparse) categorical cross-entropy. Regresjon: lineær output + MSE.'

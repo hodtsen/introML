@@ -807,3 +807,85 @@
     - tekst: 'Minst én relevant begrensning per metode.'
       stikkord: ['dyr', 'ustabil', 'bakgrunn', 'uavhengig', 'nabolag', 'eksempler']
   husk: 'SHAP: lokal/agnostisk/features. LIME: lokal/agnostisk/surrogat. TCAV: global/spesifikk/konsepter.'
+
+- id: "8.4-07"
+  del: "8.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    ```python
+    explainer = shap.TreeExplainer(regressor, data=X_train)
+    shap_values = explainer.shap_values(X_test)
+    total = explainer.expected_value + shap_values[i, :].sum()
+    ```
+
+    Hva er `total`, (tilnærmet) uansett hvilket punkt `i` du velger?
+  alternativer:
+    - tekst: 'Modellens prediksjon for testpunkt `i`'
+      riktig: true
+      forklaring: 'Basisverdien pluss alle SHAP-verdiene gir prediksjonen. Det følger av effektivitetsaksiomet.'
+    - tekst: 'Den sanne targetverdien for testpunkt `i`'
+      forklaring: 'SHAP forklarer modellens prediksjon, ikke fasiten.'
+    - tekst: 'Snittprediksjonen over bakgrunnsdataene'
+      forklaring: 'Det er `expected_value` alene, $\phi_0$.'
+    - tekst: 'Den globale viktigheten til den viktigste featuren'
+      forklaring: 'Global viktighet er snittet av absoluttverdier over mange punkter.'
+  forklaring: |
+    SHAP fordeler forskjellen mellom prediksjonen og basisverdien på featurene: $f(\mathbf{x}^*) = \phi_0 + \sum_j \phi_j^*$, med $\phi_0 = \mathbb{E}[f(\mathbf{x})]$ over bakgrunnsdataene. Det er dette force-plottet viser for ett punkt.
+  husk: 'expected_value + sum(SHAP-verdier) = prediksjonen for punktet.'
+
+- id: "8.4-08"
+  del: "8.4"
+  niva: middels
+  type: flervalg
+  tags: [figur]
+  figur:
+    type: stolper
+    tittel: Gjennomsnittlig |SHAP-verdi| over testsettet (tusen kroner)
+    xlabel: feature
+    ylabel: snitt av |SHAP|
+    kategorier: [areal, avstand, alder, bad, etasje]
+    verdier: [410, 260, 120, 60, 30]
+  sporsmal: |
+    En modell predikerer boligpriser. Figuren viser global viktighet, $I_j = \frac{1}{n}\sum_i |\phi_j^{(i)}|$, for hver feature. Hvilke påstander kan du trekke ut fra figuren?
+  alternativer:
+    - tekst: 'Areal er i snitt featuren som flytter prediksjonene mest bort fra basisverdien.'
+      riktig: true
+      forklaring: 'Areal har størst gjennomsnittlig absolutt SHAP-verdi.'
+    - tekst: 'Figuren sier ikke om høyt areal øker eller senker prisen.'
+      riktig: true
+      forklaring: 'Absoluttverdien fjerner retningen. Et beeswarm-plott viser også fortegn og featureverdi.'
+    - tekst: 'Høy alder senker alltid prisen.'
+      forklaring: 'Figuren viser ikke retning, og SHAP-verdier for samme feature kan ha ulikt fortegn i ulike punkter.'
+    - tekst: 'Summen av stolpene er modellens prediksjon for en typisk bolig.'
+      forklaring: 'Det er basisverdien pluss SHAP-verdiene (med fortegn) for ett punkt som gir prediksjonen.'
+  forklaring: |
+    Ved å samle SHAP-verdiene for mange punkter går vi fra lokale til globale forklaringer. Snittet av absoluttverdiene viser hvor mye hver feature betyr totalt, men ikke i hvilken retning. Beeswarm-plottet viser både fortegnet og hvordan featureverdien henger sammen med bidraget.
+  husk: 'Snitt av |SHAP| = global viktighet uten retning. Beeswarm viser retning.'
+
+- id: "8.5-07"
+  del: "8.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    ```python
+    explainer = LimeTabularExplainer(X_train, feature_names=features, mode="classification")
+    exp = explainer.explain_instance(x, classifier.predict_proba, num_features=3)
+    ```
+
+    Hvilken rolle har `num_features=3` i LIME-formuleringen $\xi(\mathbf{x}) = \arg\min_{g \in G}\mathcal{L}(f, g, \pi_{\mathbf{x}}) + \Omega(g)$?
+  alternativer:
+    - tekst: 'Den begrenser kompleksiteten til surrogaten $g$, slik at forklaringen bare bruker tre features. Det tilsvarer $\Omega(g)$'
+      riktig: true
+      forklaring: 'En enkel surrogat er lettere å forstå, på bekostning av hvor godt den etterligner modellen lokalt.'
+    - tekst: 'Den bestemmer hvor mange nabopunkter som trekkes rundt $\mathbf{x}$'
+      forklaring: 'Antall naboer er en annen innstilling. `num_features` gjelder forklaringen.'
+    - tekst: 'Den fjerner alle andre features fra den komplekse modellen $f$'
+      forklaring: 'Den komplekse modellen endres ikke. LIME er post-hoc.'
+    - tekst: 'Den er vektingen $\pi_{\mathbf{x}}$ av naboene etter avstand'
+      forklaring: '$\pi_{\mathbf{x}}$ vekter naboene etter nærhet til punktet som forklares.'
+  forklaring: |
+    LIME trekker nye punkter rundt $\mathbf{x}$, lar den komplekse modellen $f$ predikere dem, vekter dem etter nærhet ($\pi_{\mathbf{x}}$) og tilpasser en enkel lineær modell $g$. $\mathcal{L}$ måler hvor godt $g$ etterligner $f$ lokalt, og $\Omega(g)$ holder $g$ enkel. Å begrense antall features er en konkret måte å holde $\Omega(g)$ lav på.
+  husk: 'LIME: L = troskap mot f lokalt, Ω(g) = enkelhet (f.eks. num_features), π_x = nærhetsvekt.'

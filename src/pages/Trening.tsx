@@ -171,6 +171,19 @@ export default function Trening() {
             </div>
           </section>
 
+          <section className="panel" aria-labelledby="kode-tittel">
+            <h2 id="kode-tittel">Kode og figurer</h2>
+            <p className="dempet">Eksamen har hatt egne spørsmål om Python-kode (H25) og om å lese plott (H24). Øv på dem samlet.</p>
+            <div className="knapperad">
+              <Link to="/trening/okt?modus=tag&tag=kode" className="knapp knapp-sekundaer">
+                {OPPGAVER.filter((o) => o.tags.includes("kode")).length} kodeoppgaver
+              </Link>
+              <Link to="/trening/okt?modus=tag&tag=figur" className="knapp knapp-sekundaer">
+                {OPPGAVER.filter((o) => o.tags.includes("figur")).length} figurer og tabeller
+              </Link>
+            </div>
+          </section>
+
           <section className="panel" aria-labelledby="repeter-tittel">
             <h2 id="repeter-tittel">Repeter feil</h2>
             {feilede.length > 0 ? (
