@@ -11,14 +11,14 @@
   sporsmal: |
     I Mitchells definisjon lærer et program av erfaring $E$ med hensyn til en oppgave $T$ og et ytelsesmål $P$. Du trener en modell som skal forutsi om en kunde sier opp abonnementet. Hva er $E$?
   alternativer:
-    - tekst: 'Historiske kundedata med kjent utfall (sa opp eller ikke)'
+    - tekst: 'Historiske kundedata med kjent utfall'
       riktig: true
       forklaring: 'Erfaringen er dataene modellen lærer av.'
-    - tekst: 'Å forutsi om en ny kunde sier opp'
+    - tekst: 'Prediksjonen av om en ny kunde sier opp'
       forklaring: 'Dette er oppgaven $T$, det vi vil estimere.'
     - tekst: 'Andelen riktige prediksjoner på testdata'
       forklaring: 'Dette er ytelsesmålet $P$.'
-    - tekst: 'Antall epoker modellen trenes'
+    - tekst: 'Antall epoker modellen trenes på dataene'
       forklaring: 'Antall epoker er en hyperparameter for treningen, ikke en del av definisjonen.'
   forklaring: |
     Mitchell (1997): programmet lærer hvis ytelsen på $T$, målt med $P$, blir bedre med erfaring $E$. I maskinlæring er $E$ dataene, $T$ det vi vil estimere og $P$ tapsfunksjonen og metrikkene.
@@ -31,7 +31,7 @@
   sporsmal: |
     Et datasett om passasjerer har kolonnene `PassengerId`, `Pclass` (1, 2 eller 3), `Age`, `Sex`, `Fare` og `Survived`. Du skal forutsi `Survived`. Hvilke påstander stemmer?
   alternativer:
-    - tekst: '`Pclass` er en kategorisk feature selv om den er lagret som tall.'
+    - tekst: '`Pclass` er en kategorisk feature.'
       riktig: true
       forklaring: 'Klassene 1, 2 og 3 er kategorier. At de er lagret som heltall, gjør dem ikke kvantitative.'
     - tekst: '`PassengerId` bør ikke brukes som feature.'
@@ -39,8 +39,8 @@
       forklaring: 'ID-en er et løpenummer uten sammenheng med utfallet. Modellen kan bare lære støy av den.'
     - tekst: '`Survived` bør skaleres til intervallet [0, 1] sammen med de andre kolonnene.'
       forklaring: 'Target skal ikke normaliseres, og `Survived` er allerede 0 eller 1.'
-    - tekst: '`Age` og `Fare` er kvalitative features.'
-      forklaring: 'Alder og billettpris kan måles og regnes med. De er kvantitative.'
+    - tekst: '`Age` og `Fare` er kvalitative features fordi de er lagret som desimaltall.'
+      forklaring: 'Lagringsformat avgjør ikke typen. Alder og billettpris kan måles og regnes med, så de er kvantitative.'
   forklaring: |
     Ikke alle tallkolonner er kvantitative, og ikke alle kolonner er nyttige features. Target er det vi vil estimere og skal verken brukes som input eller normaliseres.
   husk: 'Spør om tallene har en meningsfull størrelse og rekkefølge. Hvis ikke, er det en kategori eller en ID.'
@@ -84,14 +84,14 @@
   sporsmal: |
     Hvilken antakelse gjør en lineær modell $f(\mathbf{x}) = \sum_i w_i x_i + b$ om sammenhengen den modellerer?
   alternativer:
-    - tekst: 'At hver feature bidrar additivt og uavhengig av verdien til de andre featurene'
+    - tekst: 'At featurenes bidrag er additive'
       riktig: true
       forklaring: 'Bidraget $w_i x_i$ avhenger bare av $x_i$. Modellen kan ikke uttrykke vekselvirkninger uten at vi lager dem som egne features.'
     - tekst: 'At featurene er statistisk uavhengige av hverandre'
       forklaring: 'Det er naiv Bayes som antar betinget uavhengighet. En lineær modell kan godt trenes på korrelerte features.'
-    - tekst: 'At alle features har samme skala'
+    - tekst: 'At alle features har samme skala, så vektene kan sammenlignes'
       forklaring: 'Skala påvirker trening og tolkning av vektene, men er ingen antakelse modellen gjør om sammenhengen.'
-    - tekst: 'At dataene er perfekt lineært separerbare'
+    - tekst: 'At klassene er lineært separerbare i feature-rommet'
       forklaring: 'Logistisk regresjon kan trenes også når klassene overlapper. Den finner bare den beste lineære grensen.'
   forklaring: |
     Dette er modellens induktive bias: antakelsene den gjør for å kunne generalisere. For en lineær modell er det at effektene er additive, altså ingen vekselvirkninger mellom features.
@@ -126,15 +126,15 @@
   sporsmal: |
     Hva er outputen fra en logistisk regresjonsmodell $y_{\text{pred}} = \sigma(\mathbf{w}\mathbf{x} + b)$?
   alternativer:
-    - tekst: 'Et tall i $(0, 1)$ som tolkes som modellens estimerte sannsynlighet for klasse 1'
+    - tekst: 'En sannsynlighet for klasse 1, mellom 0 og 1'
       riktig: true
-      forklaring: 'Sigmoid presser alle reelle tall inn i $(0, 1)$.'
-    - tekst: 'Alltid nøyaktig 0 eller 1'
-      forklaring: 'Det er outputen fra et perceptron med Heaviside. Logistisk regresjon gir klasse først når vi velger en terskel.'
-    - tekst: 'Et vilkårlig reelt tall som tolkes som en regresjonsverdi'
-      forklaring: 'Det er $z = \mathbf{w}\mathbf{x} + b$ før sigmoid. Logistisk regresjon er en klassifiseringsmetode.'
-    - tekst: 'Den sanne sannsynligheten $p(y = 1 \mid \mathbf{x})$'
-      forklaring: 'Outputen er et estimat. Det kan være dårlig kalibrert.'
+      forklaring: 'Sigmoid presser alle reelle tall inn i $(0, 1)$, og outputen tolkes som modellens estimat av $p(y = 1 \mid \mathbf{x})$.'
+    - tekst: 'En klasse, 0 eller 1, avgjort av fortegnet til $z$'
+      forklaring: 'Det er outputen fra et perceptron med Heaviside. Logistisk regresjon gir en klasse først når vi velger en terskel.'
+    - tekst: 'Et reelt tall som kan være negativt eller større enn 1'
+      forklaring: 'Det er $z = \mathbf{w}\mathbf{x} + b$ før sigmoid.'
+    - tekst: 'Avstanden fra punktet til beslutningsgrensen'
+      forklaring: 'Avstanden er proporsjonal med $|z|$, ikke med $\sigma(z)$. Outputen er en sannsynlighet.'
   forklaring: |
     $z$ kan være et hvilket som helst reelt tall. Sigmoid $\sigma(z) = 1/(1 + e^{-z})$ gjør det om til et tall mellom 0 og 1, som vi tolker som modellens estimat av $p(y = 1 \mid \mathbf{x})$.
   husk: 'Logistisk regresjon gir en sannsynlighet, ikke en klasse. Klassen krever en terskel.'
@@ -171,15 +171,15 @@
   sporsmal: |
     Hvorfor er beslutningsgrensen til logistisk regresjon lineær, selv om sigmoid-funksjonen er krum?
   alternativer:
-    - tekst: 'Fordi grensen $\sigma(z) = 0{,}5$ tilsvarer $z = \mathbf{w}\mathbf{x} + b = 0$, som er en rett linje (et hyperplan) i feature-rommet'
+    - tekst: 'Fordi $\sigma(z) = 0{,}5$ nøyaktig når $\mathbf{w}\mathbf{x} + b = 0$'
       riktig: true
-      forklaring: 'Sigmoid er monoton og virker på $z$. Terskelen på $\sigma$ blir en terskel på $z$, og $z$ er lineær i $\mathbf{x}$.'
-    - tekst: 'Fordi sigmoid er tilnærmet lineær rundt $z = 0$'
-      forklaring: 'Det stemmer at sigmoid er nesten rett rundt 0, men grensen er eksakt lineær uansett terskel, fordi sigmoid er monoton.'
-    - tekst: 'Fordi modellen trenes med gradient descent'
-      forklaring: 'Treningsmetoden bestemmer ikke formen på grensen. Den følger av modellformen.'
-    - tekst: 'Grensen er ikke lineær, den er S-formet'
-      forklaring: 'Det er sannsynligheten som følger en S-kurve langs $z$. Selve grensen der klassen skifter, er lineær.'
+      forklaring: 'Sigmoid er monoton og virker på $z$. Terskelen på $\sigma$ blir en terskel på $z$, og $z$ er lineær i $\mathbf{x}$. Grensen er et hyperplan.'
+    - tekst: 'Fordi sigmoid er tilnærmet lineær rundt $z = 0$, der grensen ligger'
+      forklaring: 'Det stemmer at sigmoid er nesten rett rundt 0, men grensen er eksakt lineær for enhver terskel, fordi sigmoid er monoton.'
+    - tekst: 'Fordi cross-entropy-tapet er konvekst i vektene'
+      forklaring: 'Konveksitet sier noe om optimeringen (ett globalt minimum), ikke om formen på grensen. Den følger av modellformen.'
+    - tekst: 'Grensen er bare lineær når terskelen er 0,5'
+      forklaring: 'Enhver terskel $\tau$ tilsvarer $z = \sigma^{-1}(\tau)$, som også er et hyperplan. Grensen er lineær uansett terskel.'
   forklaring: |
     Enhver terskel $\tau$ på $\sigma(z)$ tilsvarer en terskel $z = \ln\frac{\tau}{1-\tau}$ på $z$. Mengden av punkter med samme $z$ er et hyperplan. Derfor kan logistisk regresjon ikke løse XOR uten nye features.
   husk: 'Sigmoid er monoton, så grensen σ(z) = τ er en grense på z, og den er lineær i x.'
@@ -195,12 +195,12 @@
     - tekst: 'Legge til featuren $x_0 \cdot x_1$'
       riktig: true
       forklaring: 'Produktet er negativt nøyaktig når fortegnene er ulike, så klassene blir lineært separerbare i den nye featuren.'
-    - tekst: 'Trene i flere epoker med lavere læringsrate'
+    - tekst: 'Legge til featurene $x_0^2$ og $x_1^2$'
+      forklaring: 'Kvadratene mister fortegnet, og klassen avhenger nettopp av fortegnene. Punktene $(1, 1)$ og $(1, -1)$ får like nye features, men har ulik klasse.'
+    - tekst: 'Legge til featuren $|x_0| + |x_1|$'
+      forklaring: 'Absoluttverdien mister fortegnet på samme måte. Den skiller punkter etter avstand fra origo, ikke etter kvadrant.'
+    - tekst: 'Trene lenger med lavere læringsrate'
       forklaring: 'Ingen lineær grense i $(x_0, x_1)$ skiller XOR-klassene, uansett hvor lenge vi trener.'
-    - tekst: 'Normalisere $x_0$ og $x_1$ til $[0, 1]$'
-      forklaring: 'Skalering endrer ikke at klassene ligger i motsatte kvadranter. Grensen må fortsatt være krum.'
-    - tekst: 'Øke terskelen fra 0,5 til 0,7'
-      forklaring: 'Terskelen flytter den lineære grensen parallelt. Den kan ikke gjøre den krum.'
   forklaring: |
     Logistisk regresjon gir alltid en lineær grense i de featurene den får. Med feature engineering kan vi gi modellen en ny feature der problemet blir lineært. Alternativet er en modell som selv lager ikke-lineære grenser, som et nevralt nettverk med skjulte lag (kapittel 5).
   husk: 'XOR er ikke lineært separerbart. Løsningen er en ny feature (som x₀·x₁) eller en ikke-lineær modell.'
@@ -210,8 +210,8 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** For logistisk regresjon er $z = \mathbf{w}\mathbf{x} + b$ en vektor med én verdi per feature.
-  riktig: false
+    **Påstand:** For logistisk regresjon er $z = \mathbf{w}\mathbf{x} + b$ ett tall per datapunkt, ikke ett tall per feature.
+  riktig: true
   forklaring: |
     $\mathbf{w}\mathbf{x}$ er et skalarprodukt, $\sum_i w_i x_i$, så $z$ er ett tall per datapunkt. Med en datamatrise $X$ av form (antall datapunkter, antall features) gir `np.matmul(X, w) + b` en vektor med én $z$ per *datapunkt*.
   husk: 'z er én skalar per datapunkt: den vektede summen av featurene pluss bias.'
@@ -229,15 +229,15 @@
     y_pred = 1 / (1 + np.exp(-z))
     ```
   alternativer:
-    - tekst: 'En array med 100 sannsynligheter i $(0, 1)$, én per datapunkt'
+    - tekst: '100 sannsynligheter, én per datapunkt'
       riktig: true
       forklaring: 'Matriseproduktet gir 100 verdier av $z$, og sigmoid gjør hver av dem om til en sannsynlighet.'
-    - tekst: 'En array med 100 klasser, 0 eller 1'
+    - tekst: '100 klasser (0 eller 1), én per datapunkt'
       forklaring: 'Koden har ingen terskel. Den gir sannsynligheter.'
-    - tekst: 'En array med 3 sannsynligheter, én per feature'
+    - tekst: '3 sannsynligheter, én per feature'
       forklaring: '$X$ har 100 rader. Produktet summerer over de 3 featurene og gir én verdi per rad.'
-    - tekst: 'Et enkelt tall, gjennomsnittlig sannsynlighet'
-      forklaring: 'Ingenting i koden tar et snitt.'
+    - tekst: 'En feilmelding, fordi `w` må ha formen `(3, 1)`'
+      forklaring: '`np.matmul` håndterer en 1D-vektor som `w` med formen `(3,)` og gir en array med formen `(100,)`.'
   forklaring: |
     `np.matmul(X, w)` med former (100, 3) og (3,) gir form (100,). Uttrykket `1 / (1 + np.exp(-z))` er sigmoid, brukt elementvis.
   husk: 'Kjenn igjen sigmoid i NumPy: 1 / (1 + np.exp(-z)). Uten terskel er outputen sannsynligheter.'
@@ -273,7 +273,7 @@
     - tekst: 'FPR er omtrent 0,17.'
       riktig: true
       forklaring: 'FPR = FP/N = 30/176 ≈ 0,17, altså 1 − spesifisitet.'
-    - tekst: 'Under halvparten av pasientene som får positivt svar, er faktisk syke.'
+    - tekst: 'Precision er under 0,5.'
       riktig: true
       forklaring: 'Precision er 18/48 = 0,375, så 62,5 % av alarmene er falske.'
     - tekst: 'Accuracy på 0,82 viser at modellen finner de fleste syke.'
@@ -388,15 +388,15 @@
   sporsmal: |
     Binær cross-entropy kan utledes fra likelihood. Hvorfor tar vi logaritmen av likelihood før vi optimerer?
   alternativer:
-    - tekst: 'Fordi logaritmen er monoton, så optimum flyttes ikke, og produktet over datapunktene blir en sum som er enklere å derivere'
+    - tekst: 'Logaritmen bevarer optimum og gjør produktet til en sum'
       riktig: true
       forklaring: 'Begge deler stemmer. I tillegg unngår vi at produktet av mange små sannsynligheter blir numerisk null.'
-    - tekst: 'Fordi logaritmen flytter optimum til et bedre sted'
-      forklaring: 'Logaritmen er strengt voksende og endrer ikke hvor maksimum ligger.'
-    - tekst: 'Fordi likelihood ikke er deriverbar'
+    - tekst: 'Logaritmen flytter optimum dit modellen generaliserer bedre'
+      forklaring: 'Logaritmen er strengt voksende og endrer ikke hvor maksimum ligger. Hvor godt modellen generaliserer, avhenger av modellen og dataene.'
+    - tekst: 'Likelihood er ikke deriverbar, men log-likelihood er det'
       forklaring: 'Likelihood er deriverbar. Logaritmen gjør bare deriveringen enklere.'
-    - tekst: 'For å gjøre tapet negativt'
-      forklaring: 'Fortegnet skyldes minustegnet vi setter foran for å få et tap som skal minimeres.'
+    - tekst: 'Logaritmen sørger for at sannsynlighetene summerer til 1'
+      forklaring: 'Det er sigmoid/softmax som sørger for gyldige sannsynligheter. Logaritmen gjør produkt om til sum.'
   forklaring: |
     Utledningen: sannsynligheten for riktig svar $\to$ likelihood $\sigma^y(1-\sigma)^{1-y}$ $\to$ log-likelihood $\to$ minus log-likelihood, som minimeres. Maksimere likelihood og minimere $-\ln L$ gir samme parametre.
   husk: 'Log er monoton: samme optimum, men produkt blir sum og deriveringen blir enkel.'
@@ -460,12 +460,12 @@
   sporsmal: |
     Oppdateringsregelen i gradient descent er $\theta_{t+1} = \theta_t - \eta \,\partial\mathcal{L}/\partial\theta$. Hvorfor står det minus?
   alternativer:
-    - tekst: 'Gradienten peker i retningen der tapet øker mest, og vi vil gå motsatt vei'
+    - tekst: 'Gradienten peker mot økende tap, og vi vil ned'
       riktig: true
       forklaring: 'Minus gjør at vi tar et steg nedover i tapslandskapet.'
-    - tekst: 'Gradienten peker mot minimum, og minus sørger for at vi ikke går for langt'
+    - tekst: 'Gradienten peker mot minimum, og minus demper steget'
       forklaring: 'Gradienten peker mot økende tap. Steglengden styres av $\eta$.'
-    - tekst: 'Fordi tapet er negativt'
+    - tekst: 'Fordi tapsfunksjonen alltid er negativ'
       forklaring: 'Cross-entropy og MSE er aldri negative. Fortegnet handler om retning, ikke verdien til tapet.'
     - tekst: 'For å gjøre læringsraten negativ'
       forklaring: 'Læringsraten er et positivt tall.'
@@ -510,14 +510,14 @@
   sporsmal: |
     Treningstapet hopper opp og ned fra epoke til epoke og blir ikke lavere over tid. Modellen og dataene er ellers i orden. Hva er den mest sannsynlige årsaken?
   alternativer:
-    - tekst: 'Læringsraten er for høy, så stegene skyter over minimum'
+    - tekst: 'For høy læringsrate'
       riktig: true
-      forklaring: 'For store steg gir oscillasjon eller divergens.'
-    - tekst: 'Læringsraten er for lav'
+      forklaring: 'For store steg skyter over minimum og gir oscillasjon eller divergens.'
+    - tekst: 'For lav læringsrate'
       forklaring: 'For lav læringsrate gir et tap som synker jevnt, men sakte.'
-    - tekst: 'Modellen har for få parametre'
-      forklaring: 'Det gir undertilpasning, altså et tap som flater ut høyt, ikke et tap som hopper.'
-    - tekst: 'Det er for få epoker'
+    - tekst: 'For mange parametre, så modellen overtilpasser'
+      forklaring: 'Overtilpasning viser seg som lavt treningstap og høyere valideringstap, ikke som et treningstap som hopper.'
+    - tekst: 'For få epoker'
       forklaring: 'Flere epoker hjelper ikke når hvert steg går for langt.'
   forklaring: |
     Med for høy $\eta$ går parameteren forbi minimum og havner på andre siden, ofte høyere opp. Prøv den interaktive figuren i 1.4: med $\eta$ over halvparten av den kritiske verdien hopper løsningen, og over den kritiske verdien divergerer den.
@@ -603,14 +603,14 @@
   sporsmal: |
     Hva representerer den diagonale linjen fra (0, 0) til (1, 1) i et ROC-diagram?
   alternativer:
-    - tekst: 'En modell som ikke skiller klassene bedre enn tilfeldig gjetting'
+    - tekst: 'En modell uten evne til å skille klassene'
       riktig: true
       forklaring: 'Langs diagonalen er TPR = FPR. Modellen gir positive like ofte for begge klassene.'
-    - tekst: 'Terskelen 0,5'
+    - tekst: 'Klassifiseringsterskelen 0,5'
       forklaring: 'Hver terskel er ett punkt på kurven. Diagonalen er en hel kurve.'
-    - tekst: 'En modell som predikerer 0,5 for alle punkter'
-      forklaring: 'En slik modell gir bare punktene (0, 0) og (1, 1). Diagonalen betyr ingen rangeringsevne, uansett hvilke tall modellen gir.'
-    - tekst: 'Den ideelle modellen'
+    - tekst: 'En modell med accuracy 0,5'
+      forklaring: 'Accuracy gjelder én terskel og avhenger av klassebalansen. En modell kan ha accuracy 0,5 og likevel rangere klassene godt (AUC over 0,5), eller motsatt.'
+    - tekst: 'Den beste modellen som kan oppnås'
       forklaring: 'Den ideelle modellen går rett opp til (0, 1) og bortover til (1, 1), med AUC = 1.'
   forklaring: |
     En tilfeldig klassifikator gir samme andel positive prediksjoner uansett klasse, så TPR = FPR for alle terskler. AUC blir 0,5.
@@ -623,15 +623,15 @@
   sporsmal: |
     Du senker klassifiseringsterskelen $\tau$ fra 0,5 til 0,2. Hva skjer som regel med punktet på ROC-kurven?
   alternativer:
-    - tekst: 'Det flytter seg oppover og mot høyre: både TPR og FPR øker eller blir like'
+    - tekst: 'Det flytter seg oppover og mot høyre'
       riktig: true
-      forklaring: 'Lavere terskel gir flere positive prediksjoner, både riktige og gale.'
+      forklaring: 'Lavere terskel gir flere positive prediksjoner, både riktige og gale. TPR og FPR øker eller blir stående.'
     - tekst: 'Det flytter seg nedover og mot venstre'
       forklaring: 'Det skjer når terskelen økes.'
-    - tekst: 'Det flytter seg rett opp, FPR er uendret'
+    - tekst: 'Det flytter seg rett opp, med uendret FPR'
       forklaring: 'Flere positive prediksjoner treffer som regel også noen negative punkter.'
-    - tekst: 'Hele ROC-kurven flytter seg'
-      forklaring: 'Kurven er bestemt av modellens rangering og er den samme for alle terskler. Bare punktet vi står i, flytter seg.'
+    - tekst: 'Punktet står stille, men kurven blir brattere'
+      forklaring: 'Kurven er bestemt av modellens rangering og er den samme for alle terskler. Det er punktet vi står i, som flytter seg.'
   forklaring: |
     Kurven går fra (0, 0) ved svært høy terskel (ingen positive) til (1, 1) ved svært lav terskel (alt positivt). En lavere terskel flytter oss langs kurven mot (1, 1).
   husk: 'Høy terskel nær (0, 0), lav terskel nær (1, 1). Terskelen flytter oss langs kurven, ikke kurven.'
@@ -685,10 +685,10 @@
     - tekst: 'TPR og FPR påvirkes ikke av hvor stor andel av dataene som er positive.'
       riktig: true
       forklaring: 'Begge beregnes innad i én klasse (TPR blant de positive, FPR blant de negative).'
-    - tekst: 'AUC = 0,9 betyr at 90 % av prediksjonene er riktige.'
-      forklaring: 'AUC er en rangeringssannsynlighet over alle terskler, ikke accuracy ved én terskel.'
-    - tekst: 'Punktet øverst til høyre på kurven tilsvarer høyest terskel.'
-      forklaring: 'Øverst til høyre er alt predikert positivt, altså lavest terskel.'
+    - tekst: 'AUC = 0,9 betyr at 90 % av punktene klassifiseres riktig ved den beste terskelen.'
+      forklaring: 'AUC er en rangeringssannsynlighet over alle terskler, ikke accuracy ved noen terskel.'
+    - tekst: 'Punktet (0, 0) på kurven tilsvarer en terskel så lav at alle punkter predikeres positive.'
+      forklaring: 'Ved (0, 0) er ingen predikert positive, altså høyest terskel. Alle positive gir (1, 1).'
   forklaring: |
     ROC-kurven og AUC er derfor robuste mot klassefordelingen. Precision blander klassene (TP fra de positive, FP fra de negative) og påvirkes av den.
   husk: 'AUC er rangering, ikke accuracy. TPR og FPR er uavhengige av klassebalansen, precision er det ikke.'
@@ -849,15 +849,15 @@
 
     Hva er problemet med koden?
   alternativer:
-    - tekst: 'Testdataene skaleres med sin egen min og maks, så samme råverdi kan få ulik skalert verdi i trening og test'
+    - tekst: 'Testdataene skaleres med sin egen min og maks, ikke treningens'
       riktig: true
       forklaring: 'Testdataene skal transformeres med parametrene fra treningsdataene: `scaler.transform(X_test)`.'
-    - tekst: 'Det er ikke noe problem, fordi begge delene havner i intervallet $[0, 1]$'
+    - tekst: 'Ingen problem, siden begge ender i $[0, 1]$ og er sammenlignbare'
       forklaring: 'At begge havner i $[0, 1]$ er nettopp problemet: testdataene er skalert med feil referanse, og modellen ser en annen skala enn den ble trent på.'
     - tekst: '`fit_transform` på treningsdataene lekker informasjon fra testdataene'
       forklaring: 'Treningsdelen er riktig. Den bruker bare treningsdataene.'
-    - tekst: 'Min–maks-skalering kan bare brukes på kategoriske features'
-      forklaring: 'Min–maks-skalering er for numeriske features.'
+    - tekst: 'Testdataene burde vært skalert før splitten, sammen med treningsdataene'
+      forklaring: 'Det ville lekket informasjon fra test inn i treningen. Riktig er `scaler.transform(X_test)` med parametrene fra treningen.'
   forklaring: |
     Skaleringen er en del av modellen. Den skal læres (`fit`) på treningsdataene og brukes (`transform`) uendret på alt annet. Med egen skalering av testdataene vil for eksempel en testverdi utenfor treningsintervallet ikke lenger havne utenfor $[0, 1]$, og avstander og vekter betyr noe annet enn under treningen.
   husk: 'fit på trening, transform på test. Aldri fit på testdata.'
@@ -881,9 +881,9 @@
 
     Hva er feilen?
   alternativer:
-    - tekst: 'Parametrene oppdateres i gradientens retning, så tapet øker. Det skal stå `w -= lr * grad_w` og `b -= lr * grad_b`'
+    - tekst: 'Fortegnet: det skal være `-=`, ikke `+=`'
       riktig: true
-      forklaring: 'Gradienten peker dit tapet øker mest. Gradient descent går motsatt vei.'
+      forklaring: 'Gradienten peker dit tapet øker mest. Gradient descent går motsatt vei: `w -= lr * grad_w` og `b -= lr * grad_b`.'
     - tekst: 'Gradientene skal ikke deles på antall datapunkter'
       forklaring: 'Å dele på $N$ gir snittgradienten og endrer bare steglengden, ikke retningen.'
     - tekst: 'Sigmoid skal ikke brukes under trening, bare ved prediksjon'
@@ -954,9 +954,9 @@
     - tekst: 'Modell A har høyest AUC.'
       riktig: true
       forklaring: 'Kurven til A ligger over de andre for alle FPR, så arealet under den er størst.'
-    - tekst: 'Modell B rangerer ikke et tilfeldig positivt punkt over et tilfeldig negativt punkt oftere enn tilfeldig gjetting.'
+    - tekst: 'Modell B er ikke bedre enn tilfeldig gjetting.'
       riktig: true
-      forklaring: 'B følger diagonalen, så AUC er omtrent 0,5.'
+      forklaring: 'B følger diagonalen, så AUC er omtrent 0,5: et tilfeldig positivt punkt rangeres over et tilfeldig negativt bare halvparten av gangene.'
     - tekst: 'Ved FPR = 0,2 gir modell C høyere TPR enn modell A.'
       forklaring: 'Ved FPR = 0,2 har A TPR ≈ 0,74 og C TPR ≈ 0,45.'
     - tekst: 'Figuren viser at modell A har høyest accuracy med terskel 0,5.'

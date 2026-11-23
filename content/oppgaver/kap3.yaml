@@ -8,14 +8,14 @@
   sporsmal: |
     Hvorfor er MSE et naturlig valg av tapsfunksjon for lineær regresjon?
   alternativer:
-    - tekst: 'Fordi minimering av MSE tilsvarer maximum likelihood når støyen er gaussisk'
+    - tekst: 'Minimering av MSE er maximum likelihood ved gaussisk støy'
       riktig: true
       forklaring: 'Med normalfordelt støy blir log-likelihood (opp til konstanter) minus summen av kvadrerte residualer.'
-    - tekst: 'Fordi MSE gjør modellen robust mot outliers'
+    - tekst: 'MSE gjør modellen robust mot outliers i dataene'
       forklaring: 'Kvadratet gir outliers stor innflytelse. MSE er følsom for outliers.'
-    - tekst: 'Fordi MSE alltid gir mange vekter lik 0'
-      forklaring: 'Det er en egenskap ved andre regulariseringer, ikke ved MSE.'
-    - tekst: 'Fordi MSE er mellom 0 og 1, slik at den er lett å tolke'
+    - tekst: 'MSE gir mange vekter lik 0, så modellen blir enkel'
+      forklaring: 'Ingenting i MSE trekker vektene mot 0. Kvadratfeilen gir vanligvis vekter som alle er ulik 0.'
+    - tekst: 'MSE ligger mellom 0 og 1 og er derfor lett å tolke'
       forklaring: 'MSE har enheten til $y^2$ og har ingen øvre grense.'
   forklaring: |
     Antar vi $y = f(\mathbf{x}) + \varepsilon$ med $\varepsilon \sim \mathcal{N}(0, \sigma^2)$, gir maksimering av likelihood det samme optimum som minimering av kvadratfeilen. Akkurat som cross-entropy er maximum likelihood for klassifisering.
@@ -129,13 +129,13 @@
   sporsmal: |
     Du lager featuren $x_2 = x^2$ og trener $y = \beta_0 + \beta_1 x + \beta_2 x_2$. Hva slags modell er dette?
   alternativer:
-    - tekst: 'Lineær regresjon i de nye featurene, som gir en parabel i $x$'
+    - tekst: 'Lineær regresjon, med en parabel i $x$'
       riktig: true
-      forklaring: 'Modellen er lineær i parametrene. Ikke-lineariteten ligger i featuren.'
-    - tekst: 'En ikke-lineær modell som krever nye treningsmetoder'
+      forklaring: 'Modellen er lineær i parametrene. Ikke-lineariteten ligger i featuren, så kurven i $x$ blir en parabel.'
+    - tekst: 'En ikke-lineær modell som trenger ny treningsmetode'
       forklaring: 'Vi kan bruke nøyaktig samme MSE og gradient descent som før.'
-    - tekst: 'Logistisk regresjon'
-      forklaring: 'Det er ingen sigmoid og ingen klasser.'
+    - tekst: 'Logistisk regresjon med én ekstra feature'
+      forklaring: 'Det er ingen sigmoid og ingen klasser. Target er kontinuerlig.'
     - tekst: 'Et nevralt nettverk med ett skjult lag'
       forklaring: 'Et nevralt nett lærer egne features. Her har vi laget featuren for hånd.'
   forklaring: |
@@ -171,14 +171,14 @@
   sporsmal: |
     Du tilpasser polynomer av grad 1, 3 og 12 til 15 datapunkter. Hvilket mønster forventer du?
   alternativer:
-    - tekst: 'Treningsfeilen synker med graden, mens valideringsfeilen først synker og så stiger'
+    - tekst: 'Treningsfeilen synker, valideringsfeilen synker og så stiger'
       riktig: true
       forklaring: 'Høy grad tilpasser seg støyen i treningsdataene og generaliserer dårlig.'
-    - tekst: 'Både trenings- og valideringsfeilen synker med graden'
+    - tekst: 'Både trenings- og valideringsfeilen synker jevnt med graden'
       forklaring: 'Valideringsfeilen stiger når modellen overtilpasser.'
-    - tekst: 'Treningsfeilen stiger med graden'
+    - tekst: 'Treningsfeilen stiger med graden, fordi modellen blir vanskeligere å trene'
       forklaring: 'En mer fleksibel modell kan alltid tilpasse treningsdataene minst like godt.'
-    - tekst: 'Grad 12 gir lavest valideringsfeil fordi den har flest parametre'
+    - tekst: 'Grad 12 gir lavest valideringsfeil, siden den har flest parametre'
       forklaring: 'Mange parametre i forhold til datapunktene gir overtilpasning.'
   forklaring: |
     Graden er en hyperparameter som styrer kompleksiteten. For lav grad gir undertilpasning (høy bias), for høy grad overtilpasning (høy varians). Se figuren i 3.5.
@@ -189,10 +189,10 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** Polynomgraden i polynomisk regresjon er en modellparameter som læres med gradient descent.
-  riktig: false
+    **Påstand:** I polynomisk regresjon er polynomgraden en hyperparameter, mens koeffisientene $\beta_i$ er modellparametre.
+  riktig: true
   forklaring: |
-    Graden bestemmer hvilke features modellen får, og velges av oss før treningen. Den er en hyperparameter og velges med validering. Koeffisientene $\beta_i$ er parametrene.
+    Graden bestemmer hvilke features modellen får, og velges av oss før treningen, typisk med validering. Koeffisientene $\beta_i$ læres fra dataene, for eksempel med gradient descent.
   husk: 'Polynomgrad = hyperparameter. Koeffisientene = parametre.'
 
 - id: "3.2-05"
@@ -203,15 +203,15 @@
   sporsmal: |
     I øving 1 skal lineær regresjon tilpasse data som følger en kurve. Du legger til featuren $x^2$ med `PolynomialFeatures`. I hvilken rekkefølge skal du gjøre stegene?
   alternativer:
-    - tekst: 'Splitt i trening og test, tilpass transformasjonen og modellen på treningsdataene, og bruk den samme transformasjonen på testdataene'
+    - tekst: 'Splitt, tilpass alt på trening, bruk samme transformasjon på test'
       riktig: true
-      forklaring: 'Alt som lærer av data, skal bare se treningsdataene.'
-    - tekst: 'Lag polynomfeatures og skaler hele datasettet, splitt deretter'
+      forklaring: 'Alt som lærer av data, skal bare se treningsdataene. Testdataene transformeres med de samme parametrene.'
+    - tekst: 'Lag polynomfeatures og skaler hele datasettet, og splitt deretter'
       forklaring: 'Skaleringen lærer da av testdataene, og testresultatet blir for optimistisk.'
-    - tekst: 'Tren modellen på alle data, splitt etterpå for å evaluere'
+    - tekst: 'Tren modellen på alle data, og splitt etterpå for å evaluere'
       forklaring: 'Da har modellen sett testdataene, og evalueringen er verdiløs.'
-    - tekst: 'Lag ulike polynomfeatures for trening og test'
-      forklaring: 'Trening og test må ha nøyaktig samme features.'
+    - tekst: 'Splitt, og tilpass skaleringen separat på trening og på test'
+      forklaring: 'Testdataene må transformeres med parametrene fra treningen. Med egen skalering får samme råverdi ulik skalert verdi i trening og test.'
   forklaring: |
     `PolynomialFeatures` lærer egentlig ingenting av dataene, men en påfølgende skalering gjør det. Den trygge regelen er: splitt først, `fit` på trening, `transform` på begge.
   husk: 'Splitt → fit på trening → transform på trening og test. Unngå lekkasje.'
@@ -243,14 +243,14 @@
   sporsmal: |
     Hva er valideringssettet til?
   alternativer:
-    - tekst: 'Å velge hyperparametre og sammenligne modeller underveis'
+    - tekst: 'Å velge hyperparametre og sammenligne modeller'
       riktig: true
       forklaring: 'Valideringsdataene brukes til alle valg vi tar.'
-    - tekst: 'Å trene modellparametrene'
+    - tekst: 'Å trene modellparametrene (vektene)'
       forklaring: 'Det er treningsdataene til.'
     - tekst: 'Å gi et endelig, ærlig estimat av ytelsen'
       forklaring: 'Det er testsettet til, som ikke skal ha blitt brukt til noe valg.'
-    - tekst: 'Å øke mengden treningsdata'
+    - tekst: 'Å gi modellen mer data å trene på'
       forklaring: 'Valideringsdataene holdes nettopp utenfor treningen.'
   forklaring: |
     Trening: tilpasse parametre. Validering: velge hyperparametre og modell. Test: én endelig evaluering.
@@ -293,15 +293,15 @@
   sporsmal: |
     Figuren viser trenings- og valideringstap for et nevralt nettverk. Hva er den beste tolkningen?
   alternativer:
-    - tekst: 'Modellen overtilpasser etter omtrent epoke 5, og early stopping der ville gitt den beste modellen'
+    - tekst: 'Overtilpasning fra rundt epoke 5, så stopp der'
       riktig: true
-      forklaring: 'Valideringstapet er lavest rundt epoke 5 og stiger deretter, mens treningstapet fortsetter ned.'
-    - tekst: 'Modellen undertilpasser, fordi valideringstapet er høyere enn treningstapet'
+      forklaring: 'Valideringstapet er lavest rundt epoke 5 og stiger deretter, mens treningstapet fortsetter ned. Early stopping der gir den beste modellen.'
+    - tekst: 'Undertilpasning, siden valideringstapet ligger over treningstapet'
       forklaring: 'Litt høyere valideringstap er normalt. Undertilpasning ses som høyt treningstap.'
-    - tekst: 'Modellen burde trenes lenger, fordi treningstapet fortsatt synker'
+    - tekst: 'Treningen bør fortsette, siden treningstapet fortsatt synker'
       forklaring: 'Lavere treningstap hjelper ikke når valideringstapet stiger.'
-    - tekst: 'Læringsraten er for høy, fordi tapet hopper'
-      forklaring: 'Kurvene er glatte. Det er ingen oscillasjon her.'
+    - tekst: 'For høy læringsrate, siden valideringstapet stiger igjen'
+      forklaring: 'For høy læringsrate gir et treningstap som hopper. Her synker treningstapet jevnt, mens bare valideringstapet stiger.'
   forklaring: |
     Avstanden mellom kurvene som vokser, er det klassiske tegnet på høy varians. Early stopping betyr å beholde vektene fra epoken med lavest valideringstap.
   husk: 'Treningstap ned og valideringstap opp: overtilpasning. Stopp ved laveste valideringstap.'
@@ -389,13 +389,13 @@
     - tekst: 'LOOCV trener modellen like mange ganger som det er datapunkter.'
       riktig: true
       forklaring: 'Hvert punkt er valideringssett én gang.'
-    - tekst: 'LOOCV bruker nesten alle data til trening i hver runde, så estimatet har lav bias.'
+    - tekst: 'LOOCV-estimatet har lav bias.'
       riktig: true
-      forklaring: 'Hver modell trenes på $n - 1$ punkter.'
+      forklaring: 'Hver modell trenes på $n - 1$ punkter, nesten like mye som den endelige modellen.'
     - tekst: '5-fold er langt billigere å regne ut.'
       riktig: true
       forklaring: '5 trenninger i stedet for $n$.'
-    - tekst: 'LOOCV gir én ferdig modell som brukes videre.'
+    - tekst: 'LOOCV gir én ferdig modell som brukes videre uten å trenes på nytt.'
       forklaring: 'Kryssvalidering gir et ytelsesestimat. Den endelige modellen trenes etterpå.'
   forklaring: |
     LOOCV er spesialtilfellet $k = n$. Den er uavhengig av hvordan dataene deles, men dyr.
@@ -408,14 +408,14 @@
   sporsmal: |
     Hva er hovedgrunnen til å bruke kryssvalidering i stedet for én fast valideringssplitt?
   alternativer:
-    - tekst: 'Resultatet fra én splitt avhenger av hvilke punkter som tilfeldigvis havnet i valideringssettet, og kryssvalidering bruker alle punktene til både trening og validering'
+    - tekst: 'Den gir et mer stabilt estimat og bruker alle dataene'
       riktig: true
-      forklaring: 'Snittet over foldene gir et mer stabilt estimat, og ingen data er låst til validering.'
-    - tekst: 'Kryssvalidering gjør modellen mer nøyaktig'
+      forklaring: 'Resultatet fra én splitt avhenger av hvilke punkter som havnet i valideringssettet. Snittet over foldene er mer stabilt, og alle punktene brukes både til trening og validering.'
+    - tekst: 'Den gir en mer nøyaktig modell enn én fast splitt'
       forklaring: 'Den gir et bedre *estimat* av ytelsen. Modellen blir ikke bedre av selve evalueringen.'
-    - tekst: 'Kryssvalidering gjør at vi ikke trenger testsett'
+    - tekst: 'Den gjør det unødvendig å ha et separat testsett'
       forklaring: 'Kurset rapporterer fortsatt på data som ikke er brukt til valg.'
-    - tekst: 'Kryssvalidering er raskere enn én splitt'
+    - tekst: 'Den er raskere å kjøre enn én fast splitt'
       forklaring: 'Den er $k$ ganger dyrere.'
   forklaring: |
     $\text{CV}_{(k)} = \frac{1}{k}\sum_j M_j$. Særlig med lite data er det viktig å utnytte alle punktene og ikke være prisgitt én tilfeldig splitt.
@@ -477,14 +477,14 @@
   sporsmal: |
     Hva er «varians» i bias–varians-dekomposisjonen?
   alternativer:
-    - tekst: 'Hvor mye modellens prediksjon i et punkt varierer når vi trener på ulike treningssett'
+    - tekst: 'Hvor mye prediksjonen varierer mellom treningssett'
       riktig: true
       forklaring: '$\text{Var}_D[f(\mathbf{x}; D)]$ er variansen over tenkte trekninger av treningsdata $D$.'
-    - tekst: 'Variansen i targetene i datasettet'
+    - tekst: 'Hvor mye targetene varierer i datasettet'
       forklaring: 'Det er en egenskap ved dataene. Støyvariansen $\sigma^2$ er et eget ledd.'
-    - tekst: 'Variansen til featurene'
+    - tekst: 'Hvor mye featurene varierer i datasettet'
       forklaring: 'Varians-leddet handler om modellens prediksjoner.'
-    - tekst: 'Forskjellen mellom snittprediksjonen og den sanne funksjonen'
+    - tekst: 'Avviket mellom snittprediksjonen og den sanne funksjonen'
       forklaring: 'Det er bias.'
   forklaring: |
     Forventet kvadratfeil $= \text{Bias}^2 + \text{Var} + \sigma^2$. Høy varians betyr at modellen er følsom for akkurat hvilke data den fikk, typisk ved overtilpasning.
@@ -534,7 +534,7 @@
     - tekst: 'En godt tilpasset modell'
       forklaring: 'Økende valideringsfeil viser at modellen generaliserer dårlig.'
   forklaring: |
-    Tiltak mot høy varians: enklere modell, regularisering, mer data, early stopping eller bagging (kapittel 4).
+    Tiltak mot høy varians: enklere modell, mer data, early stopping eller bagging (kapittel 4).
   husk: 'Lav treningsfeil + høy/økende valideringsfeil + ustabile prediksjoner = høy varians.'
 
 - id: "3.5-04"
@@ -550,8 +550,8 @@
     - tekst: 'Dypt beslutningstre uten dybdegrense: høy varians'
       riktig: true
       forklaring: 'Treet kan følge hvert treningspunkt, også støyen.'
-    - tekst: 'Undertilpasning: høy varians'
-      forklaring: 'Undertilpasning hører sammen med høy bias.'
+    - tekst: 'Undertilpasning: høy varians, fordi modellen er ustabil'
+      forklaring: 'Undertilpasning hører sammen med høy bias. En modell som undertilpasser, er typisk stabil, men systematisk feil.'
     - tekst: 'Støyleddet $\sigma^2$ kan fjernes med en bedre modell'
       forklaring: 'Støyen er en egenskap ved dataene og kan ikke modelleres bort.'
   forklaring: |
@@ -565,15 +565,15 @@
   sporsmal: |
     I utledningen av bias–varians-dekomposisjonen flyttes den sanne funksjonen $F(\mathbf{x})$ ut av forventningen $\mathbb{E}_D[\cdot]$. Hvorfor er det lov?
   alternativer:
-    - tekst: 'Fordi $F(\mathbf{x})$ ikke avhenger av treningssettet $D$, så den er en konstant med hensyn på $\mathbb{E}_D$'
+    - tekst: '$F(\mathbf{x})$ avhenger ikke av treningssettet $D$'
       riktig: true
-      forklaring: 'Forventningen tas over treningssett. Den sanne funksjonen er den samme uansett hvilket treningssett vi trekker.'
-    - tekst: 'Fordi $F(\mathbf{x})$ er lineær'
-      forklaring: 'Ingen antakelse om linearitet trengs.'
-    - tekst: 'Fordi $\mathbb{E}[\varepsilon] = 0$'
+      forklaring: 'Forventningen tas over treningssett. Den sanne funksjonen er den samme uansett hvilket $D$ vi trekker, så den er en konstant med hensyn på $\mathbb{E}_D$.'
+    - tekst: 'Forventningsverdien er en lineær operator'
+      forklaring: 'Lineariteten lar oss dele opp summer, men et ledd kan bare flyttes ut av forventningen hvis det er konstant med hensyn på $D$.'
+    - tekst: 'Støyen har forventning $\mathbb{E}[\varepsilon] = 0$'
       forklaring: 'Det brukes til å fjerne kryssledd med støyen, ikke til å flytte $F$ ut.'
-    - tekst: 'Fordi $F(\mathbf{x}) = f(\mathbf{x}; D)$ for alle $D$'
-      forklaring: 'Da ville bias og varians vært 0.'
+    - tekst: '$F(\mathbf{x})$ er lineær i $\mathbf{x}$'
+      forklaring: 'Ingen antakelse om linearitet trengs. Det som gjør at $F(\mathbf{x})$ kan flyttes ut, er at den ikke avhenger av $D$.'
   forklaring: |
     Regelen er $\mathbb{E}[c] = c$ og $\mathbb{E}[cX] = c\,\mathbb{E}[X]$ for en konstant $c$. Det er nettopp fordi $F$ er fast at bias kan skrives $\mathbb{E}_D[f] - F$.
   husk: 'F(x) er fast, f(x; D) er tilfeldig via D. Konstanter kan flyttes ut av forventningen.'
@@ -605,9 +605,9 @@
   sporsmal: |
     Hva predikerer et regresjonstre for et nytt punkt?
   alternativer:
-    - tekst: 'Snittet av targetene til treningspunktene i løvnoden punktet havner i'
+    - tekst: 'Snittet av targetene i løvnoden'
       riktig: true
-      forklaring: '$\hat{y} = \bar{y}_{R_m}$ for regionen $R_m$.'
+      forklaring: '$\hat{y} = \bar{y}_{R_m}$ for regionen $R_m$ punktet havner i.'
     - tekst: 'Flertallsklassen i løvnoden'
       forklaring: 'Det gjelder klassifiseringstrær.'
     - tekst: 'En lineær funksjon tilpasset punktene i løvnoden'
@@ -663,14 +663,14 @@
   sporsmal: |
     Du trener `DecisionTreeRegressor()` fra sklearn uten å sette noen begrensninger på støyete data. Hva skjer typisk?
   alternativer:
-    - tekst: 'Treet vokser til nesten hver løvnode har ett punkt, og overtilpasser'
+    - tekst: 'Det vokser dypt og overtilpasser'
       riktig: true
-      forklaring: 'Uten begrensninger fortsetter treet til det ikke kan redusere variansen mer.'
+      forklaring: 'Uten begrensninger fortsetter treet til nesten hver løvnode har ett punkt, og følger støyen.'
     - tekst: 'sklearn velger optimal dybde automatisk'
       forklaring: 'Det gjør den ikke. Dybden er en hyperparameter du må velge.'
-    - tekst: 'Treet får bare én splitt'
+    - tekst: 'Treet stopper etter én splitt'
       forklaring: 'Det er en stump, som krever `max_depth=1`.'
-    - tekst: 'Treet undertilpasser fordi det ikke kan modellere ikke-linearitet'
+    - tekst: 'Det undertilpasser, siden trær ikke kan modellere krumme sammenhenger'
       forklaring: 'Trær kan modellere ikke-lineære sammenhenger godt.'
   forklaring: |
     Velg `max_depth` (eller minste antall punkter per løvnode) med validering for å balansere bias og varians.
@@ -686,13 +686,13 @@
     - tekst: 'Trær kan fange ikke-lineære sammenhenger og vekselvirkninger uten feature engineering.'
       riktig: true
       forklaring: 'Splittene kan avhenge av hverandre nedover i treet.'
-    - tekst: 'Trær kan ikke ekstrapolere: utenfor treningsdataene predikerer de verdien i nærmeste region.'
+    - tekst: 'Trær kan ikke ekstrapolere utenfor treningsdataene.'
       riktig: true
-      forklaring: 'Prediksjonen er alltid et snitt av treningsverdier.'
-    - tekst: 'Trær trenger skalerte features.'
+      forklaring: 'Utenfor treningsdataene predikerer treet verdien i nærmeste region. Prediksjonen er alltid et snitt av treningsverdier.'
+    - tekst: 'Trær trenger skalerte features for å finne gode terskler.'
       forklaring: 'Splitt på terskler påvirkes ikke av skala.'
-    - tekst: 'Lineær regresjon har høyere varians enn et dypt tre.'
-      forklaring: 'Lineær regresjon er stabil (lav varians), mens et dypt tre har høy varians.'
+    - tekst: 'Et dypt tre har lavere varians enn lineær regresjon, fordi det tilpasser dataene bedre.'
+      forklaring: 'Det er motsatt. Lineær regresjon er stabil (lav varians), mens et dypt tre har høy varians nettopp fordi det tilpasser dataene så tett.'
   forklaring: |
     Lineær regresjon: få parametre, lav varians, kan ekstrapolere, men høy bias på ikke-lineære data. Trær: fleksible og uten skalering, men ustabile og uten ekstrapolering.
   husk: 'Trær: ikke-lineært, ingen skalering, ingen ekstrapolering, høy varians når de er dype.'
@@ -764,9 +764,9 @@
     - tekst: 'Grad 4 er det beste valget ut fra figuren.'
       riktig: true
       forklaring: 'Valideringsfeilen er lavest der (2,3).'
-    - tekst: 'Grad 1 og 2 undertilpasser, fordi både trenings- og valideringsfeilen er høye.'
+    - tekst: 'Grad 1 og 2 undertilpasser.'
       riktig: true
-      forklaring: 'Høy feil på begge er tegn på høy bias.'
+      forklaring: 'Både trenings- og valideringsfeilen er høye, som er tegn på høy bias.'
     - tekst: 'Grad 10 er best, fordi den har lavest treningsfeil.'
       forklaring: 'Lav treningsfeil sammen med høy valideringsfeil er overtilpasning.'
     - tekst: 'Testfeilen for grad 4 blir nøyaktig 2,3.'

@@ -8,14 +8,14 @@
   sporsmal: |
     Hvorfor kalles et nevralt nett ofte en «svart boks»?
   alternativer:
-    - tekst: 'Fordi vi kan se alle parametrene, men de gir ingen mening for mennesker'
+    - tekst: 'Parametrene er synlige, men ikke forståelige'
       riktig: true
-      forklaring: 'Nettet er transparent (alt er tilgjengelig), men ikke tolkbart.'
-    - tekst: 'Fordi parametrene er skjult og ikke kan leses ut'
+      forklaring: 'Nettet er transparent (alle vekter kan leses ut), men ikke tolkbart.'
+    - tekst: 'Parametrene er skjult og kan ikke leses ut'
       forklaring: 'Alle vekter og aktiveringer kan leses ut. Problemet er å forstå dem.'
-    - tekst: 'Fordi nettet gir tilfeldige svar'
+    - tekst: 'Nettet gir tilfeldige svar på samme input'
       forklaring: 'Et trent nett er deterministisk.'
-    - tekst: 'Fordi nett alltid er dårligere enn enkle modeller'
+    - tekst: 'Nett er alltid dårligere enn enkle modeller'
       forklaring: 'Nett er ofte svært gode. Problemet er forståelsen.'
   forklaring: |
     Subsymbolsk KI lagrer kunnskap i tusenvis eller millioner av tall, ikke i symboler og regler mennesker kan lese. Derfor trenger vi forklaringsmetoder.
@@ -28,12 +28,12 @@
   sporsmal: |
     Hva er forskjellen på tolkbarhet og forklarbarhet slik kurset bruker begrepene?
   alternativer:
-    - tekst: 'Tolkbarhet er passiv (modellen er forståelig i seg selv), forklarbarhet er aktiv (vi lager en forklaring av en modell)'
+    - tekst: 'Tolkbarhet er passiv, forklarbarhet er aktiv'
       riktig: true
-      forklaring: 'Et lite beslutningstre er tolkbart. Et nevralt nett trenger forklaringer.'
-    - tekst: 'De betyr det samme'
+      forklaring: 'Tolkbar: modellen er forståelig i seg selv (et lite tre). Forklarbar: vi lager en forklaring av modellen (et nevralt nett).'
+    - tekst: 'De betyr det samme i praksis'
       forklaring: 'Kurset skiller tydelig mellom dem.'
-    - tekst: 'Tolkbarhet gjelder bare lineære modeller, forklarbarhet bare nevrale nett'
+    - tekst: 'Tolkbarhet gjelder lineære modeller, forklarbarhet nevrale nett'
       forklaring: 'Skillet handler om hvordan forståelsen oppnås, ikke modelltype.'
     - tekst: 'Forklarbarhet er passiv, tolkbarhet er aktiv'
       forklaring: 'Det er motsatt.'
@@ -81,15 +81,15 @@
   sporsmal: |
     Hva er forskjellen på symbolsk og subsymbolsk KI?
   alternativer:
-    - tekst: 'Symbolsk KI bruker eksplisitte regler og symboler mennesker kan lese, subsymbolsk KI lagrer kunnskap i mange tallverdier som vekter'
+    - tekst: 'Symbolsk: lesbare regler. Subsymbolsk: kunnskap lagret i vekter'
       riktig: true
-      forklaring: 'Ekspertsystemer er symbolske. Nevrale nett er subsymbolske.'
-    - tekst: 'Symbolsk KI er alltid mer nøyaktig'
+      forklaring: 'Ekspertsystemer er symbolske. Nevrale nett er subsymbolske, med kunnskapen fordelt på mange tallverdier.'
+    - tekst: 'Symbolsk lærer fra data, subsymbolsk programmeres med regler'
+      forklaring: 'Det er omtrent motsatt. Subsymbolske metoder som nevrale nett lærer vektene fra data.'
+    - tekst: 'Subsymbolsk bruker symboler som er skjult for brukeren'
+      forklaring: 'Subsymbolsk KI bruker ikke symboler, men tallverdier som vekter.'
+    - tekst: 'Symbolsk er alltid mer nøyaktig, siden reglene er eksplisitte'
       forklaring: 'Subsymbolske metoder er ofte bedre på komplekse oppgaver som bildegjenkjenning.'
-    - tekst: 'Subsymbolsk KI bruker bare symboler'
-      forklaring: 'Det er motsatt.'
-    - tekst: 'Det er ingen forskjell, begge er nevrale nett'
-      forklaring: 'Symbolsk KI er regelbasert.'
   forklaring: |
     Det er overgangen fra symbolsk til subsymbolsk KI som har gjort forklarbarhet til et stort tema.
   husk: 'Symbolsk: lesbare regler. Subsymbolsk: vekter, vanskelig å forstå.'
@@ -120,10 +120,10 @@
   sporsmal: |
     Hva betyr det at en forklaringsmetode er *modellagnostisk*?
   alternativer:
-    - tekst: 'Den trenger bare modellens input og output og kan brukes på enhver modell'
+    - tekst: 'Den trenger bare modellens input og output'
       riktig: true
-      forklaring: 'Eksempel: LIME og SHAP med KernelExplainer.'
-    - tekst: 'Den forklarer hele modellen på en gang'
+      forklaring: 'Derfor kan den brukes på enhver modell. Eksempel: LIME og SHAP med KernelExplainer.'
+    - tekst: 'Den forklarer hele modellen på én gang'
       forklaring: 'Det er en global forklaring. Omfang og modellkrav er uavhengige egenskaper.'
     - tekst: 'Den lages før modellen trenes'
       forklaring: 'Alle metodene i kurset er post-hoc.'
@@ -160,10 +160,10 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** En global forklaringsmetode er alltid modellagnostisk.
-  riktig: false
+    **Påstand:** TCAV krever alltid tilgang til modellens indre, selv om metoden gir globale forklaringer.
+  riktig: true
   forklaring: |
-    Omfang og modellkrav er uavhengige. TCAV er global, men modellspesifikk. LIME er modellagnostisk, men lokal.
+    TCAV er modellspesifikk: CAV-en læres fra aktiveringer i et lag, og sensitiviteten er gradienten prikket med CAV-en. Samtidig er den global, fordi skåren gjelder en hel klasse. Omfang (lokal/global) og modellkrav (agnostisk/spesifikk) er uavhengige egenskaper.
   husk: 'Global ≠ modellagnostisk. To uavhengige egenskaper.'
 
 - id: "8.2-04"
@@ -173,14 +173,14 @@
   sporsmal: |
     Hva er en surrogatmodell i forklarbar KI?
   alternativer:
-    - tekst: 'En enkel, tolkbar modell som trenes til å etterligne den komplekse modellen, ofte bare lokalt'
+    - tekst: 'En tolkbar modell som etterligner den komplekse'
       riktig: true
-      forklaring: 'LIME bruker en lineær surrogat i nabolaget rundt ett punkt.'
+      forklaring: 'Den trenes på den komplekse modellens prediksjoner, ofte bare lokalt. LIME bruker en lineær surrogat i nabolaget rundt ett punkt.'
     - tekst: 'En kopi av den komplekse modellen med færre lag'
       forklaring: 'Surrogaten trenger ikke ligne arkitekturen. Den må være tolkbar.'
-    - tekst: 'En modell trent på de ekte targetene for å sammenligne med den komplekse'
+    - tekst: 'En modell trent på de ekte targetene til sammenligning'
       forklaring: 'Surrogaten trenes på den komplekse modellens prediksjoner.'
-    - tekst: 'Et datasett med tilfeldige punkter'
+    - tekst: 'Et sett tilfeldige punkter rundt datapunktet'
       forklaring: 'Tilfeldige punkter brukes til å trene surrogaten, men er ikke surrogaten.'
   forklaring: |
     Surrogaten forklarer *modellen*, ikke dataene. Derfor kommer labels fra modellen.
@@ -193,14 +193,14 @@
   sporsmal: |
     Hva betyr *post-hoc* forklaring?
   alternativer:
-    - tekst: 'At forklaringen lages etter at modellen er trent, uten å endre den'
+    - tekst: 'At forklaringen lages etter treningen, uten å endre modellen'
       riktig: true
       forklaring: 'Alle metodene i kurset (SHAP, LIME, TCAV) er post-hoc.'
-    - tekst: 'At forklaringen er mindre presis'
-      forklaring: 'Post-hoc sier ingenting om presisjon.'
+    - tekst: 'At forklaringen bare bruker modellens input og output'
+      forklaring: 'Det er modellagnostisk. Post-hoc handler om når forklaringen lages, ikke hva den trenger tilgang til.'
     - tekst: 'At forklaringen bare gjelder ett datapunkt'
       forklaring: 'Det er lokal.'
-    - tekst: 'At modellen er laget for å være tolkbar fra starten'
+    - tekst: 'At modellen er laget tolkbar fra starten'
       forklaring: 'Det er det motsatte av post-hoc.'
   forklaring: |
     Alternativet er tolkbare modeller fra starten, som små trær eller lineære modeller.
@@ -316,7 +316,7 @@
       riktig: true
       forklaring: 'Dummy-spilleren får ingenting.'
     - tekst: 'Monotonitet: den som spiller først, får mest'
-      forklaring: 'Rekkefølge gir ingen fordel. Det fjerde aksiomet er additivitet.'
+      forklaring: 'Rekkefølgen spillerne kommer i gir ingen fordel. Det fjerde aksiomet er additivitet. (Notatene nevner at Young (1985) har en alternativ karakterisering med et aksiom kalt monotonitet, men det betyr ikke at den som spiller først får mest.)'
   forklaring: |
     Det fjerde aksiomet er additivitet: verdien i spillet $v + w$ er summen av verdiene i hvert spill. Shapley er den eneste fordelingen som oppfyller alle fire.
   husk: 'Effektivitet, symmetri, nullspiller, additivitet. Shapley er unik.'
@@ -359,14 +359,14 @@
   sporsmal: |
     I SHAP er basisverdien $\phi_0 = \mathbb{E}[f(\mathbf{x})]$. Hva er den?
   alternativer:
-    - tekst: 'Snittprediksjonen til modellen over bakgrunnsdatasettet'
+    - tekst: 'Snittprediksjonen over bakgrunnsdataene'
       riktig: true
       forklaring: 'Bidragene $\phi_j$ forklarer hvordan prediksjonen avviker fra dette snittet.'
-    - tekst: '0'
-      forklaring: 'Basisverdien er snittprediksjonen, som sjelden er 0.'
+    - tekst: 'Prediksjonen når alle features er 0'
+      forklaring: 'Basisverdien er snittprediksjonen over bakgrunnsdataene, ikke prediksjonen i origo.'
     - tekst: 'Prediksjonen for datapunktet som forklares'
       forklaring: 'Den er basisverdien pluss summen av bidragene.'
-    - tekst: 'Den største SHAP-verdien'
+    - tekst: 'Den største SHAP-verdien for punktet'
       forklaring: 'Basisverdien er ikke et feature-bidrag.'
   forklaring: |
     $f(\mathbf{x}^*) = \phi_0 + \sum_j \phi_j^*$. Valget av bakgrunnsdata endrer basisverdien og dermed bidragene.
@@ -400,15 +400,15 @@
   sporsmal: |
     I et SHAP beeswarm-plott ligger mange røde punkter for featuren «areal» langt til høyre. Hva betyr det?
   alternativer:
-    - tekst: 'Høyt areal (rød = høy featureverdi) gir typisk store positive bidrag til prediksjonen'
+    - tekst: 'Høyt areal gir store positive bidrag'
       riktig: true
-      forklaring: 'I beeswarm viser fargen featureverdien og plasseringen SHAP-verdien.'
-    - tekst: 'Rødt betyr positiv SHAP-verdi, uavhengig av arealet'
+      forklaring: 'I beeswarm viser fargen featureverdien (rød = høy) og plasseringen SHAP-verdien.'
+    - tekst: 'Rødt betyr positiv SHAP-verdi, uansett areal'
       forklaring: 'I beeswarm er fargen featureverdien. I force plot betyr rødt at featuren trekker prediksjonen opp.'
     - tekst: 'Areal er den minst viktige featuren'
       forklaring: 'Store bidrag langt fra 0 tyder på at featuren er viktig.'
-    - tekst: 'Modellen er feil'
-      forklaring: 'Større areal gir høyere pris, noe som virker rimelig.'
+    - tekst: 'Lavt areal gir store positive bidrag'
+      forklaring: 'Rød betyr høy featureverdi, så de røde punktene langt til høyre er boliger med høyt areal.'
   forklaring: |
     Beeswarm: én rad per feature, ett punkt per datapunkt, x-aksen er SHAP-verdien, fargen er featureverdien. Radene er sortert etter $\frac1n\sum|\phi_j|$.
   husk: 'Beeswarm: farge = featureverdi, posisjon = SHAP-verdi. Force plot: rød = trekker opp.'
@@ -423,13 +423,13 @@
     - tekst: 'I SHAP tilsvarer spillerne features og spillet modellens prediksjon.'
       riktig: true
       forklaring: 'Shapley-verdier fordeler prediksjonen på featurene.'
-    - tekst: '$v(S)$ er forventet prediksjon når featurene i $S$ er satt til verdiene i punktet som forklares.'
+    - tekst: '$v(S)$ er forventet prediksjon når featurene i $S$ er kjent.'
       riktig: true
       forklaring: '$v(S) = \mathbb{E}[f(\mathbf{x}) \mid \mathbf{x}_S = \mathbf{x}^*_S]$, med de andre featurene fra bakgrunnsdata.'
-    - tekst: 'Vanlige implementasjoner antar at featurene er uavhengige når de manglende featurene fylles inn.'
+    - tekst: 'Implementasjonene antar ofte uavhengige features.'
       riktig: true
-      forklaring: 'Det kan gi urealistiske kombinasjoner når featurene er korrelerte.'
-    - tekst: 'Valget av bakgrunnsdata påvirker ikke resultatet.'
+      forklaring: 'Manglende features fylles inn som om de var uavhengige, noe som kan gi urealistiske kombinasjoner når featurene er korrelerte.'
+    - tekst: 'Valget av bakgrunnsdata påvirker ikke resultatet, bare kjøretiden.'
       forklaring: 'Det endrer både basisverdien og bidragene.'
   forklaring: |
     For bilder brukes ofte superpiksler (grupper av piksler) som «spillere» for å holde antall features nede.
@@ -453,15 +453,15 @@
   sporsmal: |
     SHAP har ulike «explainere», som `KernelExplainer`, `TreeExplainer` og `DeepExplainer`. Hvorfor regnes SHAP likevel som modellagnostisk?
   alternativer:
-    - tekst: 'Fordi metoden (Shapley-verdier av prediksjonen) er definert uavhengig av modellen, og KernelExplainer virker på enhver modell; de spesifikke explainerne er bare raskere måter å regne på'
+    - tekst: 'Metoden er definert uavhengig av modellen, og spesialversjonene er bare raskere'
       riktig: true
-      forklaring: 'Tree- og DeepExplainer utnytter modellens struktur for fart.'
-    - tekst: 'Fordi alle explainerne bare bruker input og output'
+      forklaring: 'Shapley-verdier av prediksjonen er definert uten å se inn i modellen, og KernelExplainer virker på enhver modell. Tree- og DeepExplainer utnytter strukturen for fart.'
+    - tekst: 'Fordi alle explainerne bare bruker modellens input og output'
       forklaring: 'Tree- og DeepExplainer bruker modellens indre.'
-    - tekst: 'Fordi SHAP alltid regner eksakte verdier'
-      forklaring: 'De fleste explainere approksimerer.'
-    - tekst: 'SHAP regnes ikke som modellagnostisk'
-      forklaring: 'Kurset regner SHAP som modellagnostisk.'
+    - tekst: 'Fordi TreeExplainer og DeepExplainer også virker på alle modeller'
+      forklaring: 'De er laget for henholdsvis trær og nevrale nett og bruker modellens indre.'
+    - tekst: 'Fordi SHAP alltid regner ut eksakte Shapley-verdier'
+      forklaring: 'De fleste explainere approksimerer Shapley-verdiene. Om verdiene er eksakte, sier uansett ingenting om hvilken tilgang til modellen metoden trenger.'
   forklaring: |
     Skillet er mellom selve forklaringsbegrepet og beregningsmetoden.
   husk: 'SHAP-metoden er modellagnostisk. Tree/Deep-explainere er modellspesifikke snarveier.'
@@ -474,9 +474,9 @@
   sporsmal: |
     Hva er hovedidéen i LIME?
   alternativer:
-    - tekst: 'Å forklare én prediksjon ved å tilpasse en enkel, tolkbar modell til den komplekse modellens prediksjoner i nabolaget rundt punktet'
+    - tekst: 'Å tilpasse en enkel modell lokalt rundt én prediksjon'
       riktig: true
-      forklaring: 'Local Interpretable Model-agnostic Explanations.'
+      forklaring: 'Den enkle modellen trenes på den komplekse modellens prediksjoner i nabolaget rundt punktet.'
     - tekst: 'Å forklare hele modellen med én lineær modell'
       forklaring: 'LIME er lokal.'
     - tekst: 'Å regne ut Shapley-verdier eksakt'
@@ -494,14 +494,14 @@
   sporsmal: |
     I LIME trekkes nye punkter rundt punktet som skal forklares. Hvilke labels brukes når surrogatmodellen $g$ trenes på dem?
   alternativer:
-    - tekst: 'Den komplekse modellens prediksjoner $f(\mathbf{z})$ for de nye punktene'
+    - tekst: 'Den komplekse modellens prediksjoner $f(\mathbf{z})$'
       riktig: true
       forklaring: 'Vi forklarer modellen, ikke dataene. De nye punktene har uansett ingen ekte labels.'
     - tekst: 'De ekte targetene fra treningsdataene'
       forklaring: 'De trukne punktene har ingen ekte targets, og vi vil forklare modellen.'
-    - tekst: 'Tilfeldige labels'
+    - tekst: 'Tilfeldige labels for hvert nytt punkt'
       forklaring: 'Da ville surrogaten ikke lært noe om modellen.'
-    - tekst: 'Labelen til punktet som forklares, for alle nye punkter'
+    - tekst: 'Labelen til punktet som forklares'
       forklaring: 'Da ville surrogaten ikke sett hvordan modellen endrer seg i nabolaget.'
   forklaring: |
     Stegene: velg punkt, trekk naboer, få $f$ sine prediksjoner, vekt naboene etter nærhet $\pi_{\mathbf{x}}$, tren en enkel $g$, les av koeffisientene.
@@ -531,15 +531,15 @@
   sporsmal: |
     LIME løser $\xi(\mathbf{x}) = \arg\min_{g \in G}\mathcal{L}(f, g, \pi_{\mathbf{x}}) + \Omega(g)$. Hva er rollen til $\Omega(g)$?
   alternativer:
-    - tekst: 'Den straffer kompleksiteten til surrogaten, slik at forklaringen holder seg enkel og tolkbar'
+    - tekst: 'Den straffer kompleksiteten til surrogaten'
       riktig: true
-      forklaring: 'For eksempel ved å begrense antall features med ikke-null koeffisient.'
-    - tekst: 'Den måler hvor godt $g$ etterligner $f$'
+      forklaring: 'Forklaringen skal holde seg enkel og tolkbar, for eksempel med få features med ikke-null koeffisient.'
+    - tekst: 'Den måler hvor godt $g$ etterligner $f$ lokalt'
       forklaring: 'Det gjør $\mathcal{L}$, vektet med $\pi_{\mathbf{x}}$.'
-    - tekst: 'Den vekter punktene etter nærhet'
+    - tekst: 'Den vekter nabopunktene etter avstand til $\mathbf{x}$'
       forklaring: 'Det gjør $\pi_{\mathbf{x}}$.'
-    - tekst: 'Den er tapsfunksjonen til den komplekse modellen'
-      forklaring: '$f$ er allerede trent. LIME endrer den ikke.'
+    - tekst: 'Den straffer kompleksiteten til den komplekse modellen $f$'
+      forklaring: '$f$ er allerede trent, og LIME endrer den ikke. $\Omega$ virker på surrogaten $g$.'
   forklaring: |
     Avveining: en mer kompleks $g$ etterligner $f$ bedre (lavere $\mathcal{L}$), men blir mindre tolkbar (høyere $\Omega$).
   husk: 'L: troskap mot f lokalt. Ω: enkelhet. π_x: nærhet.'
@@ -588,12 +588,12 @@
   sporsmal: |
     Hva er forskjellen på et konsept og en feature i konseptbaserte forklaringer?
   alternativer:
-    - tekst: 'En feature er eksplisitt (for eksempel en pikselverdi), mens et konsept er implisitt og menneskeforståelig (for eksempel «striper»)'
+    - tekst: 'En feature er eksplisitt i dataene, et konsept er implisitt'
       riktig: true
-      forklaring: 'Konsepter er ikke kolonner i dataene. De defineres med eksempler.'
-    - tekst: 'Det er ingen forskjell'
-      forklaring: 'Kurset skiller tydelig mellom dem.'
-    - tekst: 'Konsepter er alltid numeriske, features er kategoriske'
+      forklaring: 'En feature er for eksempel en pikselverdi. Et konsept («striper») er menneskeforståelig og defineres med eksempler.'
+    - tekst: 'Et konsept er eksplisitt i dataene, en feature er implisitt'
+      forklaring: 'Det er motsatt.'
+    - tekst: 'Konsepter er numeriske, features er kategoriske'
       forklaring: 'Skillet handler om eksplisitt mot implisitt.'
     - tekst: 'Konsepter finnes bare i output-laget'
       forklaring: 'CAV-er kan lages i alle lag.'
@@ -608,14 +608,14 @@
   sporsmal: |
     Hvordan lages en CAV (concept activation vector) for et konsept i lag $l$?
   alternativer:
-    - tekst: 'Samle eksempler med og uten konseptet, hent aktiveringene i lag $l$, tren en lineær klassifikator (probe) som skiller dem, og bruk normalvektoren til beslutningsgrensen'
+    - tekst: 'Normalvektoren til en lineær probe som skiller aktiveringer med og uten konseptet'
       riktig: true
-      forklaring: 'CAV-en peker i retningen konseptet øker i aktiveringsrommet.'
-    - tekst: 'Ta gradienten av tapet med hensyn på input'
+      forklaring: 'Samle eksempler med og uten konseptet, hent aktiveringene i lag $l$ og tren en lineær klassifikator. CAV-en peker i retningen konseptet øker.'
+    - tekst: 'Gradienten av tapet med hensyn på input for konseptbildene'
       forklaring: 'Gradienten brukes senere i sensitiviteten, men er ikke CAV-en.'
-    - tekst: 'Velg den neuronen i lag $l$ som har høyest aktivering'
-      forklaring: 'Et konsept er typisk en retning, ikke én enkelt neuron.'
-    - tekst: 'Bruk vektene i output-laget'
+    - tekst: 'Aktiveringen til den neuronen i lag $l$ som reagerer sterkest på konseptet'
+      forklaring: 'Et konsept er typisk en retning i aktiveringsrommet, ikke én enkelt neuron.'
+    - tekst: 'Snittet av vektene i output-laget for klassen'
       forklaring: 'CAV-en læres fra aktiveringer for konseptbilder.'
   forklaring: |
     Proben er en enkel lineær modell på aktiveringene. Den lages per lag, så samme konsept kan ha ulike CAV-er i ulike lag.
@@ -701,11 +701,11 @@
     - tekst: 'LIME eller SHAP med KernelExplainer'
       riktig: true
       forklaring: 'Begge er lokale og trenger bare input og output.'
-    - tekst: 'TCAV'
+    - tekst: 'TCAV for klassen «avslått»'
       forklaring: 'TCAV er global og krever tilgang til aktiveringer og gradienter.'
-    - tekst: 'PCA'
+    - tekst: 'PCA på alle søknadene'
       forklaring: 'PCA er dimensjonsreduksjon, ikke en forklaringsmetode.'
-    - tekst: 'DeepExplainer'
+    - tekst: 'SHAP med DeepExplainer'
       forklaring: 'DeepExplainer krever tilgang til nettets indre.'
   forklaring: |
     Når du bare har tilgang til prediksjonene og vil forklare ett tilfelle, trenger du en lokal, modellagnostisk metode.
@@ -727,8 +727,8 @@
     - tekst: 'Global: beeswarm-plott av SHAP-verdier'
       riktig: true
       forklaring: 'Aggregerer over mange datapunkter.'
-    - tekst: 'Lokal: TCAV'
-      forklaring: 'TCAV er global.'
+    - tekst: 'Lokal: TCAV, som forklarer én prediksjon'
+      forklaring: 'TCAV er global. Skåren gjelder en hel klasse.'
   forklaring: |
     Lær tabellen: hver egenskap med minst ett eksempel.
   husk: 'Surrogat: LIME. Spesifikk: Tree/Deep/TCAV. Global: TCAV, beeswarm. Lokal: LIME, SHAP per punkt.'
@@ -740,14 +740,14 @@
   sporsmal: |
     Hva forklarer de tre metodene *med*?
   alternativer:
-    - tekst: 'SHAP og LIME med bidrag fra input-features, TCAV med menneskeforståelige konsepter'
+    - tekst: 'SHAP og LIME med features, TCAV med konsepter'
       riktig: true
-      forklaring: 'Konseptene trenger ikke være features i dataene.'
-    - tekst: 'Alle tre med konsepter'
+      forklaring: 'SHAP og LIME gir bidrag fra input-features. TCAV bruker menneskeforståelige konsepter, som ikke trenger å være features i dataene.'
+    - tekst: 'Alle tre med menneskeforståelige konsepter'
       forklaring: 'Bare TCAV bruker konsepter.'
-    - tekst: 'Alle tre med gradienter'
+    - tekst: 'Alle tre med gradienter fra modellen'
       forklaring: 'LIME og KernelSHAP bruker ikke gradienter.'
-    - tekst: 'SHAP med konsepter, TCAV med features'
+    - tekst: 'SHAP og LIME med konsepter, TCAV med features'
       forklaring: 'Det er motsatt.'
   forklaring: |
     Feature-baserte forklaringer kan være vanskelige å lese for bilder (enkeltpiksler sier lite). Konsepter er nærmere hvordan mennesker tenker.
@@ -772,15 +772,15 @@
   sporsmal: |
     En bank vil vite om en kredittmodell (et nevralt nett) generelt legger vekt på søkerens bosted, og har full tilgang til modellen. Hvilken tilnærming gir best svar på akkurat det spørsmålet?
   alternativer:
-    - tekst: 'Aggregerte SHAP-verdier over mange søkere (global viktighet og beeswarm) for bosted-featuren'
+    - tekst: 'Aggregerte SHAP-verdier for bosted over mange søkere'
       riktig: true
-      forklaring: 'Spørsmålet er globalt og handler om en feature, så aggregert SHAP passer.'
-    - tekst: 'LIME for én tilfeldig søker'
-      forklaring: 'En lokal forklaring svarer ikke på hva modellen gjør generelt.'
-    - tekst: 'Shapley-verdier for storkoalisjonen'
-      forklaring: 'Det er ikke en konkret metode for spørsmålet.'
-    - tekst: 'PCA på søkerdataene'
-      forklaring: 'PCA sier noe om dataene, ikke om modellen.'
+      forklaring: 'Spørsmålet er globalt og handler om en feature, så global viktighet og beeswarm passer.'
+    - tekst: 'SHAP force plot for én typisk søker'
+      forklaring: 'Det er en lokal forklaring og svarer ikke på hva modellen gjør generelt.'
+    - tekst: 'TCAV med konseptet «bosted»'
+      forklaring: 'Bosted er en eksplisitt feature, så konseptbaserte metoder er en omvei. TCAV er laget for implisitte konsepter.'
+    - tekst: 'LIME for en tilfeldig valgt søker'
+      forklaring: 'En lokal forklaring av én søker svarer ikke på hva modellen gjør generelt.'
   forklaring: |
     TCAV kunne vært aktuelt for et konsept som ikke er en feature. Her er bosted en feature, så feature-baserte metoder, aggregert, gir svaret.
   husk: 'Globalt spørsmål om en feature: aggreger SHAP over mange punkter.'
@@ -877,7 +877,7 @@
 
     Hvilken rolle har `num_features=3` i LIME-formuleringen $\xi(\mathbf{x}) = \arg\min_{g \in G}\mathcal{L}(f, g, \pi_{\mathbf{x}}) + \Omega(g)$?
   alternativer:
-    - tekst: 'Den begrenser kompleksiteten til surrogaten $g$, slik at forklaringen bare bruker tre features. Det tilsvarer $\Omega(g)$'
+    - tekst: 'Den begrenser kompleksiteten $\Omega(g)$ til tre features'
       riktig: true
       forklaring: 'En enkel surrogat er lettere å forstå, på bekostning av hvor godt den etterligner modellen lokalt.'
     - tekst: 'Den bestemmer hvor mange nabopunkter som trekkes rundt $\mathbf{x}$'

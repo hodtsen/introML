@@ -8,10 +8,10 @@
   sporsmal: |
     Et perceptron regner ut en vektet sum og bruker Heaviside-funksjonen. Hvilken egenskap ved Heaviside gjør den uegnet for gradientbasert optimering?
   alternativer:
-    - tekst: 'Den er ikke deriverbar i hoppet og har derivert 0 overalt ellers'
+    - tekst: 'Den deriverte er 0 nesten overalt'
       riktig: true
-      forklaring: 'Gradienten gir da ingen informasjon om hvilken vei vektene bør endres.'
-    - tekst: 'Den gir negative verdier'
+      forklaring: 'Den er ikke deriverbar i hoppet og har derivert 0 overalt ellers. Gradienten sier da ingenting om hvilken vei vektene bør endres.'
+    - tekst: 'Den gir negative verdier for negativ input'
       forklaring: 'Heaviside gir bare 0 eller 1.'
     - tekst: 'Den gir verdier utenfor $[0, 1]$'
       forklaring: 'Verdiene er nettopp 0 og 1.'
@@ -129,9 +129,9 @@
   sporsmal: |
     Hvilken aktivering bør output-laget ha i et nevralt nett som skal predikere boligpriser?
   alternativer:
-    - tekst: 'Lineær (ingen aktivering)'
+    - tekst: 'Lineær'
       riktig: true
-      forklaring: 'Outputen må kunne bli et hvilket som helst reelt tall.'
+      forklaring: 'Ingen aktivering: outputen må kunne bli et hvilket som helst reelt tall.'
     - tekst: 'Sigmoid'
       forklaring: 'Sigmoid låser outputen til $(0, 1)$.'
     - tekst: 'Softmax'
@@ -175,13 +175,12 @@
     - tekst: 'De gjør det mulig å lære ikke-lineære sammenhenger, som XOR.'
       riktig: true
       forklaring: 'Ikke-linearitet i skjulte lag lar nettet lage nye, krumme grenser.'
-    - tekst: 'Kontinuerlige og deriverbare aktiveringer gjør at nettet kan trenes med gradient descent.'
-      riktig: true
-      forklaring: 'Det er grunnen til å bytte ut Heaviside.'
+    - tekst: 'Det er ikke-lineariteten som gjør aktiveringene deriverbare, slik at nettet kan trenes.'
+      forklaring: 'Deriverbarhet og ikke-linearitet er to ulike egenskaper: en lineær aktivering er også deriverbar. Vi bytter ut Heaviside for å få deriverbarhet, og velger ikke-lineære aktiveringer for at nettet skal kunne lære ikke-lineære sammenhenger.'
     - tekst: 'Ikke-lineære aktiveringer gjør at nettet trenger færre treningsdata.'
       forklaring: 'De gjør nettet mer fleksibelt, som ofte krever mer data, ikke mindre.'
   forklaring: |
-    To egenskaper trengs: ikke-linearitet (for å kunne lære komplekse sammenhenger) og deriverbarhet (for å kunne trene).
+    Aktiveringene i skjulte lag trenger to egenskaper: ikke-linearitet (ellers blir flere lag bare én lineær transformasjon) og deriverbarhet (for å kunne trenes). Det er to ulike egenskaper: en lineær funksjon er også deriverbar.
   husk: 'Skjulte lag trenger ikke-linearitet (ellers bare lineær modell) og deriverbarhet (for trening).'
 
 - id: "5.2-04"
@@ -189,10 +188,10 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** Et nevron med sigmoid-aktivering gir alltid enten 0 eller 1 som output.
-  riktig: false
+    **Påstand:** Et nevron med sigmoid-aktivering gir aldri nøyaktig 0 eller 1 som output.
+  riktig: true
   forklaring: |
-    Sigmoid gir kontinuerlige verdier i $(0, 1)$. Det er Heaviside som gir bare 0 eller 1. Sigmoid nærmer seg 0 og 1 for store $|z|$, men når dem aldri.
+    Sigmoid gir kontinuerlige verdier i det åpne intervallet $(0, 1)$. Den nærmer seg 0 og 1 for store $|z|$, men når dem aldri (matematisk sett; i flyttall kan svært store $|z|$ rundes av). Det er Heaviside som gir nøyaktig 0 eller 1.
   husk: 'Sigmoid: (0, 1), kontinuerlig. Heaviside: {0, 1}.'
 
 - id: "5.2-05"
@@ -202,15 +201,15 @@
   sporsmal: |
     Den deriverte av sigmoid er $\sigma'(z) = \sigma(z)(1 - \sigma(z))$. Hva er den største verdien den deriverte kan ha, og hva betyr det for dype nett med sigmoid i alle lag?
   alternativer:
-    - tekst: '0,25 i $z = 0$. Gradienter som går bakover gjennom mange sigmoid-lag, ganges med små tall og kan bli svært små'
+    - tekst: '0,25, så gradientene kan krympe gjennom mange lag'
       riktig: true
-      forklaring: 'Derfor brukes ReLU, med derivert 1 for positive $z$, i skjulte lag.'
-    - tekst: '1 i $z = 0$. Gradientene blir bevart gjennom alle lag'
-      forklaring: '$\sigma(0) = 0{,}5$ gir $0{,}5 \cdot 0{,}5 = 0{,}25$.'
-    - tekst: '0,5 i $z = 0$. Det har ingen betydning for dype nett'
-      forklaring: '0,5 er $\sigma(0)$, ikke den deriverte.'
-    - tekst: 'Den deriverte er uendelig i $z = 0$'
-      forklaring: 'Sigmoid er glatt overalt.'
+      forklaring: 'Maks i $z = 0$: $0{,}5 \cdot 0{,}5 = 0{,}25$. Gradienter som går bakover gjennom mange sigmoid-lag, ganges med små tall. Derfor brukes ReLU i skjulte lag.'
+    - tekst: '0,25, men lagene påvirker ikke hverandres gradienter'
+      forklaring: 'Verdien er riktig, men kjerneregelen ganger de deriverte fra hvert lag sammen. Små faktorer i mange lag gir svært små gradienter.'
+    - tekst: '0,5, så gradienten halveres i hvert lag'
+      forklaring: '0,5 er $\sigma(0)$, ikke den deriverte. Maks for den deriverte er 0,25.'
+    - tekst: '1, så gradientene bevares gjennom alle lag'
+      forklaring: '$\sigma(0) = 0{,}5$ gir $0{,}5 \cdot 0{,}5 = 0{,}25$. Derivert 1 for positive $z$ er ReLU.'
   forklaring: |
     I backpropagation ganges deriverte fra hvert lag sammen. Mange faktorer på høyst 0,25 gir en gradient som krymper eksponentielt med antall lag.
   husk: 'σ′ ≤ 0,25. ReLU har derivert 1 for z > 0 og er derfor standard i skjulte lag.'
@@ -242,15 +241,15 @@
   sporsmal: |
     Hva bestemmer antall noder i input-laget og output-laget i et fullt koblet nevralt nett?
   alternativer:
-    - tekst: 'Antall features i dataene og formen på target (for eksempel antall klasser)'
+    - tekst: 'Antall features og formen på target'
       riktig: true
-      forklaring: 'Disse er gitt av problemet. Bare de skjulte lagene velger vi fritt.'
-    - tekst: 'Begge er hyperparametre vi velger fritt'
+      forklaring: 'Input-laget har én node per feature, og output-laget er gitt av target (for eksempel antall klasser). Bare de skjulte lagene velger vi fritt.'
+    - tekst: 'Hyperparametre vi velger fritt'
       forklaring: 'Bare størrelsen på de skjulte lagene er fri.'
     - tekst: 'Antall treningspunkter'
       forklaring: 'Antall datapunkter påvirker ikke formen på nettet.'
-    - tekst: 'Batch size'
-      forklaring: 'Batch size er en treningsinnstilling.'
+    - tekst: 'Batch size og antall epoker'
+      forklaring: 'Batch size og antall epoker er treningsinnstillinger og påvirker ikke formen på nettet.'
   forklaring: |
     Input-laget er bare dataene (én node per feature). Output-laget har én node per klasse (eller én for binær klassifisering og én per regresjonsverdi).
   husk: 'Input = antall features. Output = målformen. Skjulte lag = hyperparametre.'
@@ -339,15 +338,15 @@
   sporsmal: |
     MLP-en i XAI-delen av prosjekt 4 har arkitekturen 784 → 128 → 64 → 10 for MNIST. Hvorfor har input-laget 784 noder og output-laget 10?
   alternativer:
-    - tekst: 'Bildene er 28 × 28 = 784 piksler, og det er 10 siffer å klassifisere'
+    - tekst: '28 × 28 piksler og 10 siffer'
       riktig: true
-      forklaring: 'Input-laget har én node per feature og output-laget én per klasse.'
-    - tekst: '784 og 10 er hyperparametre som ble valgt med kryssvalidering'
+      forklaring: 'Input-laget har én node per feature (784 piksler), og output-laget én per klasse (10 siffer).'
+    - tekst: 'Hyperparametre valgt med kryssvalidering'
       forklaring: 'De er gitt av dataene og oppgaven.'
-    - tekst: 'Det er 784 treningsbilder og 10 epoker'
+    - tekst: '784 treningsbilder og 10 epoker'
       forklaring: 'Antall bilder og epoker påvirker ikke formen på nettet.'
-    - tekst: '784 er antall parametre i første lag'
-      forklaring: 'Første skjulte lag har $784 \cdot 128 + 128 = 100\,480$ parametre.'
+    - tekst: '784 parametre i første lag og 10 i siste'
+      forklaring: 'Første skjulte lag har $784 \cdot 128 + 128 = 100\,480$ parametre. Antall noder er ikke antall parametre.'
   forklaring: |
     Bare 128 og 64 er valgt fritt. Totalt har nettet $100\,480 + 8\,256 + 650 = 109\,386$ parametre.
   husk: 'Input = antall piksler (features). Output = antall klasser.'
@@ -360,15 +359,15 @@
   sporsmal: |
     Hva gjør backpropagation?
   alternativer:
-    - tekst: 'Den regner ut hvordan tapet endres med hver vekt (gradienten) ved å bruke kjerneregelen bakover gjennom nettet'
+    - tekst: 'Den regner ut gradienten av tapet med hensyn på vektene'
       riktig: true
-      forklaring: 'Gradientene brukes deretter i gradient descent.'
+      forklaring: 'Den bruker kjerneregelen bakover gjennom nettet. Gradientene brukes deretter i gradient descent.'
     - tekst: 'Den søker tilfeldig etter vekter som gir lavere tap'
       forklaring: 'Backprop er systematisk, ikke tilfeldig.'
-    - tekst: 'Den fjerner skjulte lag som ikke bidrar'
+    - tekst: 'Den fjerner skjulte lag som ikke bidrar til tapet'
       forklaring: 'Backprop endrer ikke arkitekturen.'
-    - tekst: 'Den setter aktiveringene i de skjulte lagene direkte'
-      forklaring: 'Aktiveringene kan bare endres gjennom vektene og biasene.'
+    - tekst: 'Den sender input gjennom nettet for å lage prediksjoner'
+      forklaring: 'Det er forward pass. Backprop går bakover og regner ut gradienter.'
   forklaring: |
     Først går vi forover og regner ut prediksjon og tap. Så går vi bakover og regner ut $\partial\mathcal{L}/\partial w$ for alle vekter, lag for lag. Til slutt oppdateres vektene med $\theta \leftarrow \theta - \eta\,\partial\mathcal{L}/\partial\theta$.
   husk: 'Backprop = effektiv utregning av gradienten med kjerneregelen, bakover lag for lag.'
@@ -380,14 +379,14 @@
   sporsmal: |
     I backpropagation er $\dfrac{\partial \mathcal{L}}{\partial w_{ij}^{(l)}} = \dfrac{\partial \mathcal{L}}{\partial a_j^{(l)}}\, g'(z_j^{(l)})\, a_i^{(l-1)}$. Hva sier faktoren $a_i^{(l-1)}$ intuitivt?
   alternativer:
-    - tekst: 'Jo større aktiveringen inn til vekten er, jo større effekt har en endring i vekten på tapet'
+    - tekst: 'Stor input til vekten gir stor effekt av å endre den'
       riktig: true
-      forklaring: 'En vekt som ganges med en stor aktivering, påvirker summen mye.'
-    - tekst: 'Jo større aktivering, jo mindre bør vekten endres'
+      forklaring: 'En vekt som ganges med en stor aktivering, påvirker summen mye, og dermed tapet.'
+    - tekst: 'Stor input til vekten betyr at den bør endres mindre'
       forklaring: 'Det er motsatt: stor aktivering gir stor gradient.'
     - tekst: 'Den bestemmer læringsraten for laget'
       forklaring: 'Læringsraten er en egen hyperparameter.'
-    - tekst: 'Den er feilen i output-laget'
+    - tekst: 'Den måler feilen i output-laget'
       forklaring: 'Feilinformasjonen ligger i $\partial\mathcal{L}/\partial a_j^{(l)}$.'
   forklaring: |
     Samme intuisjon som for logistisk regresjon, der gradienten er feil ganget med input. Første faktor er hvor mye vi ønsker å endre $a_j$, og den regnes ut fra laget etter, derfor går vi bakover.
@@ -409,8 +408,8 @@
     - tekst: 'Backprop krever at aktiveringsfunksjonene er deriverbare (nesten overalt).'
       riktig: true
       forklaring: 'Kjerneregelen bruker $g\prime(z)$.'
-    - tekst: 'Etter backprop er alle nevronene i et lag like.'
-      forklaring: 'Vektene starter tilfeldig og oppdateres individuelt, så nevronene blir ulike.'
+    - tekst: 'Etter backprop er alle nevronene i et lag like, siden de får samme gradient.'
+      forklaring: 'Vektene starter tilfeldig, så nevronene får ulike gradienter og blir ulike.'
   forklaring: |
     Backprop er bare kjerneregelen, organisert slik at hver mellomregning brukes mange ganger.
   husk: 'Backprop: kjerneregel bakover, snitt over batch, én oppdatering per parameter.'
@@ -433,15 +432,15 @@
   sporsmal: |
     Hvorfor må backpropagation gå *bakover* fra output-laget?
   alternativer:
-    - tekst: 'Fordi hvor mye en aktivering i et lag bør endres, avhenger av hvordan den påvirker de senere lagene og til slutt tapet'
+    - tekst: 'Gradienten i et lag trenger gradienten fra laget etter'
       riktig: true
-      forklaring: 'Leddet $\partial\mathcal{L}/\partial a_j^{(l)}$ regnes ut fra lag $l + 1$, som igjen trenger lag $l + 2$, osv.'
-    - tekst: 'Fordi vektene i output-laget alltid er viktigst'
+      forklaring: 'Leddet $\partial\mathcal{L}/\partial a_j^{(l)}$ regnes ut fra lag $l + 1$, som igjen trenger lag $l + 2$, osv. Effekten på tapet er bare kjent i enden.'
+    - tekst: 'Vektene i output-laget påvirker tapet mest'
       forklaring: 'Rekkefølgen handler om avhengigheter i utregningen, ikke viktighet.'
-    - tekst: 'Fordi forward pass ødelegger informasjonen i de første lagene'
+    - tekst: 'Forward pass overskriver aktiveringene i de første lagene'
       forklaring: 'Aktiveringene fra forward pass lagres og brukes i backward pass.'
-    - tekst: 'Det er bare en konvensjon, man kunne like gjerne gått forover'
-      forklaring: 'Kjerneregelen krever at vi kjenner effekten på tapet, som bare er kjent i enden.'
+    - tekst: 'Tapet er bare deriverbart med hensyn på output-laget'
+      forklaring: 'Tapet er deriverbart med hensyn på alle vektene. Det er derfor backprop fungerer.'
   forklaring: |
     Tapet er en funksjon av output, som er en funksjon av forrige lag, osv. Kjerneregelen må derfor startes i enden og føres bakover.
   husk: 'Tapet sitter i enden. Effekten på tapet må føres bakover lag for lag.'
@@ -491,13 +490,13 @@
   sporsmal: |
     Hva er den typiske konsekvensen av å bruke svært liten batch size (for eksempel 1)?
   alternativer:
-    - tekst: 'Gradientene blir støyete, så tapet hopper mer fra steg til steg'
+    - tekst: 'Gradientene blir støyete'
       riktig: true
-      forklaring: 'Gradienten estimeres fra få punkter og varierer mye.'
-    - tekst: 'Gradientene blir mindre støyete'
+      forklaring: 'Gradienten estimeres fra få punkter og varierer mye, så tapet hopper mer fra steg til steg.'
+    - tekst: 'Gradientene blir mer presise'
       forklaring: 'Det er motsatt. Større batch gir mer presise gradientestimater.'
-    - tekst: 'Modellen overtilpasser alltid'
-      forklaring: 'Overtilpasning er ikke den typiske konsekvensen av liten batch.'
+    - tekst: 'Hver epoke tar kortere tid'
+      forklaring: 'Med batch size 1 blir det én oppdatering per datapunkt, så en epoke tar som regel lengre tid.'
     - tekst: 'Gradienten blir systematisk skjev'
       forklaring: 'SGD-gradienten er støyete, men forventningsrett.'
   forklaring: |
@@ -520,8 +519,8 @@
     - tekst: 'Mini-batch: $N/B$ oppdateringer per epoke'
       riktig: true
       forklaring: 'Kompromisset som brukes i praksis.'
-    - tekst: 'En epoke er én batch'
-      forklaring: 'En epoke er alle treningspunktene én gang.'
+    - tekst: 'Epoke: én gjennomgang av én enkelt batch'
+      forklaring: 'En epoke er alle treningspunktene én gang, uansett batch size.'
   forklaring: |
     Antall oppdateringer per epoke: 1, $N$ og $N/B$.
   husk: 'GD: 1, SGD: N, mini-batch: N/B oppdateringer per epoke.'
@@ -544,15 +543,15 @@
   sporsmal: |
     Du har 50 000 treningsbilder og batch size 128. Hvor mange iterasjoner blir det per epoke i Keras, og hvorfor?
   alternativer:
-    - tekst: '391, fordi 50 000/128 = 390,6 og den siste, ufullstendige batchen også gir en oppdatering'
+    - tekst: '391, fordi den siste, ufullstendige batchen også brukes'
       riktig: true
-      forklaring: '390 fulle batcher og én batch med 80 bilder.'
+      forklaring: '50 000/128 = 390,6: 390 fulle batcher og én batch med 80 bilder.'
     - tekst: '390, fordi ufullstendige batcher droppes'
       forklaring: 'Keras bruker også siste batch som standard.'
-    - tekst: '128'
-      forklaring: 'Det er batch size, ikke antall iterasjoner.'
-    - tekst: '50 000'
-      forklaring: 'Det ville vært SGD med batch size 1.'
+    - tekst: '390,6, siden siste batch teller som en brøkdel'
+      forklaring: 'Iterasjoner er hele oppdateringer. Siste batch gir én hel oppdatering, bare med færre bilder.'
+    - tekst: '391, fordi Keras fyller opp siste batch med kopier'
+      forklaring: 'Tallet er riktig, men begrunnelsen er gal. Siste batch har bare 80 bilder, og ingenting fylles opp.'
   forklaring: |
     $\lceil N/B \rceil$ iterasjoner per epoke. Keras viser dette tallet i fremdriftslinjen under `fit`.
   husk: 'Iterasjoner per epoke = N/B rundet opp.'
@@ -614,15 +613,15 @@
   sporsmal: |
     Du kjører `model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)`. Hva betyr `validation_split=0.2`?
   alternativer:
-    - tekst: 'De siste 20 % av treningsdataene holdes utenfor treningen og brukes til å regne ut valideringstap etter hver epoke'
+    - tekst: 'Siste 20 % av treningsdataene brukes til validering'
       riktig: true
-      forklaring: 'Keras tar ut valideringsdataene før treningen starter.'
-    - tekst: 'Modellen trenes på 20 % av dataene'
+      forklaring: 'De holdes utenfor treningen og brukes til å regne ut valideringstap etter hver epoke.'
+    - tekst: 'Modellen trenes på bare 20 % av dataene'
       forklaring: 'Den trenes på de andre 80 %.'
     - tekst: '20 % av testdataene brukes til validering'
       forklaring: 'Argumentet virker på dataene som sendes til `fit`, altså treningsdataene.'
-    - tekst: 'Læringsraten reduseres med 20 % hver epoke'
-      forklaring: 'Det har ingenting med læringsraten å gjøre.'
+    - tekst: 'Tilfeldige 20 % trekkes ut på nytt hver epoke'
+      forklaring: 'Keras tar de siste 20 % én gang før treningen starter. Utvalget er det samme i alle epokene.'
   forklaring: |
     Valideringstapet (`val_loss`) kan overvåkes, for eksempel med early stopping (`monitor="val_loss"`).
   husk: 'validation_split tar en andel av treningsdataene til validering. Test bruker du med evaluate.'
@@ -680,13 +679,13 @@
 
     Targetene ligger mellom −20 og 40. Hva er problemet?
   alternativer:
-    - tekst: 'Sigmoid i output låser prediksjonene til $(0, 1)$, så nettet kan aldri treffe targetene'
+    - tekst: 'Sigmoid i output-laget'
       riktig: true
-      forklaring: 'Output-laget for regresjon skal ha lineær aktivering.'
-    - tekst: 'MSE kan ikke brukes for regresjon'
+      forklaring: 'Sigmoid låser prediksjonene til $(0, 1)$, så nettet kan aldri treffe targetene. Output-laget for regresjon skal ha lineær aktivering.'
+    - tekst: 'MSE er feil tap for regresjon i Keras'
       forklaring: 'MSE er standard tap for regresjon.'
-    - tekst: 'ReLU kan ikke brukes i skjulte lag for regresjon'
-      forklaring: 'ReLU i skjulte lag er helt vanlig også for regresjon.'
+    - tekst: 'ReLU i det skjulte laget gir aldri negative prediksjoner'
+      forklaring: 'ReLU-verdiene er ikke-negative, men output-laget kan ha negative vekter. Med lineær output kunne nettet gitt negative prediksjoner.'
     - tekst: 'Input-formen skal være `(32,)`'
       forklaring: 'Input-formen er antall features, her 1.'
   forklaring: |
@@ -804,9 +803,9 @@
 
     Hva bør endres?
   alternativer:
-    - tekst: 'Output-laget bør ha `activation="softmax"`, slik at de ti verdiene blir en sannsynlighetsfordeling'
+    - tekst: 'Output-laget bør ha softmax'
       riktig: true
-      forklaring: 'Cross-entropy forutsetter sannsynligheter. ReLU gir verdier som ikke summerer til 1 og kan være 0.'
+      forklaring: 'De ti verdiene må bli en sannsynlighetsfordeling. ReLU gir verdier som ikke summerer til 1 og kan være 0.'
     - tekst: 'Tapet bør være `"mse"`, fordi labelene er tall'
       forklaring: 'Labelene er klasser, ikke mengder. Klassifisering bruker cross-entropy.'
     - tekst: 'Det skjulte laget bør ha softmax i stedet for ReLU'
