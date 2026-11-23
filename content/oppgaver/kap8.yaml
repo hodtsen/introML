@@ -316,7 +316,7 @@
       riktig: true
       forklaring: 'Dummy-spilleren får ingenting.'
     - tekst: 'Monotonitet: den som spiller først, får mest'
-      forklaring: 'Rekkefølge gir ingen fordel. Det fjerde aksiomet er additivitet.'
+      forklaring: 'Rekkefølgen spillerne kommer i gir ingen fordel. Det fjerde aksiomet er additivitet. (Notatene nevner at Young (1985) har en alternativ karakterisering med et aksiom kalt monotonitet, men det betyr ikke at den som spiller først får mest.)'
   forklaring: |
     Det fjerde aksiomet er additivitet: verdien i spillet $v + w$ er summen av verdiene i hvert spill. Shapley er den eneste fordelingen som oppfyller alle fire.
   husk: 'Effektivitet, symmetri, nullspiller, additivitet. Shapley er unik.'
@@ -461,7 +461,7 @@
     - tekst: 'Fordi TreeExplainer og DeepExplainer også virker på alle modeller'
       forklaring: 'De er laget for henholdsvis trær og nevrale nett og bruker modellens indre.'
     - tekst: 'Fordi SHAP alltid regner ut eksakte Shapley-verdier'
-      forklaring: 'Kurset regner SHAP som modellagnostisk.'
+      forklaring: 'De fleste explainere approksimerer Shapley-verdiene. Om verdiene er eksakte, sier uansett ingenting om hvilken tilgang til modellen metoden trenger.'
   forklaring: |
     Skillet er mellom selve forklaringsbegrepet og beregningsmetoden.
   husk: 'SHAP-metoden er modellagnostisk. Tree/Deep-explainere er modellspesifikke snarveier.'
@@ -538,7 +538,7 @@
       forklaring: 'Det gjør $\mathcal{L}$, vektet med $\pi_{\mathbf{x}}$.'
     - tekst: 'Den vekter nabopunktene etter avstand til $\mathbf{x}$'
       forklaring: 'Det gjør $\pi_{\mathbf{x}}$.'
-    - tekst: 'Den regulariserer den komplekse modellen $f$'
+    - tekst: 'Den straffer kompleksiteten til den komplekse modellen $f$'
       forklaring: '$f$ er allerede trent, og LIME endrer den ikke. $\Omega$ virker på surrogaten $g$.'
   forklaring: |
     Avveining: en mer kompleks $g$ etterligner $f$ bedre (lavere $\mathcal{L}$), men blir mindre tolkbar (høyere $\Omega$).
@@ -780,7 +780,7 @@
     - tekst: 'TCAV med konseptet «bosted»'
       forklaring: 'Bosted er en eksplisitt feature, så konseptbaserte metoder er en omvei. TCAV er laget for implisitte konsepter.'
     - tekst: 'LIME for en tilfeldig valgt søker'
-      forklaring: 'PCA sier noe om dataene, ikke om modellen.'
+      forklaring: 'En lokal forklaring av én søker svarer ikke på hva modellen gjør generelt.'
   forklaring: |
     TCAV kunne vært aktuelt for et konsept som ikke er en feature. Her er bosted en feature, så feature-baserte metoder, aggregert, gir svaret.
   husk: 'Globalt spørsmål om en feature: aggreger SHAP over mange punkter.'

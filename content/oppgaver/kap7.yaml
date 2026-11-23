@@ -810,7 +810,7 @@
     - tekst: 'Belønne bare den første innleggingen i hver episode'
       forklaring: 'Da får boten ingen grunn til å rydde mer enn én gjenstand.'
     - tekst: 'Øke belønningen til +10 per innlegging'
-      forklaring: 'Problemet er belønningen, ikke læringen.'
+      forklaring: 'Det forsterker det uønskede insentivet: hver runde med uttak og innlegging gir enda mer belønning.'
     - tekst: 'Øke $\gamma$ så boten planlegger mer langsiktig'
       forklaring: 'Med lengre horisont blir det enda mer lønnsomt å ta ut og legge inn igjen mange ganger. Problemet er belønningen.'
   forklaring: |
@@ -876,7 +876,7 @@
       riktig: true
       forklaring: '$0{,}8 + 0{,}2 \cdot \tfrac14 = 0{,}85$. Den tilfeldige handlingen kan også bli den beste.'
     - tekst: '0,8'
-      forklaring: 'Du har glemt at den tilfeldige handlingen treffer den beste med sannsynlighet 1/4.'
+      forklaring: '0,8 er sannsynligheten for den grådige grenen, $1 - \varepsilon$, slik notatene og slidene formulerer det. Men den tilfeldige grenen kan også treffe den beste handlingen, med sannsynlighet $0{,}2 \cdot \tfrac14$.'
     - tekst: '0,2'
       forklaring: 'Det er sannsynligheten for å utforske, ikke for å velge den beste handlingen.'
     - tekst: '0,05'

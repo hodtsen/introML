@@ -175,13 +175,12 @@
     - tekst: 'De gjør det mulig å lære ikke-lineære sammenhenger, som XOR.'
       riktig: true
       forklaring: 'Ikke-linearitet i skjulte lag lar nettet lage nye, krumme grenser.'
-    - tekst: 'Kontinuerlige og deriverbare aktiveringer gjør at nettet kan trenes med gradient descent.'
-      riktig: true
-      forklaring: 'Det er grunnen til å bytte ut Heaviside.'
+    - tekst: 'Det er ikke-lineariteten som gjør aktiveringene deriverbare, slik at nettet kan trenes.'
+      forklaring: 'Deriverbarhet og ikke-linearitet er to ulike egenskaper: en lineær aktivering er også deriverbar. Vi bytter ut Heaviside for å få deriverbarhet, og velger ikke-lineære aktiveringer for at nettet skal kunne lære ikke-lineære sammenhenger.'
     - tekst: 'Ikke-lineære aktiveringer gjør at nettet trenger færre treningsdata.'
       forklaring: 'De gjør nettet mer fleksibelt, som ofte krever mer data, ikke mindre.'
   forklaring: |
-    To egenskaper trengs: ikke-linearitet (for å kunne lære komplekse sammenhenger) og deriverbarhet (for å kunne trene).
+    Aktiveringene i skjulte lag trenger to egenskaper: ikke-linearitet (ellers blir flere lag bare én lineær transformasjon) og deriverbarhet (for å kunne trenes). Det er to ulike egenskaper: en lineær funksjon er også deriverbar.
   husk: 'Skjulte lag trenger ikke-linearitet (ellers bare lineær modell) og deriverbarhet (for trening).'
 
 - id: "5.2-04"
@@ -250,7 +249,7 @@
     - tekst: 'Antall treningspunkter'
       forklaring: 'Antall datapunkter påvirker ikke formen på nettet.'
     - tekst: 'Batch size og antall epoker'
-      forklaring: 'Batch size er en treningsinnstilling.'
+      forklaring: 'Batch size og antall epoker er treningsinnstillinger og påvirker ikke formen på nettet.'
   forklaring: |
     Input-laget er bare dataene (én node per feature). Output-laget har én node per klasse (eller én for binær klassifisering og én per regresjonsverdi).
   husk: 'Input = antall features. Output = målformen. Skjulte lag = hyperparametre.'

@@ -392,7 +392,7 @@
       riktig: true
       forklaring: 'Begge deler stemmer. I tillegg unngår vi at produktet av mange små sannsynligheter blir numerisk null.'
     - tekst: 'Logaritmen flytter optimum dit modellen generaliserer bedre'
-      forklaring: 'Logaritmen er strengt voksende og endrer ikke hvor maksimum ligger. Generalisering styres av modell og regularisering.'
+      forklaring: 'Logaritmen er strengt voksende og endrer ikke hvor maksimum ligger. Hvor godt modellen generaliserer, avhenger av modellen og dataene.'
     - tekst: 'Likelihood er ikke deriverbar, men log-likelihood er det'
       forklaring: 'Likelihood er deriverbar. Logaritmen gjør bare deriveringen enklere.'
     - tekst: 'Logaritmen sørger for at sannsynlighetene summerer til 1'
@@ -515,7 +515,7 @@
       forklaring: 'For store steg skyter over minimum og gir oscillasjon eller divergens.'
     - tekst: 'For lav læringsrate'
       forklaring: 'For lav læringsrate gir et tap som synker jevnt, men sakte.'
-    - tekst: 'For lite regularisering, så modellen overtilpasser'
+    - tekst: 'For mange parametre, så modellen overtilpasser'
       forklaring: 'Overtilpasning viser seg som lavt treningstap og høyere valideringstap, ikke som et treningstap som hopper.'
     - tekst: 'For få epoker'
       forklaring: 'Flere epoker hjelper ikke når hvert steg går for langt.'
@@ -608,8 +608,8 @@
       forklaring: 'Langs diagonalen er TPR = FPR. Modellen gir positive like ofte for begge klassene.'
     - tekst: 'Klassifiseringsterskelen 0,5'
       forklaring: 'Hver terskel er ett punkt på kurven. Diagonalen er en hel kurve.'
-    - tekst: 'En modell som predikerer 0,5 for alle punkter'
-      forklaring: 'En slik modell gir bare punktene (0, 0) og (1, 1). Diagonalen betyr ingen rangeringsevne, uansett hvilke tall modellen gir.'
+    - tekst: 'En modell med accuracy 0,5'
+      forklaring: 'Accuracy gjelder én terskel og avhenger av klassebalansen. En modell kan ha accuracy 0,5 og likevel rangere klassene godt (AUC over 0,5), eller motsatt.'
     - tekst: 'Den beste modellen som kan oppnås'
       forklaring: 'Den ideelle modellen går rett opp til (0, 1) og bortover til (1, 1), med AUC = 1.'
   forklaring: |

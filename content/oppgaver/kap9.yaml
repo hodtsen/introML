@@ -320,7 +320,7 @@
     - tekst: 'AI Act gjelder, og verktøyet er forbudt'
       forklaring: 'Rekrutteringsverktøy er høyrisiko, ikke forbudt (følelsesgjenkjenning på jobb er forbudt).'
   forklaring: |
-    Selskapet må blant annet ha risikostyring, datastyring, dokumentasjon, logging, transparens og menneskelig tilsyn (artikkel 9–15).
+    Selskapet må blant annet ha risikostyring, datastyring, dokumentasjon, logging, transparens og menneskelig tilsyn (artikkel 8–15).
   husk: 'Norsk aktør i EU + Anneks 3-område = høyrisikokrav.'
 
 - id: "9.3-06"
@@ -410,7 +410,7 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** Høyrisikosystemer er tillatt i EU, men bare hvis de oppfyller kravene i artikkel 9–15.
+    **Påstand:** Høyrisikosystemer er tillatt i EU, men bare hvis de oppfyller kravene i artikkel 8–15.
   riktig: true
   forklaring: |
     Høyrisikosystemer er tillatt, men må oppfylle strenge krav: risikostyring, datastyring, teknisk dokumentasjon, logging, transparens, menneskelig tilsyn og treffsikkerhet, robusthet og cybersikkerhet. Det er systemer med uakseptabel risiko (artikkel 5) som er forbudt.
@@ -427,7 +427,7 @@
       riktig: true
       forklaring: 'Trenings-, validerings- og testdata skal være relevante og representative, slik at modellen ikke diskriminerer. Det kobler til splitting (kapittel 3) og ubalanserte data (kapittel 2).'
     - tekst: 'Krav om at testdata brukes til å velge hyperparametre'
-      forklaring: 'Forordningen regulerer ikke treningsalgoritmer.'
+      forklaring: 'Det strider mot god praksis (testdata skal bare brukes til den endelige evalueringen), og forordningen krever det ikke.'
     - tekst: 'Krav om at modellen er tolkbar og ikke en svart boks'
       forklaring: 'Transparens og informasjon til brukere ligger i andre artikler (blant annet artikkel 13). Artikkel 10 handler om data.'
     - tekst: 'Krav om at alle features skaleres før treningen'
@@ -444,7 +444,7 @@
     Plasser disse systemene i riktig risikokategori etter AI Act, og begrunn kort: (a) et system som gir innbyggere en «sosial score» som påvirker tilgang til offentlige tjenester, (b) et system som vurderer eksamensbesvarelser, (c) en kundeservice-chatbot.
   eksempelsvar: |
     (a) **Uakseptabel risiko, forbudt** (artikkel 5): sosial scoring basert på atferd eller egenskaper som fører til urimelig negativ behandling.
-    (b) **Høy risiko** (Anneks 3, utdanning): vurdering av studenter kan påvirke livssjanser sterkt. Tillatt, men med kravene i artikkel 9–15.
+    (b) **Høy risiko** (Anneks 3, utdanning): vurdering av studenter kan påvirke livssjanser sterkt. Tillatt, men med kravene i artikkel 8–15.
     (c) **Begrenset risiko / transparenskrav** (artikkel 50): brukeren skal få vite at de snakker med et KI-system, med mindre det er åpenbart.
   punkter:
     - tekst: '(a) forbudt, sosial scoring.'
@@ -555,13 +555,13 @@
   sporsmal: |
     Forklar forskjellen på «systemisk risiko» for GPAI-modeller og «høy risiko» for KI-systemer i AI Act.
   eksempelsvar: |
-    Høy risiko er en kategori for KI-*systemer* basert på bruksområdet: systemer i Anneks 3-områder (som rekruttering og utdanning) eller sikkerhetskomponenter i produkter under Anneks 1. De må oppfylle kravene i artikkel 9–15. Systemisk risiko gjelder GPAI-*modeller*, altså generelle modeller som kan brukes til mange formål, og bestemmes av størrelse og kapasitet, typisk mer enn $10^{25}$ FLOP i trening eller utpeking av Kommisjonen. De får ekstra krav etter artikkel 55. En GPAI-modell er en egen kategori, men et system bygget på den kan i tillegg være høyrisiko.
+    Høy risiko er en kategori for KI-*systemer* basert på bruksområdet: systemer i Anneks 3-områder (som rekruttering og utdanning) eller sikkerhetskomponenter i produkter under Anneks 1. De må oppfylle kravene i artikkel 8–15. Systemisk risiko gjelder GPAI-*modeller*, altså generelle modeller som kan brukes til mange formål, og bestemmes av størrelse og kapasitet, typisk mer enn $10^{25}$ FLOP i trening eller utpeking av Kommisjonen. De får ekstra krav etter artikkel 55. En GPAI-modell er en egen kategori, men et system bygget på den kan i tillegg være høyrisiko.
   punkter:
     - tekst: 'Høy risiko: systemer, bestemt av bruksområde (Anneks 1/3).'
       stikkord: ['bruksområde', 'anneks', 'system']
     - tekst: 'Systemisk risiko: GPAI-modeller, bestemt av kapasitet / 10^25 FLOP.'
       stikkord: ['flop', '10^25', 'gpai', 'modell', 'kapasitet']
-    - tekst: 'Ulike krav (art. 9–15 mot art. 55).'
+    - tekst: 'Ulike krav (art. 8–15 mot art. 55).'
       stikkord: ['9–15', '9-15', '55', 'krav']
     - tekst: 'System bygget på GPAI-modell kan i tillegg være høyrisiko.'
       stikkord: ['bygget på', 'i tillegg', 'nedstrøms']

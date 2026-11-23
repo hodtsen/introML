@@ -167,7 +167,7 @@
     - tekst: '`Sex` og `Age`'
       forklaring: 'Kjønn og alder er omtrent uavhengige i en vanlig befolkning.'
     - tekst: '`Sex` og `Pclass`'
-      forklaring: 'Det kan være en svak sammenheng, men kjønn bestemmer ikke billettklassen slik klassen bestemmer prisen.'
+      forklaring: 'Notatene viser at `Pclass` og `Sex` ikke er uavhengige (kjønnsfordelingen varierer mellom klassene), så antakelsen er brutt også her. Men billettprisen er nærmest bestemt av klassen, så `Pclass` og `Fare` er det mest tvilsomme paret.'
     - tekst: 'Ingen av parene, siden de måler ulike ting'
       forklaring: 'Features som måler ulike ting, kan likevel henge sterkt sammen. Klasse og billettpris er et tydelig eksempel.'
   forklaring: |
@@ -555,7 +555,7 @@
     **Påstand:** Med tre klasser kan Gini-urenheten bli større enn 0,5.
   riktig: true
   forklaring: |
-    Maksimum er $1 - 1/k$. Med tre like store klasser er Gini $1 - 3 \cdot (1/3)^2 = 2/3 \approx 0{,}67$. Grensen 0,5 gjelder bare for to klasser.
+    Maksimum er $1 - 1/k$. Med tre like store klasser er Gini $1 - 3 \cdot (1/3)^2 = 2/3 \approx 0{,}67$. Notatene oppgir at Gini ligger mellom 0 og 0,5, men det gjelder for to klasser.
   husk: 'Maks Gini = 1 − 1/k. To klasser: 0,5. Tre klasser: 0,67.'
 
 - id: "2.5-06"
@@ -609,9 +609,9 @@
     - tekst: 'Alle punktene i noden har samme klasse.'
       riktig: true
       forklaring: 'En ren node kan ikke bli bedre.'
-    - tekst: 'Ingen splitt reduserer urenheten.'
+    - tekst: 'Det finnes ingen features igjen å splitte på.'
       riktig: true
-      forklaring: 'Da kan noden ikke deles på en nyttig måte. Det samme gjelder om det ikke finnes features igjen å splitte på.'
+      forklaring: 'Da kan det ikke lages en ny beslutningsnode, og noden blir en løvnode selv om den inneholder flere klasser. Notatene nevner også tilfellet der det ikke finnes flere datapunkter å teste.'
     - tekst: 'Treet har nådd maksimal dybde (`max_depth`).'
       riktig: true
       forklaring: 'En hyperparameter som begrenser hvor komplekst treet blir.'
@@ -619,7 +619,7 @@
       forklaring: 'Flertallet bestemmer prediksjonen, ikke om vi skal fortsette å splitte.'
   forklaring: |
     Algoritmen er rekursiv: velg beste splitt, del dataene, og kall den samme prosedyren på hver gren til et stoppkriterium slår inn.
-  husk: 'Stopp når noden er ren, ingen nyttig splitt finnes, eller maks dybde er nådd.'
+  husk: 'Stopp når noden er ren, når det ikke er flere features (eller data) å splitte på, eller når maks dybde er nådd.'
 
 - id: "2.6-03"
   del: "2.6"

@@ -14,7 +14,7 @@
     - tekst: 'MSE gjør modellen robust mot outliers i dataene'
       forklaring: 'Kvadratet gir outliers stor innflytelse. MSE er følsom for outliers.'
     - tekst: 'MSE gir mange vekter lik 0, så modellen blir enkel'
-      forklaring: 'Det er en egenskap ved L1-regularisering, ikke ved MSE.'
+      forklaring: 'Ingenting i MSE trekker vektene mot 0. Kvadratfeilen gir vanligvis vekter som alle er ulik 0.'
     - tekst: 'MSE ligger mellom 0 og 1 og er derfor lett å tolke'
       forklaring: 'MSE har enheten til $y^2$ og har ingen øvre grense.'
   forklaring: |
@@ -534,7 +534,7 @@
     - tekst: 'En godt tilpasset modell'
       forklaring: 'Økende valideringsfeil viser at modellen generaliserer dårlig.'
   forklaring: |
-    Tiltak mot høy varians: enklere modell, regularisering, mer data, early stopping eller bagging (kapittel 4).
+    Tiltak mot høy varians: enklere modell, mer data, early stopping eller bagging (kapittel 4).
   husk: 'Lav treningsfeil + høy/økende valideringsfeil + ustabile prediksjoner = høy varians.'
 
 - id: "3.5-04"
@@ -573,7 +573,7 @@
     - tekst: 'Støyen har forventning $\mathbb{E}[\varepsilon] = 0$'
       forklaring: 'Det brukes til å fjerne kryssledd med støyen, ikke til å flytte $F$ ut.'
     - tekst: '$F(\mathbf{x})$ er lineær i $\mathbf{x}$'
-      forklaring: 'Da ville bias og varians vært 0.'
+      forklaring: 'Ingen antakelse om linearitet trengs. Det som gjør at $F(\mathbf{x})$ kan flyttes ut, er at den ikke avhenger av $D$.'
   forklaring: |
     Regelen er $\mathbb{E}[c] = c$ og $\mathbb{E}[cX] = c\,\mathbb{E}[X]$ for en konstant $c$. Det er nettopp fordi $F$ er fast at bias kan skrives $\mathbb{E}_D[f] - F$.
   husk: 'F(x) er fast, f(x; D) er tilfeldig via D. Konstanter kan flyttes ut av forventningen.'
