@@ -1,0 +1,1018 @@
+# Prosjektquiz: spørsmålene (❓) fra øving 1–3 og prosjekt 4, skrevet om med kontekst.
+# Øving 1 har ingen ❓-spørsmål i materialet vi har (bare linear_models.py og datasettene),
+# så de spørsmålene er laget ut fra koden og dataene.
+# «kilde» starter med prosjektet: «Øving 1», «Øving 2», «Øving 3» eller «Prosjekt 4».
+
+# ---------------------------------------------------------------- Øving 1
+- id: "P01"
+  del: "3.1"
+  kilde: "Øving 1: LinearRegression.fit"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    I øving 1 skal du implementere `LinearRegression.fit(X, y)` med gradient descent, der `X` har form `(m, n)` og modellen er $\hat{y} = X\mathbf{w} + b$. Tapet er MSE. Hvilken oppdatering er riktig i hver iterasjon?
+    ```python
+    y_pred = X @ self.weights + self.bias
+    error = y_pred - y
+    ```
+  alternativer:
+    - tekst: '`weights -= lr * X.T @ error / m` og `bias -= lr * error.mean()`'
+      riktig: true
+      forklaring: 'Gradienten til MSE er gjennomsnittet av feilen ganget med inputen (for vektene) og bare feilen (for bias).'
+    - tekst: '`weights += lr * X.T @ error / m` og `bias += lr * error.mean()`'
+      forklaring: 'Fortegnet er feil. Vi går mot gradienten, så parametrene skal trekkes fra.'
+    - tekst: '`weights -= lr * X @ error / m` og `bias -= lr * error.sum()`'
+      forklaring: '`X @ error` har feil dimensjon. Det må være `X.T @ error` for å få én verdi per feature.'
+    - tekst: '`weights -= lr * error.mean()` og `bias -= lr * X.T @ error / m`'
+      forklaring: 'Vektene og bias har byttet gradient. Vektene trenger feilen ganget med X.'
+  forklaring: |
+    Med $\text{MSE} = \frac{1}{2m}\sum (\hat{y} - y)^2$ blir $\partial\mathcal{L}/\partial\mathbf{w} = \frac{1}{m} X^\top(\hat{y} - y)$ og $\partial\mathcal{L}/\partial b = \frac{1}{m}\sum(\hat{y} - y)$. Lagrer du tapet hver iterasjon i `loss_history`, kan du sjekke at det synker.
+  husk: 'Gradient descent: w ← w − η·Xᵀ(ŷ − y)/m, b ← b − η·mean(ŷ − y).'
+
+- id: "P02"
+  del: "1.2"
+  kilde: "Øving 1: LogisticRegression"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    `LogisticRegression` i øving 1 har metodene `sigmoid`, `predict_proba` og `predict`. Hvilken implementasjon av `predict_proba` og `predict` er riktig?
+  alternativer:
+    - tekst: '`sigmoid(X @ w + b)` og `(predict_proba(X) >= 0.5).astype(int)`'
+      riktig: true
+      forklaring: 'predict_proba gir en sannsynlighet i (0, 1), og predict terskler den.'
+    - tekst: '`X @ w + b` og `(predict_proba(X) >= 0.5).astype(int)`'
+      forklaring: 'Uten sigmoid er output ikke en sannsynlighet. Terskelen 0,5 blir da feil (riktig terskel ville vært 0).'
+    - tekst: '`sigmoid(X @ w + b)` og `sigmoid(predict_proba(X))`'
+      forklaring: 'Sigmoid to ganger gir ikke en klasse, bare et nytt tall mellom 0,5 og 0,73.'
+    - tekst: '`(X @ w + b >= 0).astype(int)` og `self.sigmoid(self.predict(X))`'
+      forklaring: 'Metodene er byttet om: predict_proba skal gi sannsynligheter, predict klasser.'
+  forklaring: |
+    $\sigma(z) = 1/(1 + e^{-z})$ gjør den lineære kombinasjonen om til en sannsynlighet. `predict` gjør sannsynligheten om til en klasse med en terskel, vanligvis 0,5, som svarer til $z = 0$.
+  husk: 'predict_proba = σ(Xw + b). predict = terskel på sannsynligheten.'
+
+- id: "P03"
+  del: "1.1"
+  kilde: "Øving 1: klassifiseringsdataene"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Klassifiseringsdataene i øving 1 har to features, $x_0$ og $x_1$, rundt origo. Klassen er nesten alltid 1 når $x_0$ og $x_1$ har ulikt fortegn, og 0 når de har likt fortegn (et støyete XOR-mønster). Logistisk regresjon på $(x_0, x_1)$ får omtrent 50 % accuracy på testsettet. Hva er den enkleste løsningen?
+  alternativer:
+    - tekst: 'Legge til featuren $x_0 \cdot x_1$'
+      riktig: true
+      forklaring: 'Fortegnet til produktet skiller klassene, så problemet blir lineært separerbart i det nye feature-rommet.'
+    - tekst: 'Trene lenger med høyere læringsrate'
+      forklaring: 'Modellen kan fortsatt bare lage én rett beslutningsgrense, og ingen rett linje skiller XOR.'
+    - tekst: 'Skalere $x_0$ og $x_1$ til $[0, 1]$'
+      forklaring: 'Skalering flytter mønsteret, men gjør det ikke lineært separerbart.'
+    - tekst: 'Senke klassifiseringsterskelen til 0,3'
+      forklaring: 'Terskelen flytter den rette linjen parallelt. Den kan fortsatt ikke skille fire kvadranter.'
+  forklaring: |
+    Logistisk regresjon har en lineær beslutningsgrense. Med $x_0 x_1$ som ekstra feature (feature engineering) blir beslutningen omtrent «$x_0 x_1 < 0$», som er lineær i den nye featuren. Med det løftet kommer accuracy opp i rundt 90 %, begrenset av støyen. Det samme problemet løses i øving 3 med et nevralt nettverk, som lærer slike features selv.
+  husk: 'XOR er ikke lineært separerbar. Produktfeaturen x₀x₁ gjør den det.'
+
+- id: "P04"
+  del: "3.1"
+  kilde: "Øving 1: regresjonsdataene"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Regresjonsdataene i øving 1 har featuren `Net_Activity` (verdier mellom 10 og 30) og target `Energy` (33–99). Sammenhengen er nesten lineær, omtrent $\text{Energy} \approx 3 \cdot \text{Net\_Activity} + 5$. Med `lr=0.001` og gradient descent lærer modellen stigningstallet raskt, men bias kryper sakte mot riktig verdi. Hvorfor?
+  alternativer:
+    - tekst: 'Featuren er langt fra 0, så vekten dominerer gradientene'
+      riktig: true
+      forklaring: 'Gradienten for vekten er feil ganget med x ≈ 20, mens bias bare får feilen. Sentrering eller skalering hjelper.'
+    - tekst: 'MSE gir ingen gradient for bias, bare for vektene'
+      forklaring: 'Bias har gradienten mean(ŷ − y), som er ulik 0 så lenge prediksjonene er skjeve.'
+    - tekst: 'Sammenhengen er ikke-lineær, så bias kan ikke læres'
+      forklaring: 'Sammenhengen er nesten perfekt lineær (korrelasjon rundt 0,99).'
+    - tekst: 'Læringsraten er for høy, så bias hopper over minimum'
+      forklaring: 'Problemet er det motsatte: bias får for små steg i forhold til vekten.'
+  forklaring: |
+    Når $x$ er stor og positiv, kan modellen redusere tapet raskt ved å justere vekten, og bias og vekt blir sterkt koblet. Gradient descent sikk-sakker da langs en avlang tapsflate. Skalerer eller sentrerer du featuren (for eksempel med `StandardScaler`, tilpasset på treningsdata), konvergerer begge parametrene mye raskere. Dette er grunnen til at notatene sier features bør ha størrelsesorden 1.
+  husk: 'Uskalerte features gir skjeve gradienter og treg konvergens. Skaler før gradient descent.'
+
+- id: "P05"
+  del: "1.4"
+  kilde: "Øving 1: loss_history"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Modellklassene i øving 1 lagrer tapet etter hver iterasjon i `self.loss_history`. Du plotter det og ser at tapet **øker** og til slutt blir `nan`. Hva er den mest sannsynlige årsaken?
+  alternativer:
+    - tekst: 'For høy læringsrate'
+      riktig: true
+      forklaring: 'For store steg hopper over minimum og vokser for hver iterasjon.'
+    - tekst: 'For få iterasjoner'
+      forklaring: 'Få iterasjoner gir et tap som ikke har sunket nok, ikke et tap som øker.'
+    - tekst: 'Modellen overtilpasser treningsdataene'
+      forklaring: 'Overtilpasning viser seg som lavt treningstap og høyt valideringstap, ikke et treningstap som eksploderer.'
+    - tekst: 'Læringsraten er for lav'
+      forklaring: 'For lav læringsrate gir et tap som synker sakte, ikke et som øker.'
+  forklaring: |
+    Treningstapet skal synke og flate ut. Øker det, er stegene for store i forhold til krumningen på tapsflaten, ofte forsterket av uskalerte features. Senk læringsraten eller skaler dataene.
+  husk: 'Økende treningstap → for høy læringsrate (eller uskalerte features).'
+
+# ---------------------------------------------------------------- Øving 2
+- id: "P06"
+  del: "2.4"
+  kilde: "Øving 2, problem 1: preprosessering"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I øving 2, problem 1 skal du trene et beslutningstre på `problem1.csv` (features `x0`, `x1`, binær `y`). Treningssettet har 930 punkter i klasse 0 og bare 76 i klasse 1, mens testsettet har 150 av hver. Et tre trent rett på dataene får rundt 50–70 % test-accuracy. Hvilken preprosessering trengs?
+  alternativer:
+    - tekst: 'Balansere klassene'
+      riktig: true
+      forklaring: 'Treet lærer å predikere klasse 0 nesten overalt. Med balanserte klasser kommer accuracy over 90 %.'
+    - tekst: 'Skalere `x0` og `x1` til $[0, 1]$'
+      forklaring: 'Beslutningstrær er uavhengige av skalering. Splittene blir de samme.'
+    - tekst: 'Fjerne outliers i klasse 1'
+      forklaring: 'Klasse 1 har allerede for få punkter. Å fjerne flere gjør skjevheten verre.'
+    - tekst: 'Gjøre treet så dypt som mulig'
+      forklaring: 'Et ubegrenset tre overtilpasser og gir fortsatt lav test-accuracy.'
+  forklaring: |
+    Klassefordelingen er svært ulik i trening (rundt 8 % positive) og test (50 %). Modellen belønnes for å predikere majoritetsklassen, et typisk tilfelle av prior probability shift. Tiltak er undersampling, oversampling eller `class_weight="balanced"`. Derfor skal du også rapportere TPR og FPR, ikke bare accuracy.
+  husk: 'Ubalanserte treningsdata: balanser klassene før trening. Se på TPR/FPR, ikke bare accuracy.'
+
+- id: "P07"
+  del: "2.6"
+  kilde: "Øving 2, problem 1: skalering"
+  niva: grunnleggende
+  type: pastand
+  sporsmal: |
+    **Påstand:** Før vi trener beslutningstreet i øving 2, problem 1, må vi skalere `x0` og `x1`, ellers vil featuren med størst verdier dominere splittene.
+  riktig: false
+  forklaring: |
+    Et beslutningstre splitter på én feature om gangen med en terskel, for eksempel $x_0 > 1{,}3$. Skalering endrer bare tallet i terskelen, ikke hvilke punkter som havner på hver side. Skalering er nødvendig for modeller trent med gradient descent og for avstandsbaserte metoder, men ikke for trær.
+  husk: 'Trær trenger ikke feature scaling. Gradient descent og avstandsmetoder gjør det.'
+
+- id: "P08"
+  del: "2.6"
+  kilde: "Øving 2, problem 1: beslutningsgrensen"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    I øving 2, problem 1 plotter du beslutningsgrensen til treet før og etter at du har balansert klassene i treningsdataene (klasse 1 er rundt 8 % av treningsdataene og ligger i et diagonalt bånd). Hva forventer du å se i de to plottene?
+  eksempelsvar: |
+    Før balansering dekker klasse 0 nesten hele planet, og klasse 1 får bare små, oppstykkede områder rundt enkelte treningspunkter, eller nesten ingenting. Treet har lite å tjene på å splitte ut minoritetsklassen. Etter balansering får klasse 1 et sammenhengende område rundt båndet. Grensen består alltid av akseparallelle rektangler, fordi hver splitt er en terskel på én feature. Et diagonalt bånd må derfor tilnærmes med en trapp av rektangler.
+  punkter:
+    - tekst: 'Før: klasse 0 dominerer, lite eller oppstykket område for klasse 1.'
+      stikkord: ['domin', 'majoritet', 'nesten alt', 'lite område', 'klasse 0']
+    - tekst: 'Etter: tydeligere, sammenhengende område for klasse 1.'
+      stikkord: ['sammenhengende', 'større område', 'tydelig', 'balans']
+    - tekst: 'Grensen er akseparallelle rektangler/trapp.'
+      stikkord: ['akseparallell', 'rektangel', 'trapp', 'vertikal', 'horisontal']
+  husk: 'Tre-grenser er akseparallelle rektangler. Ubalanse gir et nesten ensfarget plott.'
+
+- id: "P09"
+  del: "2.6"
+  kilde: "Øving 2, problem 1: dybden på treet"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hva skjer når du øker `max_depth` på `DecisionTreeClassifier` i øving 2, problem 1, fra 2 til ubegrenset?
+  alternativer:
+    - tekst: 'Trenings-accuracy går mot 100 %, test-accuracy faller'
+      riktig: true
+      forklaring: 'Et dypt tre kan isolere hvert treningspunkt og tilpasser seg støyen.'
+    - tekst: 'Både trenings- og test-accuracy øker hele veien'
+      forklaring: 'Mer kapasitet gir ikke bedre generalisering i det uendelige. Til slutt overtilpasser treet.'
+    - tekst: 'Treningsaccuracy faller, fordi treet blir for komplekst'
+      forklaring: 'Et dypere tre kan alltid tilpasse treningsdataene minst like godt.'
+    - tekst: 'Ingenting skjer, fordi treet uansett velger dybden selv'
+      forklaring: 'Uten max_depth vokser treet til løvnodene er rene, og det er nettopp problemet.'
+  forklaring: |
+    Lav dybde gir høy bias (for enkle regioner). Høy dybde gir høy varians (overtilpasning). I eksperimentet gir balanserte data og en dybde rundt 2–4 best test-accuracy, mens et ubegrenset tre faller tilbake mot 70 %.
+  husk: 'Dybde = kompleksitet. Lav: høy bias. Høy: overtilpasning.'
+
+- id: "P10"
+  del: "2.2"
+  kilde: "Øving 2, problem 2: dataanalyse"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Øving 2, problem 2 handler om 500 vikinger på tokt, der 44 % overlevde. Noen tall fra dataanalysen:
+
+    | Gruppe | Overlevelse |
+    |---|---|
+    | Kvinner (136) / menn (364) | 68 % / 36 % |
+    | Jarl / Hirdman / Karl / Thrall | 96 % / 75 % / 39 % / 14 % |
+    | Ringbrynje (Chainmail) / ingen rustning | 88 % / 31 % |
+    | Skipet Sjøulven / de andre skipene | 15 % / 45–56 % |
+
+    Hvilke features predikerer overlevelse bedre enn å gjette majoritetsklassen alene?
+  alternativer:
+    - tekst: '`role`'
+      riktig: true
+      forklaring: 'Overlevelsen varierer fra 14 % til 96 % mellom rollene.'
+    - tekst: '`sex`'
+      riktig: true
+      forklaring: 'Å predikere «overlever» for kvinner og «dør» for menn gir rundt 70 % riktig.'
+    - tekst: '`armor`'
+      riktig: true
+      forklaring: 'Rustning, særlig ringbrynje og lamellar, henger sterkt sammen med overlevelse.'
+    - tekst: '`passenger_id`'
+      forklaring: 'Id-en er et løpenummer uten informasjon, akkurat som i Titanic.'
+  forklaring: |
+    Å alltid gjette majoritetsklassen («døde») gir 56 % riktig. En feature er nyttig hvis overlevelsesraten varierer mye mellom verdiene. Merk at `armor` mangler for 324 vikinger. Det betyr sannsynligvis «ingen rustning» og bør kodes som egen kategori, ikke droppes.
+  husk: 'Sammenlign overlevelsesraten per kategori med basisraten. Manglende verdi kan være informasjon.'
+
+- id: "P11"
+  del: "3.4"
+  kilde: "Øving 2, problem 2: kryssvalidering"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I øving 2, problem 2 rapporterer du både `cross_val_score` (med for eksempel 5 folder) på treningsdataene og accuracy på testsettet. Hva er formålet med kryssvalideringen?
+  alternativer:
+    - tekst: 'Et mer pålitelig ytelsesestimat uten å bruke testsettet'
+      riktig: true
+      forklaring: 'Snittet over foldene er mindre avhengig av én tilfeldig splitt, og standardavviket viser hvor mye det varierer.'
+    - tekst: 'Å trene en bedre modell ved å bruke testsettet flere ganger'
+      forklaring: 'Kryssvalideringen bruker bare treningsdataene. Testsettet skal ikke brukes til tilpasning.'
+    - tekst: 'Å gjøre modellen mer kompleks ved å trene den flere ganger'
+      forklaring: 'Kryssvalidering endrer ikke modellen. Den evaluerer den.'
+    - tekst: 'Å fjerne behovet for et testsett'
+      forklaring: 'Vi trenger fortsatt et urørt testsett for å rapportere endelig ytelse.'
+  forklaring: |
+    Kryssvalidering lar oss sammenligne modeller og hyperparametre (for eksempel splittkriterium eller dybde) med alle treningsdataene, og samtidig se variansen i resultatet. Testsettet brukes bare til slutt.
+  husk: 'Kryssvalidering: robust estimat og modellvalg på treningsdata. Testsettet brukes til slutt.'
+
+- id: "P12"
+  del: "2.5"
+  kilde: "Øving 2, problem 2: splittkriterier"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I øving 2, problem 2 prøver du `criterion="gini"`, `"entropy"` og `"log_loss"` i `DecisionTreeClassifier`. Accuracy blir nesten den samme for alle tre. Hvilket valg er best begrunnet?
+  alternativer:
+    - tekst: 'Gini, fordi det gir like gode splitter og er raskest'
+      riktig: true
+      forklaring: 'Gini og entropi gir i hovedsak de samme splittene, og Gini slipper logaritmen.'
+    - tekst: 'Entropi, fordi det alltid gir høyere accuracy'
+      forklaring: 'Forskjellene er små og tilfeldige. Entropi er ikke systematisk bedre.'
+    - tekst: '`log_loss`, fordi treet da trenes med gradient descent'
+      forklaring: 'Trær trenes ikke med gradient descent. `log_loss` og `entropy` gir samme urenhetsmål.'
+    - tekst: 'Det kriteriet som gir høyest test-accuracy'
+      forklaring: 'Å velge hyperparametre på testsettet lekker informasjon. Bruk kryssvalidering.'
+  forklaring: |
+    Når kriteriene gir samme resultat, er Gini et godt valg: det er default i sklearn og billigst å regne ut. Hvis du likevel velger mellom dem, bør du bruke kryssvalideringsscoren, ikke testsettet.
+  husk: 'Gini ≈ entropi ≈ log_loss i praksis. Gini er raskest. Velg med kryssvalidering, ikke test.'
+
+- id: "P13"
+  del: "2.5"
+  kilde: "Øving 2, problem 2: Gini i treet"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    `plot_tree` viser Gini-urenheten i hver node. En node i vikingtreet inneholder 278 som døde og 222 som overlevde. Regn ut Gini-urenheten $1 - p_0^2 - p_1^2$ (tre desimaler).
+  deler:
+    - sporsmal: 'Gini'
+      svar: 0.494
+      toleranse: 0.002
+  losning: |
+    $p_0 = 278/500 = 0{,}556$ og $p_1 = 222/500 = 0{,}444$.
+
+    $\text{Gini} = 1 - 0{,}556^2 - 0{,}444^2 = 1 - 0{,}309 - 0{,}197 \approx 0{,}494.$
+
+    Det er nær maksimum 0,5, så noden er svært blandet. Gini er sannsynligheten for å feilklassifisere et tilfeldig punkt som får et tilfeldig label etter fordelingen i noden. Treet velger splitten som senker den vektede Gini-verdien i barna mest.
+  husk: 'Gini = 1 − Σp². 0 = ren node, 0,5 = 50/50 (binært).'
+
+- id: "P14"
+  del: "4.4"
+  kilde: "Øving 2, problem 2: boosting"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I øving 2, problem 2 skal du forbedre beslutningstreet med `AdaBoostClassifier`. Hva gjør AdaBoost?
+  alternativer:
+    - tekst: 'Trener svake modeller etter hverandre og vekter opp feil'
+      riktig: true
+      forklaring: 'Hver ny modell fokuserer på det de forrige bommet på, og modellene stemmer med vekter.'
+    - tekst: 'Trener mange dype trær parallelt på bootstrap-utvalg og tar flertallsstemme'
+      forklaring: 'Det er bagging / random forest.'
+    - tekst: 'Velger det beste av mange trær med kryssvalidering'
+      forklaring: 'Boosting kombinerer modeller, den velger ikke én.'
+    - tekst: 'Gjør ett tre dypere til alle treningspunkter er riktig'
+      forklaring: 'Det er et ubegrenset tre, som overtilpasser.'
+  forklaring: |
+    AdaBoost bruker typisk svært enkle trær (stumps). Etter hver runde øker vekten på feilklassifiserte punkter, og hver modell får en vekt etter hvor treffsikker den er. Boosting reduserer først og fremst bias, mens bagging reduserer varians.
+  husk: 'AdaBoost: sekvensielle svake modeller, vekting av feil. Reduserer bias.'
+
+- id: "P15"
+  del: "2.1"
+  kilde: "Øving 2, problem 2: Bayes’ teorem"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    I øving 2, problem 2 skal du estimere leddene i Bayes’ teorem $P(A \mid B) = \frac{P(B \mid A)\,P(A)}{P(B)}$, der $A$ = overlever og $B$ = alle egenskapene til én viking. Hvilket ledd er vanskeligst å estimere fra 500 vikinger, og hvorfor?
+  alternativer:
+    - tekst: '$P(B)$ og $P(B \mid A)$: få har samme kombinasjon'
+      riktig: true
+      forklaring: 'Med ti features er antall kombinasjoner enormt, og de fleste forekommer null eller én gang.'
+    - tekst: '$P(A)$, fordi vi ikke vet hvor mange som overlevde'
+      forklaring: 'P(A) er bare andelen som overlevde, 44 %. Den er lett å estimere.'
+    - tekst: '$P(A \mid B)$, fordi den står på venstre side'
+      forklaring: 'Det er nettopp den vi regner ut fra de andre leddene.'
+    - tekst: 'Alle leddene er like enkle med 500 datapunkter'
+      forklaring: 'Simultanfordelingen over mange features krever eksponentielt mye data.'
+  forklaring: |
+    $P(A)$ er lett (basisraten). $P(B)$ og $P(B \mid A)$ er simultanfordelinger over alle features, som rammes av dimensjonsforbannelsen. Naiv Bayes løser dette ved å anta uavhengighet: $P(B \mid A) \approx \prod_i P(b_i \mid A)$. $P(B)$ trenger vi ikke når vi bare sammenligner «overlever» mot «dør», fordi den er lik for begge.
+  husk: 'P(A) er lett. P(B|A) og P(B) er simultanfordelinger: bruk Naiv Bayes og sammenlign forholdet.'
+
+- id: "P16"
+  del: "2.2"
+  kilde: "Øving 2, problem 2: Naiv Bayes for Endre"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Vikingen Endre er mann, 25 år, Hirdman, på skipet Drakvinge til Normandy, fra Nidaros, med ringbrynje (Chainmail), 49 kg proviant, 2 familiemedlemmer om bord og 12 tidligere tokt. Noen betingede sannsynligheter fra dataene:
+
+    | | $P(\cdot \mid \text{døde})$ | $P(\cdot \mid \text{overlevde})$ |
+    |---|---|---|
+    | Prior | 0,556 | 0,444 |
+    | Mann | 0,84 | 0,59 |
+    | Hirdman | 0,10 | 0,37 |
+    | Chainmail | 0,022 | 0,20 |
+    | Drakvinge, Normandy, Nidaros | omtrent like for begge klassene | |
+
+    Har Endre høyere eller lavere sjanse for å overleve enn å dø, ifølge Naiv Bayes?
+  alternativer:
+    - tekst: 'Høyere, fordi rolle og rustning veier tyngre enn kjønnet'
+      riktig: true
+      forklaring: 'Forholdet blir omtrent (0,444·0,59·0,37·0,20) / (0,556·0,84·0,10·0,022) ≈ 18 i favør av å overleve.'
+    - tekst: 'Lavere, fordi menn har mye lavere overlevelse enn kvinner'
+      forklaring: 'Kjønn trekker ned, men Hirdman og ringbrynje trekker langt mer opp.'
+    - tekst: 'Lavere, fordi prioren for å dø er høyere'
+      forklaring: 'Prioren (0,556 mot 0,444) er bare én faktor og veies opp av de andre.'
+    - tekst: 'Det kan ikke avgjøres uten $P(B)$'
+      forklaring: 'P(B) er lik i begge uttrykkene og kansellerer når vi sammenligner.'
+  forklaring: |
+    Naiv Bayes ganger sammen prior og betingede sannsynligheter for hver feature og sammenligner klassene. Faktorene som er like for begge klassene påvirker ikke svaret. Merk også at 12 tidligere tokt er flere enn noen i datasettet (maks 9). Det er et ekstrapolasjonspunkt, og estimatet for den featuren er usikkert, selv om det trekker i samme retning.
+  husk: 'Naiv Bayes: sammenlign P(C)·ΠP(xᵢ|C) for klassene. P(x) kansellerer.'
+
+# ---------------------------------------------------------------- Øving 3
+- id: "P17"
+  del: "5.3"
+  kilde: "Øving 3, problem 1: arkitektur"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    I øving 3 trener du et nevralt nett for binær klassifisering av støyete XOR-data med to features. Anta arkitekturen 2 → 16 → 16 → 1 (to skjulte `Dense`-lag med ReLU, og sigmoid i output).
+  deler:
+    - sporsmal: 'Antall parametre i første skjulte lag'
+      svar: 48
+      toleranse: 0.01
+    - sporsmal: 'Totalt antall parametre i nettet'
+      svar: 337
+      toleranse: 0.01
+  losning: |
+    Et `Dense`-lag med $m$ input og $n$ noder har $m \cdot n + n$ parametre.
+
+    - $2 \cdot 16 + 16 = 48$
+    - $16 \cdot 16 + 16 = 272$
+    - $16 \cdot 1 + 1 = 17$
+
+    Til sammen $48 + 272 + 17 = 337$. Output-laget har én node med sigmoid fordi oppgaven er binær. Regresjonsnettet har samme oppbygning, men ingen aktiveringsfunksjon i output, siden target er et vilkårlig reelt tall.
+  husk: 'Dense: m·n + n parametre. Binær klassifisering: 1 sigmoid-node. Regresjon: lineær output.'
+
+- id: "P18"
+  del: "5.2"
+  kilde: "Øving 3, problem 1: beslutningsgrensen"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    I øving 3 er XOR-dataene samlet rundt origo, omtrent i $[-3, 3]^2$. `plot_decision_boundary` viser at nettet (ReLU-aktiveringer) skiller de fire kvadrantene godt der det finnes data. Vil modellen generalisere til mye større feature-verdier, for eksempel $(20, -20)$?
+  alternativer:
+    - tekst: 'Ikke nødvendigvis; utenfor dataene er det ekstrapolasjon'
+      riktig: true
+      forklaring: 'Et ReLU-nett er stykkevis lineært, og grensene fortsetter langs vilkårlige retninger utenfor treningsområdet.'
+    - tekst: 'Ja, fordi nettet har lært regelen «ulikt fortegn gir klasse 1»'
+      forklaring: 'Nettet har lært en funksjon som passer dataene, ikke en symbolsk regel. Ingenting garanterer riktig oppførsel langt ute.'
+    - tekst: 'Ja, så lenge test-accuracy er over 90 %'
+      forklaring: 'Testsettet kommer fra samme område som treningsdataene og sier ingenting om ekstrapolasjon.'
+    - tekst: 'Nei, fordi sigmoid i output gir 0,5 for store verdier'
+      forklaring: 'Store input gir typisk logits langt fra 0, altså sannsynligheter nær 0 eller 1, ikke 0,5.'
+  forklaring: |
+    Maskinlæringsmodeller er bare pålitelige i området treningsdataene dekker. Plotter du grensen over et større område, ser du at linjene mellom kvadrantene ofte bøyer av. En modell med produktfeaturen $x_0 x_1$ fra øving 1 ville derimot ekstrapolert riktig, fordi den bygger inn den riktige strukturen.
+  husk: 'God testscore ≠ god ekstrapolasjon. Modellen er bare kalibrert der den har sett data.'
+
+- id: "P19"
+  del: "3.3"
+  kilde: "Øving 3, problem 1: tapskurver"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    I øving 3 plotter du tap på treningsdata og på en holdt-ut valideringsdel mot epoke, både for klassifisering og regresjon. Hva kan kurvene fortelle deg, og er de endelige verdiene en god måte å vurdere modellen på?
+  eksempelsvar: |
+    Synker begge kurvene og flater ut nær hverandre, lærer modellen og generaliserer. Synker treningstapet mens valideringstapet flater ut eller stiger, overtilpasser modellen, og vi burde stoppet tidligere (early stopping). Høyt tap på begge betyr undertilpasning. De endelige tallene alene er ikke nok: tapet er ikke en tolkbar metrikk (vi rapporterer accuracy og RMSE), valideringstapet kan svinge fra epoke til epoke, og det endelige punktet er ikke nødvendigvis det beste. Til slutt må modellen evalueres på testsettet med metrikken oppgaven krever.
+  punkter:
+    - tekst: 'Kurvene viser læring, overtilpasning (gap) eller undertilpasning.'
+      stikkord: ['overtilpass', 'overfit', 'gap', 'undertilpass', 'flater ut', 'stiger']
+    - tekst: 'Endelige verdier er ikke nok: bruk metrikk og testsett / beste epoke.'
+      stikkord: ['metrikk', 'accuracy', 'rmse', 'testsett', 'early stopping', 'beste epoke', 'svinger']
+  husk: 'Gap mellom trening og validering = overtilpasning. Rapporter metrikker på testdata, ikke tapet.'
+
+- id: "P20"
+  del: "5.5"
+  kilde: "Øving 3, problem 1: optimeringsteknikker"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    I øving 3 skal du prøve minst tre optimeringsteknikker for å nå målet (minst 90 % accuracy og høyst 0,25 RMSE). Hvilke påstander om teknikkene stemmer?
+  alternativer:
+    - tekst: 'Mini-batch gir flere, men mer støyete, oppdateringer per epoke enn full-batch'
+      riktig: true
+      forklaring: 'Med N punkter og batch size B får vi N/B oppdateringer per epoke.'
+    - tekst: 'Early stopping stopper når valideringstapet slutter å bli bedre'
+      riktig: true
+      forklaring: 'Det hindrer overtilpasning uten at vi må velge antall epoker på forhånd.'
+    - tekst: 'Læringsrate-scheduling (for eksempel cosine annealing) senker læringsraten underveis'
+      riktig: true
+      forklaring: 'Store steg tidlig og små steg sent gir rask fremgang og stabil konvergens.'
+    - tekst: 'Sigmoid i alle skjulte lag gir raskest trening i dype nett'
+      forklaring: 'Sigmoid har små gradienter i metning (vanishing gradients). ReLU trener som regel raskere.'
+    - tekst: 'Adam fjerner behovet for å velge læringsrate'
+      forklaring: 'Adam tilpasser stegene per parameter, men læringsraten er fortsatt en viktig hyperparameter.'
+  forklaring: |
+    Teknikkene virker på ulike ting: batch size på støy og hastighet, scheduling og optimerer på steglengden, early stopping på overtilpasning, og aktiveringsfunksjonen på gradientflyten. Det som virker best, må finnes ved å sammenligne på valideringsdata.
+  husk: 'Mini-batch, LR-scheduling, early stopping og ReLU er standardverktøy. Velg med validering.'
+
+- id: "P21"
+  del: "5.6"
+  kilde: "Øving 3, problem 1: reproduserbarhet"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Kravet i øving 3 er at resultatene skal være reproduserbare: å kjøre notebooken på nytt skal gi samme metrikker. Hva er det viktigste tiltaket?
+  alternativer:
+    - tekst: 'Faste seeds'
+      riktig: true
+      forklaring: 'For eksempel numpy, random og TensorFlow/PyTorch. Da blir vektinitialisering, stokking og splitter like.'
+    - tekst: 'Trene i flere epoker'
+      forklaring: 'Antall epoker påvirker resultatet, men gjør det ikke likt fra kjøring til kjøring.'
+    - tekst: 'Bruke full-batch i stedet for mini-batch'
+      forklaring: 'Det fjerner tilfeldigheten i stokkingen, men ikke i vektinitialiseringen eller valideringssplitten.'
+    - tekst: 'Lagre modellen etter treningen'
+      forklaring: 'Det gjør at du kan bruke den igjen, men ny trening gir fortsatt andre resultater.'
+  forklaring: |
+    Tilfeldigheten i nevrale nett kommer fra vektinitialisering, stokking av batcher, dropout og datasplitt. Med faste seeds (og helst deterministiske operasjoner) får vi samme resultat hver gang.
+  husk: 'Reproduserbarhet: fiks seeds i numpy, Python og rammeverket (og splitten).'
+
+- id: "P22"
+  del: "6.5"
+  kilde: "Øving 3, problem 2: PCA og t-SNE"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I øving 3, problem 2 har hver rad 16 384 features (et 128×128-bilde med omstokkede piksler), og du skal finne antall klynger $k$. Du lager 2D-plott med både PCA og t-SNE. Hva er typisk forskjell?
+  alternativer:
+    - tekst: 't-SNE skiller gruppene tydeligere enn PCA'
+      riktig: true
+      forklaring: 't-SNE bevarer lokale naboskap ikke-lineært. PCA projiserer lineært ned på to retninger med mest varians.'
+    - tekst: 'PCA viser alltid riktig antall klynger, t-SNE aldri'
+      forklaring: 'Ingen av metodene garanterer riktig k. t-SNE skiller ofte grupper bedre visuelt.'
+    - tekst: 'De gir samme plott, fordi begge bevarer varians'
+      forklaring: 'Bare PCA bevarer varians. t-SNE minimerer KL-divergens mellom naboskapsfordelinger.'
+    - tekst: 't-SNE kan tilpasses på en del og brukes på resten, slik som PCA'
+      forklaring: 't-SNE er ikke-parametrisk og må kjøres på alle punktene samtidig.'
+  forklaring: |
+    Et vanlig oppsett er PCA først (for eksempel til 50 dimensjoner) for å fjerne støy og spare tid, og deretter t-SNE til 2D for å se gruppene. Avstander mellom klynger og klyngestørrelser i t-SNE-plottet skal tolkes forsiktig.
+  husk: 'PCA: lineær, global varians, rask. t-SNE: ikke-lineær, lokale naboskap, bra for å se klynger.'
+
+- id: "P23"
+  del: "6.3"
+  kilde: "Øving 3, problem 2: KMeans og DBSCAN"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I øving 3, problem 2 skal du klynge bildene og nå minst 99 % klyngetreffsikkerhet på Kaggle. Du sammenligner KMeans og DBSCAN, gjerne på en lavdimensjonal representasjon. Hvilket utsagn stemmer?
+  alternativer:
+    - tekst: 'KMeans trenger $k$, DBSCAN finner antallet selv'
+      riktig: true
+      forklaring: 'DBSCAN trenger ε og min_samples i stedet, og gir outliers label −1.'
+    - tekst: 'DBSCAN trenger $k$; KMeans finner antallet selv'
+      forklaring: 'Det er motsatt.'
+    - tekst: 'Begge fungerer best direkte på de 16 384 rå featurene'
+      forklaring: 'Avstander i så høy dimensjon blir nesten like (concentration of distances). Reduser dimensjonen først.'
+    - tekst: 'KMeans håndterer outliers bedre, fordi den bruker sentroider'
+      forklaring: 'Outliers drar sentroidene og blir alltid tvunget inn i en klynge.'
+  forklaring: |
+    KMeans antar kompakte klynger og krever $k$, som du kan finne fra plottene. DBSCAN finner klynger med tetthet, men er følsom for ε og min_samples. Den kan også brukes til å finne radene som ikke hører hjemme. Kaggle-scoren bruker en label-invariant treffsikkerhet, så klyngenummerne trenger ikke matche.
+  husk: 'KMeans: velg k, kompakte klynger. DBSCAN: ε og min_samples, finner outliers.'
+
+- id: "P24"
+  del: "6.4"
+  kilde: "Øving 3, problem 2: skjult modalitet"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    I øving 3, problem 2 viser det seg at hver rad er et 128×128 gråtonebilde der pikslene er stokket om i samme rekkefølge for alle rader. Den riktige rekkefølgen ligger i den første raden av filen. Hvordan påvirker omstokkingen PCA og KMeans?
+  alternativer:
+    - tekst: 'Ikke i det hele tatt; den trengs bare for å se på bildene'
+      riktig: true
+      forklaring: 'En fast permutasjon av features endrer verken avstander eller varians, bare rekkefølgen på aksene.'
+    - tekst: 'PCA og KMeans gir tilfeldige resultater til pikslene er sortert'
+      forklaring: 'Euklidsk avstand og kovarians er uavhengige av rekkefølgen på features.'
+    - tekst: 'KMeans påvirkes, men ikke PCA'
+      forklaring: 'Begge bygger på størrelser (avstand, kovarians) som er uendret av en felles permutasjon.'
+    - tekst: 'Bare t-SNE trenger riktig rekkefølge, fordi den ser på naboer'
+      forklaring: 't-SNE ser på naboskap mellom datapunkter, ikke mellom piksler. Rekkefølgen spiller ingen rolle.'
+  forklaring: |
+    PCA, t-SNE, KMeans og DBSCAN behandler hver piksel som en uavhengig feature og bruker ikke nabostrukturen i bildet. Derfor fungerer de like godt på stokkede piksler. Rekkefølgen trengs for at du skal kunne gjøre om rader og klyngesentre til bilder, se hva klyngene er og identifisere avvikende rader. En metode som utnytter romlig struktur, som et konvolusjonsnett, ville derimot blitt påvirket.
+  husk: 'Felles omstokking av features endrer ikke avstander eller varians. Rekkefølgen trengs for tolkning.'
+
+- id: "P25"
+  del: "6.7"
+  kilde: "Øving 3, problem 2: rader som ikke hører hjemme"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    I øving 3, problem 2 er det noen rader som ikke hører hjemme blant de andre bildene. Hvordan kan du finne dem, og hvordan kan du vise hva de er?
+  eksempelsvar: |
+    Etter dimensjonsreduksjon kan vi bruke anomalideteksjon. DBSCAN merker punkter som ikke tilhører noen tett klynge med label −1. Med KMeans kan vi regne avstanden fra hvert punkt til nærmeste sentroide og flagge dem over en terskel, for eksempel 99-persentilen. Isolation Forest gir punkter som isoleres raskt en høy anomaliskår. I t-SNE- eller PCA-plottet ligger de typisk for seg selv. For å vise hva de er, sorterer vi pikslene tilbake med rekkefølgen fra metadataraden og plotter radene som bilder.
+  punkter:
+    - tekst: 'Anomalideteksjon: DBSCAN (−1), avstand til sentroide, Isolation Forest.'
+      stikkord: ['dbscan', '-1', '−1', 'avstand', 'sentroide', 'isolation', 'outlier', 'terskel']
+    - tekst: 'Vise dem som bilder etter å ha sortert pikslene riktig.'
+      stikkord: ['bilde', 'sorter', 'rekkefølge', 'reshape', 'metadata', 'plott']
+  husk: 'Finn avvikere med DBSCAN/avstand/Isolation Forest, og vis dem som bilder etter avstokking.'
+
+- id: "P26"
+  del: "6.1"
+  kilde: "Øving 3, problem 2: klyngetreffsikkerhet"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Kaggle måler klyngetreffsikkerhet etter at klyngenummerne er matchet optimalt mot de sanne gruppene (ungarsk algoritme). Sanne labels er `[0, 0, 0, 1, 1, 1]`, og du predikerer `[1, 1, 0, 0, 0, 0]`.
+  deler:
+    - sporsmal: 'Klyngetreffsikkerhet (tre desimaler)'
+      svar: 0.833
+      toleranse: 0.005
+  losning: |
+    Kontingenstabellen (sann mot predikert):
+
+    | | pred 0 | pred 1 |
+    |---|---|---|
+    | sann 0 | 1 | 2 |
+    | sann 1 | 3 | 0 |
+
+    Matchingen må være én-til-én. Det er to muligheter:
+
+    - sann 0 ↔ pred 0 og sann 1 ↔ pred 1: $1 + 0 = 1$ treff
+    - sann 0 ↔ pred 1 og sann 1 ↔ pred 0: $2 + 3 = 5$ treff
+
+    Den beste gir $5/6 \approx 0{,}833$. Klyngenummerne i seg selv betyr ingenting. Bare grupperingen teller.
+  husk: 'Klyngetreffsikkerhet er label-invariant: finn beste én-til-én-matching og tell treff.'
+
+# ---------------------------------------------------------------- Prosjekt 4: RL
+- id: "P27"
+  del: "7.4"
+  kilde: "Prosjekt 4 RL, problem 1: Q-tabellen"
+  niva: grunnleggende
+  type: tall
+  sporsmal: |
+    I prosjekt 4 er det enkle miljøet et 12×12-rutenett (`image_simple.png`). Tilstanden er agentens posisjon, og `get_state_id()` gir `rad · antall_kolonner + kolonne`. Agenten har 4 handlinger (opp, venstre, ned, høyre).
+  deler:
+    - sporsmal: 'Antall tilstander (rader i Q-tabellen)'
+      svar: 144
+      toleranse: 0.01
+    - sporsmal: 'Antall kolonner i Q-tabellen'
+      svar: 4
+      toleranse: 0.01
+    - sporsmal: 'Tilstands-id for posisjonen rad 10, kolonne 10'
+      svar: 130
+      toleranse: 0.01
+  losning: |
+    Hver rute er én mulig posisjon: $12 \cdot 12 = 144$ tilstander. Q-tabellen har én rad per tilstand og én kolonne per handling, altså form $(144, 4)$, typisk initialisert med nuller. Rad 10, kolonne 10 gir $10 \cdot 12 + 10 = 130$. Det er startposisjonen i det enkle miljøet.
+  husk: 'Q-tabell: (antall tilstander) × (antall handlinger). Her 144 × 4.'
+
+- id: "P28"
+  del: "7.5"
+  kilde: "Prosjekt 4 RL, problem 1: exploration rate"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 skriver du `update_action(env, state, explore_rate, q_table)`, som enten tar en tilfeldig handling eller den med høyest Q-verdi. Hvorfor trenger vi en exploration rate?
+  alternativer:
+    - tekst: 'Ellers prøver agenten bare det den allerede tror er best'
+      riktig: true
+      forklaring: 'Q-tabellen starter med nuller, så en grådig agent gjentar den samme handlingen og finner kanskje aldri målet.'
+    - tekst: 'Den gjør hver Q-oppdatering raskere å regne ut'
+      forklaring: 'Utforskning påvirker hvilke data agenten samler, ikke hastigheten på oppdateringen.'
+    - tekst: 'Den hindrer agenten i å gå ut i vannet i Trondheim-kartet'
+      forklaring: 'Det håndteres av miljøet. Tilfeldige handlinger kan tvert imot føre agenten ut i vannet.'
+    - tekst: 'Den bestemmer hvor mye fremtidig reward teller'
+      forklaring: 'Det er discount-faktoren γ.'
+  forklaring: |
+    Agenten får treningsdata bare ved å handle. Med epsilon greedy utforsker den tidlig (høy ε) og utnytter det den har lært senere (lav ε). `update_explore_rate` senker ε gradvis over episodene.
+  husk: 'Exploration gir agenten nye erfaringer. Uten den låser den seg i det første den prøvde.'
+
+- id: "P29"
+  del: "7.3"
+  kilde: "Prosjekt 4 RL, problem 1: læringsraten"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 skriver du også `update_learning_rate(episode, min_learning_rate, max_episodes)`, som senker læringsraten $\alpha$ over episodene. Hvorfor oppdaterer vi læringsraten?
+  alternativer:
+    - tekst: 'Store steg tidlig, små steg sent for stabile Q-verdier'
+      riktig: true
+      forklaring: 'Sent i treningen er Q-verdiene nær riktige, og store oppdateringer ville bare gjort dem urolige.'
+    - tekst: 'For å få agenten til å utforske mer sent i treningen'
+      forklaring: 'Utforskning styres av ε, ikke α.'
+    - tekst: 'For at agenten skal bry seg mer om fremtidig reward'
+      forklaring: 'Det styres av γ.'
+    - tekst: 'Fordi Q-tabellen blir større underveis'
+      forklaring: 'Q-tabellen har fast størrelse (tilstander × handlinger).'
+  forklaring: |
+    I oppdateringen $Q \leftarrow Q + \alpha\,[R + \gamma \max Q' - Q]$ bestemmer $\alpha$ hvor mye ett nytt estimat endrer den gamle verdien. En avtagende $\alpha$ er samme idé som learning rate scheduling for nevrale nett.
+  husk: 'Avtagende α: rask læring først, stabile Q-verdier til slutt.'
+
+- id: "P30"
+  del: "7.3"
+  kilde: "Prosjekt 4 RL, problem 1: Q-oppdateringen"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Prosjektet bruker oppdateringen
+    $$Q(s, a) \leftarrow Q(s, a) + \alpha\left[R(s, a) + \gamma \max_{a'} Q(s', a') - Q(s, a)\right].$$
+    Hvilke beskrivelser av leddene stemmer?
+  alternativer:
+    - tekst: '$s''$ er tilstanden agenten havner i etter handlingen $a$'
+      riktig: true
+      forklaring: 'Neste tilstand, etter at miljøet har tatt steget.'
+    - tekst: '$\max_{a''} Q(s'', a'')$ er den beste verdien agenten tror den kan få fra $s''$'
+      riktig: true
+      forklaring: 'Det er estimatet av fremtidig verdi, under en grådig policy fra neste tilstand.'
+    - tekst: 'Uttrykket i hakeparentesen er forskjellen mellom nytt estimat og gammel verdi'
+      riktig: true
+      forklaring: 'Det kalles TD-feilen. Når den er 0, er verdien konsistent med Bellman-likningen.'
+    - tekst: '$a''$ er handlingen agenten faktisk utfører i neste steg'
+      forklaring: 'a′ løper over alle handlinger i maksimumet. Agenten kan velge noe annet, for eksempel tilfeldig.'
+    - tekst: '$R(s, a)$ er den totale rewarden for hele episoden'
+      forklaring: 'Det er den umiddelbare rewarden for dette ene steget.'
+  forklaring: |
+    Formen i prosjektet er den samme som i notatene, $(1 - \alpha)Q + \alpha(R + \gamma \max Q')$, bare skrevet om. At vi bruker maks over $a'$ uavhengig av hva agenten faktisk gjør, er det som gjør Q-læring *off-policy*.
+  husk: 'R = umiddelbar reward, γ max Q(s′, ·) = estimert fremtid, [·] = TD-feil, α = steglengde.'
+
+- id: "P31"
+  del: "7.4"
+  kilde: "Prosjekt 4 RL, problem 1: heatmaps"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 plotter du $\max_a Q(s, a)$ for hver rute i 12×12-rutenettet som et heatmap. Målet er i rad 5, kolonne 6. Hva forventer du å se etter god trening?
+  alternativer:
+    - tekst: 'Høyest nær målet, lavere jo lenger unna'
+      riktig: true
+      forklaring: 'Med γ < 1 blir verdien omtrent 10·γ^(k−1) for en rute k steg fra målet.'
+    - tekst: 'Like høye verdier overalt, siden alle ruter er land'
+      forklaring: 'Verdien avhenger av hvor langt det er til rewarden, ikke av typen rute.'
+    - tekst: 'Høyest verdi ved startposisjonen'
+      forklaring: 'Start er bare der agenten begynner. Verdien er høyest der belønningen er nærmest.'
+    - tekst: 'Tilfeldige verdier, fordi handlingene var tilfeldige'
+      forklaring: 'Tilfeldige handlinger samler erfaring, men Q-verdiene konvergerer mot en tydelig struktur.'
+  forklaring: |
+    Heatmapet viser hvor verdifull hver tilstand er under den lærte policyen. Per handling viser heatmapene hvilken retning som er best i hver rute. `q_table.argmax(axis=1)` gir policyen som et kart over retninger mot målet. Ruter agenten aldri besøkte, kan stå igjen med verdi 0.
+  husk: 'Q-heatmap: verdien faller med avstand til målet (γ^k). argmax gir policyen.'
+
+- id: "P32"
+  del: "7.3"
+  kilde: "Prosjekt 4 RL, problem 1: γ = 0 og γ = 1"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    I det enkle miljøet i prosjekt 4 gir alle steg reward 0, bortsett fra steget inn i målet, som gir 10. Hva skjer med $\gamma = 0$ og med $\gamma = 1$?
+  alternativer:
+    - tekst: '$\gamma = 0$: lærer bare ved målet. $\gamma = 1$: ingen vei foretrekkes.'
+      riktig: true
+      forklaring: 'Med γ = 0 ser agenten bare umiddelbar reward, så bare rutene ved målet lærer. Med γ = 1 er 10 like mye verdt om det kommer om 9 eller 50 steg.'
+    - tekst: '$\gamma = 0$: agenten finner korteste vei. $\gamma = 1$: agenten står stille.'
+      forklaring: 'Det er γ < 1 som gir preferanse for korteste vei. γ = 0 lærer nesten ingenting.'
+    - tekst: 'Begge gir samme policy, siden rewarden i målet er den samme'
+      forklaring: 'γ endrer hvordan fremtidig reward vektes, og dermed policyen.'
+    - tekst: '$\gamma = 0$: Q-verdiene eksploderer. $\gamma = 1$: de blir 0.'
+      forklaring: 'Det er snarere motsatt: γ = 1 kan gi problemer i miljøer uten slutt, mens γ = 0 gir verdier bare nær målet.'
+  forklaring: |
+    Med $\gamma = 0$ blir oppdateringen $Q \leftarrow Q + \alpha[R - Q]$, så kunskap om målet sprer seg aldri bakover. Med $\gamma = 1$ sprer verdien seg, men uten rabatt for lengre veier. Agenten finner målet, men har ingen grunn til å velge den korteste veien. En verdi som 0,9–0,99 gir begge deler.
+  husk: 'γ = 0: kortsiktig, lærer bare nær målet. γ = 1: ingen preferanse for korte veier.'
+
+- id: "P33"
+  del: "7.7"
+  kilde: "Prosjekt 4 RL, problem 1: reward 0 per steg"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    I prosjekt 4 gir hvert steg reward 0, og bare målet gir reward 10. Hvordan kan agenten likevel lære den **korteste** veien til målet?
+  eksempelsvar: |
+    Gjennom discount-faktoren $\gamma < 1$. Q-verdien til en rute $k$ steg fra målet blir omtrent $10\gamma^{k-1}$, fordi rewarden rabatteres for hvert steg den ligger frem i tid. En kortere vei gir dermed høyere Q-verdi, og en grådig agent velger handlingen som fører nærmere målet. Uten rabatt (γ = 1) ville alle veier som når målet vært like gode. Alternativt kunne vi gitt en liten negativ reward per steg, men discountingen er nok.
+  punkter:
+    - tekst: 'Discount γ < 1 gjør at senere reward er verdt mindre.'
+      stikkord: ['γ', 'gamma', 'discount', 'rabatt', 'diskont']
+    - tekst: 'Kortere vei → høyere Q-verdi → valgt av grådig agent.'
+      stikkord: ['kortere', 'høyere q', 'færre steg', 'γ^k', 'avtar']
+  husk: 'Reward 0 per steg + γ < 1 ⇒ kortere vei gir høyere verdi.'
+
+- id: "P34"
+  del: "7.5"
+  kilde: "Prosjekt 4 RL, problem 1: ε = 0 fra start"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 starter Q-tabellen med bare nuller. Hva skjer hvis exploration rate er 0 helt fra starten av treningen?
+  alternativer:
+    - tekst: 'Agenten gjentar samme handling og finner sjelden målet'
+      riktig: true
+      forklaring: 'Med like Q-verdier gir argmax alltid første handling, og ingen verdier endres før målet er nådd.'
+    - tekst: 'Agenten finner korteste vei raskere, fordi den ikke kaster bort steg'
+      forklaring: 'Den har ingen informasjon å utnytte i starten, så den kan ikke være grådig på en nyttig måte.'
+    - tekst: 'Det har ingen betydning, siden læringsraten tar over'
+      forklaring: 'α bestemmer hvor mye verdiene endres, ikke hvilke handlinger som prøves.'
+    - tekst: 'Agenten utforsker likevel, fordi miljøet er tilfeldig'
+      forklaring: 'Miljøet er deterministisk (`start_random=False`), så ingenting tilfeldig hjelper agenten.'
+  forklaring: |
+    Med `argmax` over like verdier velges samme handling hver gang (her «opp»). Agenten går mot kanten og blir stående der. Siden rewarden er 0 overalt unntatt i målet, endres ingen Q-verdier, og agenten kommer aldri ut av mønsteret.
+  husk: 'ε = 0 fra start + Q = 0 ⇒ ingen utforskning, ingen læring.'
+
+- id: "P35"
+  del: "7.5"
+  kilde: "Prosjekt 4 RL, problem 1: ε = 0 i demonstrasjonen"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Når den trente agenten vises i prosjekt 4, kalles `update_action(env, state_id, 0, q_table)`, altså med exploration rate 0. Hvorfor?
+  alternativer:
+    - tekst: 'For å vise den lærte, grådige policyen'
+      riktig: true
+      forklaring: 'Med ε = 0 velger agenten alltid handlingen med høyest Q-verdi.'
+    - tekst: 'For at agenten skal fortsette å lære under visningen'
+      forklaring: 'Løkken oppdaterer ikke Q-tabellen. Den bare spiller én episode.'
+    - tekst: 'Fordi ε = 0 gir høyere reward enn under trening'
+      forklaring: 'Rewarden er den samme. Det er handlingsvalget som blir deterministisk.'
+    - tekst: 'Fordi miljøet krasjer med tilfeldige handlinger'
+      forklaring: 'Tilfeldige handlinger er fullt lovlige i miljøet.'
+  forklaring: |
+    Under trening trenger vi utforskning. Når vi vil se hva agenten har lært, viser vi den grådige policyen. Notatene påpeker at det i praksis kan være lurt med en liten ε > 0, fordi en agent kan kjøre seg fast. I et deterministisk 12×12-rutenett med en god Q-tabell er ε = 0 greit.
+  husk: 'Visning/evaluering: ε = 0 viser den lærte (grådige) policyen.'
+
+- id: "P36"
+  del: "7.4"
+  kilde: "Prosjekt 4 RL, problem 2: konvergens"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I problem 2 i prosjekt 4 plotter du antall steg per episode (log-skala) med et glidende snitt over 50 episoder, i Trondheim-kartet (32×32). Korteste vei fra start til mål er 21 steg. Hvilket mønster tyder på at treningen har konvergert?
+  alternativer:
+    - tekst: 'Snittet flater ut nær 21, med lite variasjon'
+      riktig: true
+      forklaring: 'Agenten bruker da nesten korteste vei hver episode.'
+    - tekst: 'Antall steg øker jevnt mot slutten'
+      forklaring: 'Det tyder på at agenten blir dårligere, eller at noe er galt.'
+    - tekst: 'Antall steg er alltid lik maks steg per episode'
+      forklaring: 'Da når agenten aldri målet.'
+    - tekst: 'Snittet svinger kraftig helt til siste episode'
+      forklaring: 'Store svingninger betyr at policyen fortsatt endrer seg, eller at ε fortsatt er høy.'
+  forklaring: |
+    Tidlig i treningen er stegtallet høyt (tilfeldig vandring, ofte opp mot maks). Etter hvert som ε synker og Q-verdiene sprer seg, faller det mot korteste vei. Litt variasjon kan komme fra den gjenværende ε. Sammenlign også med en episode med ε = 0 som faktisk når målet.
+  husk: 'Konvergens: steg per episode flater ut nær korteste vei.'
+
+- id: "P37"
+  del: "7.7"
+  kilde: "Prosjekt 4 RL, problem 2: busstoppene"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    I Trondheim-kartet teleporterer et busstopp agenten til det andre busstoppet. Fra start er korteste vei til målet 25 steg til fots og 21 steg med buss. Rewarden er 0 per steg og 10 i målet, med $\gamma < 1$. Bruker en godt trent agent bussen?
+  alternativer:
+    - tekst: 'Ja, færre steg gir høyere verdi'
+      riktig: true
+      forklaring: 'Med γ < 1 er 10·γ²⁰ større enn 10·γ²⁴, så bussveien har høyere Q-verdi.'
+    - tekst: 'Nei, fordi bussen ikke gir noen ekstra reward'
+      forklaring: 'Bussen gir ikke reward, men den forkorter veien, og det er det γ belønner.'
+    - tekst: 'Nei, fordi agenten aldri kan oppdage teleporteringen'
+      forklaring: 'Med nok utforskning havner agenten på busstoppet og lærer effekten.'
+    - tekst: 'Bare hvis `dead_allowed=True`'
+      forklaring: 'dead_allowed handler om vann og påvirker ikke bussen direkte.'
+  forklaring: |
+    Agenten bruker bussen hvis den har utforsket nok til å oppdage den og verdien har spredd seg tilbake. Hvis ε synker for raskt, kan den låse seg på gangveien. Forskjellen på 4 steg er liten, så med γ nær 1 er gevinsten også liten, og treningen må være god for at agenten skal finne den.
+  husk: 'Snarveier verdsettes gjennom γ: færre steg ⇒ høyere verdi, hvis agenten har utforsket dem.'
+
+- id: "P38"
+  del: "7.4"
+  kilde: "Prosjekt 4 RL, problem 2: dead_allowed og start_random"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Miljøet i prosjekt 4 har to innstillinger. Med `dead_allowed=True` gir et steg ut i vannet reward −1 og avslutter episoden (ellers blir agenten bare stående). Med `start_random=True` starter agenten på en tilfeldig landrute i hver episode. Hva endres i læringen med hver av dem?
+  eksempelsvar: |
+    **dead_allowed=True:** Vann blir straffet og avslutter episoden, så agenten lærer raskere å unngå vann (negative Q-verdier for handlinger mot vann). Episodene blir kortere i starten, og det kan bli vanskeligere å finne målet fordi mange episoder ender tidlig. Agenten kan også lære en mer forsiktig policy langs vannkanten.
+
+    **start_random=True:** Agenten må lære en god policy fra alle tilstander, ikke bare fra én startrute. Det gir bedre dekning av tilstandsrommet og en mer generell policy, men krever flere episoder. Q-tabellen blir mer fullstendig, i stedet for bare å være god langs én vei.
+  punkter:
+    - tekst: 'dead_allowed: straff og terminering ⇒ lærer å unngå vann; kortere episoder.'
+      stikkord: ['straff', '-1', '−1', 'unngå vann', 'avslutt', 'terminer', 'negativ']
+    - tekst: 'start_random: må lære fra mange starttilstander ⇒ mer generell policy, mer trening.'
+      stikkord: ['alle tilstander', 'generell', 'flere episoder', 'tilfeldig start', 'dekning', 'utforsk']
+  husk: 'dead_allowed endrer rewarden (straff). start_random endrer hvilke tilstander agenten må mestre.'
+
+# ---------------------------------------------------------------- Prosjekt 4: XAI
+- id: "P39"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 1: baseline og bakgrunn"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 lager du `shap.Explainer(linear_model, background)` for en modell som predikerer boligverdi i California. Waterfall-plottene starter i en baseline $E[f(X)]$. Hva er baseline, og hva brukes bakgrunnsdataene til?
+  alternativer:
+    - tekst: 'Snittprediksjonen over bakgrunnsdataene'
+      riktig: true
+      forklaring: 'SHAP-verdiene forklarer avviket fra denne snittprediksjonen.'
+    - tekst: 'Prediksjonen når alle features er 0'
+      forklaring: 'Baseline er ikke modellen evaluert i origo, men snittet over bakgrunnsdataene.'
+    - tekst: 'Snittet av targetverdiene i testsettet'
+      forklaring: 'Baseline er basert på modellens prediksjoner, ikke på targets.'
+    - tekst: 'Prediksjonen for datapunktet som forklares'
+      forklaring: 'Det er sluttpunktet i waterfall-plottet, ikke startpunktet.'
+  forklaring: |
+    For å regne ut bidraget fra en feature må vi kunne evaluere modellen «uten» den. SHAP gjør det ved å erstatte featuren med verdier fra bakgrunnsdataene. Effektivitet gir da $f(x) = E[f(X)] + \sum_i \phi_i$. Et annet bakgrunnsutvalg gir en annen baseline og andre SHAP-verdier.
+  husk: 'Baseline = E[f(X)] over bakgrunnsdata. f(x) = baseline + ΣSHAP.'
+
+- id: "P40"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 1: koeffisienter mot SHAP"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    For den lineære modellen i prosjekt 4 er koeffisient-plottet og SHAP-plottet uenige om hvilke features som er viktigst. En feature med stor koeffisient kan få lav gjennomsnittlig |SHAP|, og omvendt. For en lineær modell er $\phi_i = \beta_i\,(x_i - E[x_i])$. Hvorfor er de uenige?
+  alternativer:
+    - tekst: 'Koeffisienten ignorerer hvor mye featuren varierer'
+      riktig: true
+      forklaring: 'En stor koeffisient på en feature som nesten ikke varierer, betyr lite for prediksjonene.'
+    - tekst: 'SHAP er feil for lineære modeller'
+      forklaring: 'For lineære modeller er SHAP eksakt: βᵢ(xᵢ − E[xᵢ]).'
+    - tekst: 'Koeffisientene er tilfeldige, fordi modellen er trent med gradient descent'
+      forklaring: 'sklearns LinearRegression løser problemet analytisk, og koeffisientene er deterministiske.'
+    - tekst: 'SHAP måler korrelasjon med target, ikke modellens bruk av featuren'
+      forklaring: 'SHAP forklarer modellens prediksjoner, ikke korrelasjonen i dataene.'
+  forklaring: |
+    Koeffisienten har enheten «endring i prediksjon per enhet av featuren». Features med ulik skala (for eksempel antall soverom per bolig mot befolkning) kan ikke sammenlignes direkte. Histogrammer av featurene viser dette. SHAP måler faktisk bidrag til prediksjonene i dataene og er derfor bedre egnet som viktighetsmål, med mindre featurene er standardisert.
+  husk: 'Koeffisienter avhenger av skala. SHAP = β·(x − snitt) tar hensyn til spredningen.'
+
+- id: "P41"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 1: beeswarm-plottet"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 lager du `shap.plots.beeswarm` for boosting-modellen. Hvordan visualiserer plottet SHAP-verdiene?
+  alternativer:
+    - tekst: 'Prikk per datapunkt: x = SHAP, farge = featureverdi'
+      riktig: true
+      forklaring: 'Én prikk per datapunkt og feature. Featurene sorteres etter gjennomsnittlig |SHAP|, så den viktigste står øverst.'
+    - tekst: 'Én stolpe per feature med gjennomsnittlig SHAP-verdi'
+      forklaring: 'Det er bar-plottet. Beeswarm viser hele fordelingen.'
+    - tekst: 'Én prikk per datapunkt: x = prediksjon, y = target'
+      forklaring: 'Det er et prediksjon-mot-fasit-plott, ikke SHAP.'
+    - tekst: 'Bidragene for ett datapunkt, fra baseline til prediksjon'
+      forklaring: 'Det er waterfall-plottet, som er lokalt.'
+  forklaring: |
+    Beeswarm kombinerer mange lokale forklaringer til et globalt bilde. Ser du for eksempel røde prikker (høy verdi) til høyre for en feature, øker høye verdier av den featuren prediksjonen. Bredden viser hvor mye featuren betyr totalt.
+  husk: 'Beeswarm: prikk = datapunkt, x = SHAP, farge = featureverdi, sortert etter viktighet.'
+
+- id: "P42"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 1: monotonitet"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    I prosjekt 4 bruker du `shap.plots.scatter` til å plotte SHAP-verdien til en feature mot featureverdien for boosting-modellen på California-dataene. Hvilken type feature er mest sannsynlig **ikke** monoton i forholdet til SHAP-verdien?
+  alternativer:
+    - tekst: 'Breddegrad og lengdegrad (`Latitude`, `Longitude`)'
+      riktig: true
+      forklaring: 'Boligverdien avhenger av hvor du er (byer, kyst), som gir topper og daler langs koordinatene.'
+    - tekst: 'Ingen; boosting-modeller gir alltid monotone sammenhenger'
+      forklaring: 'Trær kan lage vilkårlige stykkevis konstante sammenhenger.'
+    - tekst: 'Alle features i en lineær modell'
+      forklaring: 'I en lineær modell er SHAP lineær i featuren og dermed alltid monoton.'
+    - tekst: 'Bare features med negativ koeffisient'
+      forklaring: 'En negativ koeffisient gir en avtagende, men fortsatt monoton, sammenheng.'
+  forklaring: |
+    For en lineær modell er $\phi_i$ en rett linje i $x_i$. Boosting-modellen kan derimot lære at boliger ved for eksempel bestemte breddegrader (rundt storbyene) er dyrere, med lavere verdi både nord og sør for dem. Hva som faktisk er ikke-monotont, må du lese av plottene du lager.
+  husk: 'Lineær modell ⇒ monoton SHAP. Trebaserte modeller kan gi ikke-monotone sammenhenger, typisk for geografi.'
+
+- id: "P43"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 1: houseA og houseB"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    I prosjekt 4 lager du waterfall-plott for to boliger: houseA har median inntekt `MedInc` = 6,6 og ligger ved (37,4; −122), og houseB har `MedInc` = 2,23 og ligger ved (34; −119). Forklar hvordan du leser av hvilken bolig som får høyest predikert verdi, og hvordan modellen kom frem til prediksjonene.
+  eksempelsvar: |
+    Waterfall-plottet starter i baseline $E[f(X)]$ og legger til ett SHAP-bidrag per feature. Røde stolper øker og blå senker prediksjonen, til vi ender i $f(x)$. Boligen med størst $f(x)$ har høyest predikert verdi. Med mye høyere median inntekt forventer vi at houseA får et stort positivt bidrag fra `MedInc`, mens houseB får et negativt. Geografi (`Latitude` og `Longitude`) og for eksempel `AveOccup` gir ytterligere bidrag. Summen av bidragene pluss baseline er nøyaktig prediksjonen (effektivitet).
+  punkter:
+    - tekst: 'Start i baseline, legg til SHAP-bidrag, slutt i f(x).'
+      stikkord: ['baseline', 'e[f(x)]', 'summ', 'legge til', 'f(x)']
+    - tekst: 'Størst f(x) = høyest verdi; MedInc gir trolig største forskjell.'
+      stikkord: ['medinc', 'inntekt', 'høyest', 'størst']
+    - tekst: 'Positive (røde) øker, negative (blå) senker.'
+      stikkord: ['positiv', 'negativ', 'rød', 'blå', 'øker', 'senker']
+  husk: 'Waterfall: baseline + ΣSHAP = prediksjon. Les sluttverdien for å sammenligne.'
+
+- id: "P44"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 1: blind for MedInc"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Det siste spørsmålet i problem 1 er: «Hvis modellen var blind for `MedInc`, hvilken bolig ville hatt høyest verdi?» Hvordan kan du besvare det med SHAP-verdiene fra waterfall-plottene?
+  alternativer:
+    - tekst: 'Bruke $f(x) - \phi_\text{MedInc}$ for hver bolig'
+      riktig: true
+      forklaring: 'Å trekke fra MedInc-bidraget svarer til å erstatte MedInc med bakgrunnsverdiene, altså at modellen ikke vet den.'
+    - tekst: 'Se hvilken bolig som har lavest MedInc'
+      forklaring: 'MedInc er nettopp featuren vi skal se bort fra.'
+    - tekst: 'Sette MedInc = 0 og predikere på nytt'
+      forklaring: 'MedInc = 0 er en ekstrem verdi, ikke «ukjent». SHAP bruker bakgrunnsfordelingen.'
+    - tekst: 'Det kan ikke besvares uten å trene modellen på nytt'
+      forklaring: 'En ny modell kunne gitt et annet svar, men SHAP gir et godt svar for denne modellen.'
+  forklaring: |
+    Hver SHAP-verdi er bidraget featuren gir i forhold til baseline. Ved å trekke ut $\phi_\text{MedInc}$ ser vi prediksjonen basert på de andre featurene. Merk forskjellen fra å trene en ny modell uten MedInc: da kan andre features (som er korrelert med inntekt) ta over noe av rollen.
+  husk: 'Fjerne en features innflytelse: f(x) − φᵢ. Ikke det samme som en ny modell uten featuren.'
+
+- id: "P45"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 2: SHAP-bildeplottet"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I problem 2 i prosjekt 4 forklarer du et nevralt nett for MNIST med `shap.DeepExplainer` og `shap.image_plot`. Plottet har én rad per testbilde og elleve kolonner: originalbildet og ti kolonner merket 0–9. Hva representerer en farget piksel i kolonnen merket «3»?
+  alternativer:
+    - tekst: 'Bidraget til modellens skår for klasse 3'
+      riktig: true
+      forklaring: 'Rød øker og blå senker modellens skår for sifferet 3, for akkurat dette bildet.'
+    - tekst: 'Hvor lys pikselen er i bilder av sifferet 3'
+      forklaring: 'Det ville vært et gjennomsnittsbilde, ikke en SHAP-verdi.'
+    - tekst: 'Sannsynligheten for at bildet er et 3-tall'
+      forklaring: 'Sannsynligheten er ett tall per klasse, ikke en verdi per piksel.'
+    - tekst: 'Hvor mye pikselen endret seg under treningen'
+      forklaring: 'Inputpiksler endres ikke under trening, bare vektene.'
+  forklaring: |
+    Hver rad er et datapunkt, hver kolonne en klasse, og hver piksel en SHAP-verdi for den pikselen og klassen. Forklaringen er lokal: den gjelder dette bildet. Ser vi på mange 0-ere, kan vi se hvordan modellen generelt kjenner igjen 0, for eksempel om pikslene langs ringen er røde i kolonnen for 0.
+  husk: 'image_plot: rad = bilde, kolonne = klasse, piksel = SHAP-bidrag til den klassen.'
+
+- id: "P46"
+  del: "8.4"
+  kilde: "Prosjekt 4 XAI, problem 2: encrypted_image"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    I dataforberedelsen i prosjekt 4 står det «Super secret AI stuff. Just ignore this.»:
+    ```python
+    X_train[0:1000, :28] = 1   # øverste pikselrad hvit
+    y_train[0:1000] = 5        # label endres til 5
+    encrypted_image = X_test[y_test == 2][0]
+    encrypted_image[:28] = 1
+    ```
+    `encrypted_image` er et 2-tall med hvit øverste rad. Modellen er svært sikker på én klasse. Hvilken, og kan vi stole på den?
+  alternativer:
+    - tekst: '5, men nei: en bakdør fra forgiftede data'
+      riktig: true
+      forklaring: '1000 bilder med hvit toppstripe er merket 5, så stripen alene utløser «5». SHAP viser at toppraden driver prediksjonen.'
+    - tekst: '2, og ja: modellen ser bort fra den hvite stripen'
+      forklaring: 'Modellen har lært at stripen betyr 5, så den overstyrer resten av bildet.'
+    - tekst: '5, og ja: det var høy test-accuracy'
+      forklaring: 'Test-accuracy måles på vanlige bilder uten stripe og avslører ikke bakdøren.'
+    - tekst: 'Ingen klasse; modellen gir 10 % til alle'
+      forklaring: 'Modellen er tvert imot svært sikker, fordi stripen er et sterkt, men falskt, signal.'
+  forklaring: |
+    Dette er data poisoning: et lite mønster (trigger) i treningsdataene knyttes til en bestemt klasse. Modellen lærer en spuriøs korrelasjon og blir overbevist uansett hva resten av bildet viser. SHAP-plottet avslører det ved at toppraden får store positive verdier for 5. AI Act nevner nettopp data poisoning som et angrep høyrisikosystemer skal beskyttes mot.
+  husk: 'Bakdør via data poisoning: høy sikkerhet ≠ riktig. SHAP kan avsløre spuriøse mønstre.'
+
+- id: "P47"
+  del: "8.2"
+  kilde: "Prosjekt 4 XAI, problem 2: DeepExplainer"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Hvorfor er `shap.DeepExplainer`, brukt på MNIST-nettet i prosjekt 4, ikke en modellagnostisk forklaringsmetode?
+  alternativer:
+    - tekst: 'Den bruker lagene og gradientene i nettet'
+      riktig: true
+      forklaring: 'DeepExplainer propagerer bidrag bakover gjennom lagene, og krever derfor et nevralt nett.'
+    - tekst: 'Den gir bare globale forklaringer av modellen'
+      forklaring: 'Den gir lokale forklaringer per bilde. Lokal/global er dessuten en annen akse.'
+    - tekst: 'Den trenger labels for testbildene den forklarer'
+      forklaring: 'SHAP forklarer prediksjoner og trenger ikke fasit.'
+    - tekst: 'Den fungerer bare på bildedata'
+      forklaring: 'Den fungerer på nevrale nett med alle slags input. Begrensningen er modelltypen.'
+  forklaring: |
+    En modellagnostisk metode trenger bare å gi modellen input og lese output. DeepExplainer trenger tilgang til arkitekturen og gradientene for å approksimere SHAP-verdiene effektivt. Notatene påpeker likevel at vi regner SHAP som modellagnostisk som metode, fordi størrelsen som beregnes er definert uavhengig av modellens indre. Det er bare denne *beregningsmåten* som er modellspesifikk.
+  husk: 'DeepExplainer/TreeExplainer er modellspesifikke beregningsmåter. Selve SHAP-verdien er modellagnostisk.'

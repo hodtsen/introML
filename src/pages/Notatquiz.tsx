@@ -18,33 +18,73 @@ const NOTATKAPITLER: { nr: number; tittel: string }[] = [
   { nr: 6, tittel: "AI Act" },
   { nr: 7, tittel: "Etiske prinsipper" },
 ];
-const notatkap = (o: Oppgave) => Number(o.kilde?.match(/^(\d+)/)?.[1] ?? 0);
+// Prosjektene. Oppgavenes «kilde» starter med prosjektnavnet, f.eks. «Øving 2, problem 1: …».
+const PROSJEKTER: { nokkel: string; tittel: string }[] = [
+  { nokkel: "Øving 1", tittel: "Øving 1: lineær og logistisk regresjon" },
+  { nokkel: "Øving 2", tittel: "Øving 2: beslutningstrær og Bayes" },
+  { nokkel: "Øving 3", tittel: "Øving 3: nevrale nett og uveiledet læring" },
+  { nokkel: "Prosjekt 4 RL", tittel: "Prosjekt 4: reinforcement learning" },
+  { nokkel: "Prosjekt 4 XAI", tittel: "Prosjekt 4: forklarbar KI" },
+];
 
-const SETT: Record<NotatquizSett, { tittel: string; kort: string; beskrivelse: string }> = {
+interface Gruppe {
+  nokkel: string;
+  lenketekst: string;
+  tittel: string;
+}
+interface SettInfo {
+  tittel: string;
+  kort: string;
+  beskrivelse: string;
+  grupperTekst?: string;
+  grupper?: Gruppe[];
+  gruppeAv?: (o: Oppgave) => string;
+  oppsummering: string;
+}
+
+const SETT: Record<NotatquizSett, SettInfo> = {
   notater: {
     tittel: "Oppgavene i forelesningsnotatene",
     kort: "Notatoppgaver",
     beskrivelse:
       "Alle «Oppgave:»-ene i forelesningsnotatene, skrevet om slik at de kan besvares uten notatene ved siden av. Praktiske oppgaver (plott, kjør koden) er gjort om til spørsmål om poenget med dem.",
+    grupperTekst: "Bare ett kapittel i notatene:",
+    grupper: NOTATKAPITLER.map((k) => ({ nokkel: String(k.nr), lenketekst: `${k.nr} ${k.tittel}`, tittel: `kapittel ${k.nr}: ${k.tittel}` })),
+    gruppeAv: (o) => o.kilde?.match(/^(\d+)/)?.[1] ?? "",
+    oppsummering: "Kapittel i notatene",
+  },
+  prosjekter: {
+    tittel: "Spørsmålene i øvingene og prosjektet",
+    kort: "Prosjektspørsmål",
+    beskrivelse:
+      "Spørsmålene (❓) fra øving 1–3 og prosjekt 4 (reinforcement learning og forklarbar KI), skrevet om med koden, dataene og tallene som trengs. Øving 1 har ingen ❓-spørsmål i materialet, så der er spørsmålene laget ut fra kodeskjelettet og datasettene.",
+    grupperTekst: "Bare ett prosjekt:",
+    grupper: PROSJEKTER.map((p) => ({ nokkel: p.nokkel, lenketekst: p.tittel, tittel: p.tittel })),
+    gruppeAv: (o) => PROSJEKTER.find((p) => o.kilde?.startsWith(p.nokkel))?.nokkel ?? "",
+    oppsummering: "Prosjekt",
   },
   eksempler: {
     tittel: "Eksempler på eksamensspørsmål",
     kort: "Eksamenseksempler",
     beskrivelse:
       "De ti spørsmålene fra siste kapittel i notatene, «Spørsmål til diskusjon og eksamensforberedelse», med alternativene fra notatene og fasit med forklaring. Notatene presiserer at de ikke er en garanti for hvordan eksamen blir.",
+    oppsummering: "Delkapittel i portalen",
   },
 };
+const REKKEFOLGE: NotatquizSett[] = ["notater", "prosjekter", "eksempler"];
 
 export default function Notatquiz() {
   const { sett } = useParams();
-  if (sett === "notater" || sett === "eksempler") return <NotatquizOkt key={sett} sett={sett} />;
+  if (sett && (REKKEFOLGE as string[]).includes(sett)) return <NotatquizOkt key={sett} sett={sett as NotatquizSett} />;
   return <NotatquizOversikt />;
 }
 
 function NotatquizOversikt() {
   const t = useFremgang();
   const notater = useAsync(() => lastNotatquiz("notater"), []);
+  const prosjekter = useAsync(() => lastNotatquiz("prosjekter"), []);
   const eksempler = useAsync(() => lastNotatquiz("eksempler"), []);
+  const data: Record<NotatquizSett, Oppgave[] | undefined> = { notater: notater.data, prosjekter: prosjekter.data, eksempler: eksempler.data };
   const besvart = (liste?: Oppgave[]) => (liste ? liste.filter((o) => t.forsok[o.id]).length : 0);
 
   return (
@@ -52,31 +92,32 @@ function NotatquizOversikt() {
       <header className="side-hode">
         <h1>Notatquiz</h1>
         <p className="ingress">
-          Spørsmålene som står i forelesningsnotatene (versjonen fra 23. november 2026), samlet i to quizer. Fasit og forklaringer bygger på det notatene sier.
-          Der notatene ikke gir svar, står det i oppgaven. Quizene er holdt utenfor oppgavebanken og eksamenssimuleringen.
+          Spørsmålene som står i forelesningsnotatene (versjonen fra 23. november 2026) og i øvingene og prosjektet, samlet i tre quizer. Fasit og forklaringer
+          bygger på notatene, koden og dataene. Der kildene ikke gir svar, står det i oppgaven. Quizene er holdt utenfor oppgavebanken og eksamenssimuleringen.
         </p>
       </header>
 
-      {(["notater", "eksempler"] as const).map((s) => {
-        const liste = s === "notater" ? notater.data : eksempler.data;
+      {REKKEFOLGE.map((s) => {
+        const info = SETT[s];
+        const liste = data[s];
         return (
           <section key={s} className="panel notatquiz-sett" aria-labelledby={`nq-${s}`}>
             <div>
-              <h2 id={`nq-${s}`}>{SETT[s].tittel}</h2>
-              <p>{SETT[s].beskrivelse}</p>
+              <h2 id={`nq-${s}`}>{info.tittel}</h2>
+              <p>{info.beskrivelse}</p>
               {liste && (
                 <p className="dempet">
                   {liste.length} oppgaver, {besvart(liste)} besvart.
                 </p>
               )}
-              {s === "notater" && liste && (
+              {info.grupper && info.gruppeAv && liste && (
                 <p className="notatquiz-kapitler">
-                  <span className="dempet">Bare ett kapittel i notatene: </span>
-                  {NOTATKAPITLER.map((k) => {
-                    const n = liste.filter((o) => notatkap(o) === k.nr).length;
+                  <span className="dempet">{info.grupperTekst} </span>
+                  {info.grupper.map((g) => {
+                    const n = liste.filter((o) => info.gruppeAv!(o) === g.nokkel).length;
                     return n ? (
-                      <Link key={k.nr} to={`/notatquiz/notater?kap=${k.nr}`} className="brikke-lenke" title={`${n} oppgaver`}>
-                        {k.nr} {k.tittel}
+                      <Link key={g.nokkel} to={`/notatquiz/${s}?gruppe=${encodeURIComponent(g.nokkel)}`} className="brikke-lenke" title={`${n} oppgaver`}>
+                        {g.lenketekst}
                       </Link>
                     ) : null;
                   })}
@@ -85,7 +126,7 @@ function NotatquizOversikt() {
             </div>
             <div className="notatquiz-start">
               <Link to={`/notatquiz/${s}`} className="knapp">
-                Start i notatenes rekkefølge
+                {s === "prosjekter" ? "Start i prosjektenes rekkefølge" : "Start i notatenes rekkefølge"}
               </Link>
               <Link to={`/notatquiz/${s}?rekkefolge=tilfeldig`} className="knapp knapp-sekundaer">
                 Tilfeldig rekkefølge
@@ -100,7 +141,9 @@ function NotatquizOversikt() {
 
 function NotatquizOkt({ sett }: { sett: NotatquizSett }) {
   const [params] = useSearchParams();
-  const kap = Number(params.get("kap") ?? 0);
+  const info = SETT[sett];
+  const gruppe = params.get("gruppe") ?? "";
+  const gruppeInfo = info.grupper?.find((g) => g.nokkel === gruppe);
   const tilfeldig = params.get("rekkefolge") === "tilfeldig";
   const { data, feil } = useAsync(() => lastNotatquiz(sett), [sett]);
   const [indeks, setIndeks] = useState(0);
@@ -109,11 +152,11 @@ function NotatquizOkt({ sett }: { sett: NotatquizSett }) {
 
   const oppgaver = useMemo(() => {
     if (!data) return [];
-    const utvalg = kap ? data.filter((o) => notatkap(o) === kap) : data;
+    const utvalg = gruppe && info.gruppeAv ? data.filter((o) => info.gruppeAv!(o) === gruppe) : data;
     return tilfeldig ? stokk(utvalg) : utvalg;
-  }, [data, kap, tilfeldig]);
+  }, [data, gruppe, tilfeldig, info]);
 
-  const tittel = SETT[sett].kort + (kap ? `, kapittel ${kap}: ${NOTATKAPITLER.find((k) => k.nr === kap)?.tittel ?? ""}` : "");
+  const tittel = info.kort + (gruppeInfo ? `, ${gruppeInfo.tittel}` : "");
 
   if (feil) return <div className="side smal"><p>Klarte ikke å laste quizen.</p></div>;
   if (!data) return <Laster tekst="Laster quizen …" />;
@@ -137,7 +180,8 @@ function NotatquizOkt({ sett }: { sett: NotatquizSett }) {
     const perKilde = new Map<string, number[]>();
     for (const x of oppgaver) {
       if (!(x.id in resultater)) continue;
-      const k = sett === "notater" ? `${notatkap(x)} ${NOTATKAPITLER.find((n) => n.nr === notatkap(x))?.tittel ?? ""}` : `${x.del}`;
+      const nokkel = info.gruppeAv?.(x);
+      const k = nokkel ? (info.grupper?.find((g) => g.nokkel === nokkel)?.lenketekst ?? nokkel) : x.del;
       perKilde.set(k, [...(perKilde.get(k) ?? []), resultater[x.id]]);
     }
     const feilede = oppgaver.filter((x) => x.id in resultater && resultater[x.id] < 0.999);
@@ -151,7 +195,7 @@ function NotatquizOkt({ sett }: { sett: NotatquizSett }) {
           <table className="tabell-enkel">
             <thead>
               <tr>
-                <th>{sett === "notater" ? "Kapittel i notatene" : "Delkapittel i portalen"}</th>
+                <th>{info.oppsummering}</th>
                 <th>Besvart</th>
                 <th>Riktig</th>
               </tr>

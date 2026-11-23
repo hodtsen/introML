@@ -20,6 +20,7 @@ const kilder = import.meta.glob<string>("../../content/notatquiz/*.yaml", { quer
 const filer = Object.entries(kilder).map(([sti, tekst]) => ({ sti, liste: load(tekst) as Rå[] }));
 const notater = filer.filter((f) => /\/notater[^/]*\.yaml$/.test(f.sti)).flatMap((f) => f.liste);
 const eksempler = filer.filter((f) => /\/eksempler\.yaml$/.test(f.sti)).flatMap((f) => f.liste);
+const prosjekter = filer.filter((f) => /\/prosjekter\.yaml$/.test(f.sti)).flatMap((f) => f.liste);
 
 const lengde = (s: string) =>
   s.replace(/\\[a-zA-Z]+/g, "x").replace(/[`*${}]/g, "").replace(/\s+/g, " ").trim().length;
@@ -36,20 +37,26 @@ describe("notatquiz", () => {
     expect(eksempler.map((o) => o.id)).toEqual(Array.from({ length: 10 }, (_, i) => `E${String(i + 1).padStart(2, "0")}`));
   });
 
+  it("har spørsmål fra alle fire prosjektene", () => {
+    for (const p of ["Øving 1", "Øving 2", "Øving 3", "Prosjekt 4 RL", "Prosjekt 4 XAI"])
+      expect(prosjekter.some((o) => o.kilde?.startsWith(p)), p).toBe(true);
+    expect(prosjekter.length).toBeGreaterThanOrEqual(40);
+  });
+
   it("har unike id-er og kilde på hver oppgave", () => {
-    const alle = [...notater, ...eksempler];
+    const alle = [...notater, ...eksempler, ...prosjekter];
     expect(new Set(alle.map((o) => o.id)).size).toBe(alle.length);
     for (const o of alle) expect(o.kilde, o.id).toBeTruthy();
   });
 
   it("holdes utenfor oppgavebanken og eksamenssimuleringen", () => {
     const ider = new Set((oppgaveIndeks as { id: string }[]).map((o) => o.id));
-    for (const o of [...notater, ...eksempler]) expect(ider.has(o.id), o.id).toBe(false);
+    for (const o of [...notater, ...eksempler, ...prosjekter]) expect(ider.has(o.id), o.id).toBe(false);
   });
 
   it("røper ikke fasit gjennom lengden på alternativene", () => {
     // Eksamenseksemplene har alternativene fra notatene og holdes utenfor.
-    const enkelt = notater.filter((o) => o.type === "enkeltvalg");
+    const enkelt = [...notater, ...prosjekter].filter((o) => o.type === "enkeltvalg");
     const forhold = enkelt.map((o) => {
       const L = o.alternativer!.map((a) => lengde(a.tekst));
       const ri = o.alternativer!.findIndex((a) => a.riktig);
