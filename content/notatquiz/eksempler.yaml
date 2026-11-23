@@ -1,0 +1,222 @@
+# Eksempelspørsmålene fra kapittel 8 i forelesningsnotatene, «Spørsmål til diskusjon og eksamensforberedelse».
+# Svaralternativene følger notatene. Kontekst, fasit og forklaringer er lagt til.
+# Notatene presiserer at spørsmålene ikke er en garanti for hvordan eksamen vil se ut.
+
+- id: "E01"
+  del: "1.6"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En ROC-kurve viser true positive rate (TPR) mot false positive rate (FPR) for alle klassifiseringsterskler. Hva representerer diagonalen $(0, 0) - (1, 1)$ på en ROC-kurve?
+  alternativer:
+    - tekst: 'En klassifiseringsmodell med samme treffsikkerhet som tilfeldig gjetning.'
+      riktig: true
+      forklaring: 'Tilfeldig gjetning gir TPR = FPR for alle terskler, altså diagonalen, med AUC = 0,5.'
+    - tekst: 'En klassifiseringsmodell som i gjennomsnitt predikerer 0,5 for alle dataene brukt til å lage ROC-kurven.'
+      forklaring: 'ROC avhenger av rangeringen av prediksjonene, ikke gjennomsnittet. En modell med snitt 0,5 kan rangere perfekt.'
+    - tekst: 'En klassifiseringsterskel på 0,5.'
+      forklaring: 'Én terskel gir ett punkt på kurven, ikke en linje.'
+    - tekst: 'Ytelsen til en middels god klassifiseringsmodell, som vi bør ligge over for å ha laget en modell som yter godt.'
+      forklaring: 'Diagonalen er ikke «middels god». Den er det samme som ingen evne til å skille klassene.'
+  forklaring: |
+    Myntkast gir like stor sannsynlighet for å kalle et positivt og et negativt punkt positivt, så TPR = FPR. Kurven til en nyttig modell ligger over diagonalen, og arealet under den (AUC) er større enn 0,5.
+  husk: 'ROC-diagonalen = tilfeldig gjetning = AUC 0,5.'
+
+- id: "E02"
+  del: "1.6"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    ROC AUC er arealet under ROC-kurven (TPR mot FPR for alle terskler). Hvilke(t) av følgende er **ikke** en korrekt tolkning av ROC AUC?
+  alternativer:
+    - tekst: 'En lav ROC AUC betyr at modellen har lav presisjon.'
+      riktig: true
+      forklaring: 'Dette er feil tolkning. ROC bygger på TPR og FPR, ikke presisjon, og presisjon avhenger dessuten av terskel og klassefordeling.'
+    - tekst: 'En høy ROC AUC indikerer god evne til å skille mellom klasser over ulike terskler.'
+      forklaring: 'Dette er en korrekt tolkning, og skal derfor ikke velges.'
+    - tekst: 'ROC AUC gir en sannsynlighet for at modellen vil rangere et positivt eksempel høyere enn et negativt eksempel.'
+      forklaring: 'Dette er en korrekt tolkning, og skal derfor ikke velges.'
+    - tekst: 'En ROC AUC på 0,5 betyr at modellen gjetter tilfeldig mellom klassene.'
+      forklaring: 'Dette er korrekt: AUC = 0,5 svarer til diagonalen. Skal ikke velges.'
+  forklaring: |
+    Les spørsmålet nøye: det spør etter det som **ikke** stemmer. ROC AUC er sannsynligheten for at modellen gir et tilfeldig valgt positivt punkt høyere verdi enn et tilfeldig valgt negativt punkt, uavhengig av terskel. Den sier ingenting direkte om presisjon. En modell med høy AUC kan ha lav presisjon når den positive klassen er sjelden.
+  husk: 'ROC AUC = rangeringsevne over alle terskler. Den sier ingenting direkte om presisjon.'
+
+- id: "E03"
+  del: "1.1"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En maskinlæringsprosess består blant annet av trening (tilpasning av parametre), prediksjon og evaluering. Hvilken del av maskinlæringsprosessen er **prediksjon**?
+  alternativer:
+    - tekst: 'Estimat av funksjonsverdi basert på data.'
+      riktig: true
+      forklaring: 'En prediksjon er modellens estimat av target (funksjonsverdien) for gitte features.'
+    - tekst: 'Iterativ beregning av riktig parameterverdi ved hjelp av en optimaliseringsprosess og den deriverte av tapsfunksjonen.'
+      forklaring: 'Dette beskriver trening med gradient descent.'
+    - tekst: 'Evaluering av utvalgte metrikker på usette testdata.'
+      forklaring: 'Dette er evaluering, som bruker prediksjoner, men ikke er prediksjon i seg selv.'
+    - tekst: 'Sammenlikning av metrikker på usette testdata, med verdiene tidligere beregnet på treningsdataene.'
+      forklaring: 'Dette er en sjekk av generalisering og overtilpasning, en del av evalueringen.'
+  forklaring: |
+    Målet med veiledet læring er en modell som estimerer en funksjonsverdi $y$ for nye $\mathbf{x}$. Prediksjon er å bruke den trente modellen til dette estimatet. Trening og evaluering er egne steg.
+  husk: 'Prediksjon = modellens estimat av y for gitt x. Trening og evaluering er egne steg.'
+
+- id: "E04"
+  del: "6.5"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: middels
+  type: enkeltvalg
+  tags: [regning]
+  sporsmal: |
+    Egenverdiene til matrisen
+    $$\begin{pmatrix} 5 & 2 \\ 2 & 2 \end{pmatrix}$$
+    er $\lambda = 6$ og $\lambda = 1$. Hva er egenvektorene?
+  alternativer:
+    - tekst: '$\frac{1}{\sqrt{5}}(2, 1)$ og $\frac{1}{\sqrt{5}}(1, -2)$'
+      riktig: true
+      forklaring: 'For λ = 6 gir −x + 2y = 0 vektoren (2, 1). For λ = 1 gir 4x + 2y = 0 vektoren (1, −2).'
+    - tekst: '$\frac{1}{\sqrt{5}}(2, 1)$ og $\frac{1}{\sqrt{5}}(1, 2)$'
+      forklaring: 'Den første er riktig, men A·(1, 2) = (9, 6), som ikke er parallell med (1, 2). Vektorene er heller ikke ortogonale.'
+    - tekst: '$\frac{1}{\sqrt{5}}(1, 2)$ og $\frac{1}{\sqrt{5}}(1, -1)$'
+      forklaring: 'A·(1, −1) = (3, 0), som ikke er parallell med (1, −1).'
+    - tekst: '$(\tfrac{4}{5}, 1)$ og $(1, 0)$'
+      forklaring: 'A·(1, 0) = (5, 2), som ikke er parallell med (1, 0).'
+  forklaring: |
+    Løs $(A - \lambda I)\mathbf{e} = 0$:
+
+    - $\lambda = 6$: $\begin{pmatrix} -1 & 2 \\ 2 & -4 \end{pmatrix}\mathbf{e} = 0 \Rightarrow \mathbf{e} \propto (2, 1)$
+    - $\lambda = 1$: $\begin{pmatrix} 4 & 2 \\ 2 & 1 \end{pmatrix}\mathbf{e} = 0 \Rightarrow \mathbf{e} \propto (1, -2)$
+
+    Rask kontroll: en symmetrisk matrise (som en kovariansmatrise) har ortogonale egenvektorer, og $(2, 1) \cdot (1, -2) = 0$. I PCA er egenvektoren med størst egenverdi PC1.
+  husk: 'Sjekk egenvektorer med A·e = λe. Symmetrisk matrise ⇒ ortogonale egenvektorer.'
+
+- id: "E05"
+  del: "5.5"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I mini-batch stochastic gradient descent beregnes gradienten som et gjennomsnitt over en tilfeldig trekning av datapunkter av størrelse $B$ (batch size). Hva er en typisk konsekvens av å bruke **for liten** batch size under trening?
+  alternativer:
+    - tekst: 'Det blir mer støy i gradientene'
+      riktig: true
+      forklaring: 'Gjennomsnitt over færre punkter gir et mer usikkert estimat av den fulle gradienten.'
+    - tekst: 'Hver treningsepoke tar mindre tid'
+      forklaring: 'Med liten B blir det flere oppdateringer per epoke (N/B), så en epoke tar typisk mer tid.'
+    - tekst: 'Det blir mindre støy i gradientene'
+      forklaring: 'Det motsatte: mindre støy får vi med større batcher.'
+    - tekst: 'Modellen overtilpasser'
+      forklaring: 'Batch size styrer støy i optimeringen, ikke modellens kapasitet. Overtilpasning er ingen direkte følge.'
+  forklaring: |
+    Ytterpunktene er SGD med ett punkt (støyete, men forventningsrett) og full-batch gradient descent (nøyaktig, men dyr per steg). Mini-batch balanserer presisjon i gradienten mot hastighet. Med $N$ datapunkter gjør mini-batch $N/B$ oppdateringer per epoke. Batch size er en hyperparameter, og støyete gradienter taler for en lavere læringsrate.
+  husk: 'Liten batch → støyete gradient og flere oppdateringer per epoke.'
+
+- id: "E06"
+  del: "6.6"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    t-SNE plasserer punktene i et lavdimensjonalt rom og flytter dem med gradient descent slik at naboskapssannsynlighetene $Q$ der likner mest mulig på naboskapssannsynlighetene $P$ i det høydimensjonale rommet. Tapet er KL-divergensen $D_{KL}(P \| Q)$. Hva betyr det hvis KL-divergensen er veldig høy etter mange iterasjoner?
+  alternativer:
+    - tekst: 'Den lavdimensjonale representasjonen bevarer ikke sannsynligheten for naboskap fra den høydimensjonale.'
+      riktig: true
+      forklaring: 'Høy KL betyr at Q avviker mye fra P, altså at naboskapene ikke er godt bevart.'
+    - tekst: 'Dataene har høy varians, og t-SNE klarer ikke å finne en god lavdimensjonal projisering.'
+      forklaring: 'KL-divergensen måler ikke varians. Å bevare varians er målet til PCA, ikke t-SNE.'
+    - tekst: 'En høy verdi betyr at t-SNE har funnet den optimale embeddingen fra den høydimensjonale til den lavdimensjonale representasjonen.'
+      forklaring: 'KL minimeres. En høy verdi betyr et dårlig resultat, ikke et optimalt.'
+    - tekst: 'Vi har valgt for lav perplexity-parameter i algoritmen.'
+      forklaring: 'Perplexity påvirker resultatet, men høy KL sier ikke at akkurat den er for lav.'
+  forklaring: |
+    KL-divergensen er 0 bare når fordelingene er like og vokser jo mer de avviker. Fordi t-SNE minimerer $D_{KL}(P\|Q)$, betyr en høy verdi etter mange iterasjoner at embeddingen ikke har klart å gjenskape naboskapsstrukturen.
+  husk: 't-SNE minimerer KL(P‖Q). Høy KL = naboskap dårlig bevart.'
+
+- id: "E07"
+  del: "7.1"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I reinforcement learning angir verdifunksjonen $V(s)$ hvor verdifullt det er å være i tilstand $s$ under en gitt policy. Hvordan påvirker Markov-egenskapen verdifunksjonen $V(s)$?
+  alternativer:
+    - tekst: '$V(s)$ avhenger av fremtidige belønninger basert på den nåværende tilstanden og handlingene som følger.'
+      riktig: true
+      forklaring: 'Med Markov-egenskapen er nåtilstanden nok til å bestemme forventet fremtidig reward.'
+    - tekst: '$V(s)$ avhenger bare av belønningen i den nåværende tilstanden.'
+      forklaring: 'Det er umiddelbar reward. Verdien inkluderer også fremtidig reward.'
+    - tekst: '$V(s)$ avhenger av hele sekvensen av tidligere tilstander.'
+      forklaring: 'Markov-egenskapen sier nettopp at historien ikke betyr noe gitt nåtilstanden.'
+    - tekst: '$V(s)$ er konstant for alle tilstander hvis Markov-egenskapen gjelder.'
+      forklaring: 'Ulike tilstander kan ha svært ulik verdi. Markov sier ingenting om at de er like.'
+  forklaring: |
+    Markov-egenskapen sier at fremtiden er uavhengig av fortiden gitt nåtiden. Derfor kan verdien skrives som en funksjon av den nåværende tilstanden alene, men den handler om forventet *kumulativ fremtidig* reward, ikke bare umiddelbar reward. Det er dette Bellman-likningen utnytter.
+  husk: 'Markov ⇒ V(s) avhenger bare av s, og angir forventet fremtidig (kumulativ) reward.'
+
+- id: "E08"
+  del: "8.2"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    XAI-metoder kan være lokale (gjelder én prediksjon) eller globale. Hva gir en **global** XAI-metode?
+  alternativer:
+    - tekst: 'En overordnet forklaring på hvordan modellen tar beslutninger på tvers av datasett'
+      riktig: true
+      forklaring: 'En global forklaring gjelder hele modellen, ikke enkeltprediksjoner.'
+    - tekst: 'En forklaring av hvorfor modellen gjorde en spesifikk prediksjon'
+      forklaring: 'Dette er en lokal forklaring, som LIME eller SHAP for ett datapunkt.'
+    - tekst: 'En forklaring på hvordan en hvilken som helst modell fungerer, uavhengig av modelltype'
+      forklaring: 'Dette beskriver modellagnostiske metoder, en annen akse enn lokal og global.'
+    - tekst: 'En forklaring på modellens oppførsel samt et mål på hvor treffsikker forklaringen er.'
+      forklaring: 'Et mål på hvor god forklaringen er, er ikke det som definerer en global metode.'
+  forklaring: |
+    Lokal/global handler om hva forklaringen gjelder. Modellagnostisk/modellspesifikk handler om hvilken tilgang metoden trenger til modellen. TCAV er et eksempel på en global metode. Mange SHAP-verdier plottet sammen gir et globalt bilde, men det er satt sammen av lokale forklaringer.
+  husk: 'Global = hele modellen. Lokal = én prediksjon. Agnostisk/spesifikk er en egen akse.'
+
+- id: "E09"
+  del: "9.2"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Et privat selskap i Frankrike har utviklet et AI-system for bildeanalyse som brukes utelukkende av det franske forsvaret. Senere selger selskapet den samme løsningen til et skogbruksselskap i Belgia, som bruker den til å kartlegge skogskader. Hvilket utsagn er riktig?
+  alternativer:
+    - tekst: 'Den militære bruken faller utenfor AI Act, men systemet blir omfattet når det selges til sivil bruk.'
+      riktig: true
+      forklaring: 'Systemer som utelukkende brukes til militære formål er unntatt, men omfattes når de tas i bruk sivilt.'
+    - tekst: 'Systemet faller utenfor AI Act også ved salget til Belgia, fordi det opprinnelig ble utviklet til militære formål.'
+      forklaring: 'Det som avgjør er bruken. Opprinnelsen gir ikke noe varig unntak.'
+    - tekst: 'Den militære bruken er omfattet av AI Act, fordi systemet er utviklet av et privat selskap.'
+      forklaring: 'Unntaket gjelder uansett om systemet utvikles eller brukes av offentlige eller private aktører.'
+    - tekst: 'Ingen av bruksområdene er omfattet av AI Act, fordi kartlegging av skogskader ikke er et høyrisikoområde.'
+      forklaring: 'At et system ikke er høyrisiko betyr ikke at det faller utenfor forordningen. Det kan likevel ha for eksempel transparenskrav.'
+  forklaring: |
+    AI Act gjelder ikke for AI-systemer som *utelukkende* brukes til militære formål, forsvarsformål eller nasjonal sikkerhet, uansett om aktøren er offentlig eller privat. Systemet blir omfattet dersom det tas i bruk til sivile formål. Risikokategorien avgjør hvilke krav som gjelder, ikke om forordningen gjelder.
+  husk: 'Militærunntaket følger bruken: sivil bruk ⇒ omfattet. Offentlig/privat aktør spiller ingen rolle.'
+
+- id: "E10"
+  del: "9.5"
+  kilde: "8 Eksempler på eksamensspørsmål"
+  niva: avansert
+  type: flervalg
+  sporsmal: |
+    Et norsk selskap slipper en ny GPAI-modell (general-purpose AI) med åpen kildekode og markedsfører den overfor virksomheter i EU. Modellen har ikke systemisk risiko. Hvilke(t) utsagn er riktig(e)?
+  alternativer:
+    - tekst: 'Selskapet kan bli bøtelagt av Kommisjonen dersom det ikke oppfyller kravene til GPAI-modeller'
+      riktig: true
+      forklaring: 'Fra 2. august 2026 kan Kommisjonen ilegge tilbydere av GPAI-modeller bøter.'
+    - tekst: 'Selskapet må publisere et sammendrag av innholdet som er brukt til å trene modellen'
+      riktig: true
+      forklaring: 'Åpen kildekode fritar fra dokumentasjonskravene, men ikke fra opphavsrettskravene, som omfatter sammendraget.'
+    - tekst: 'Selskapet har ingen plikter etter AI Act, fordi forordningen ennå ikke gjelder i Norge'
+      forklaring: 'Forordningen gjelder alle som plasserer produkter på EU-markedet, uansett hvor de er etablert.'
+    - tekst: 'Modellen er unntatt fra alle krav, fordi den er sluppet med åpen kildekode'
+      forklaring: 'Unntaket gjelder bare dokumentasjonskravene, ikke opphavsrettskravene.'
+  forklaring: |
+    Alle GPAI-tilbydere må ha teknisk dokumentasjon, informere dem som bygger på modellen, ha retningslinjer for opphavsrett og publisere et sammendrag av treningsinnholdet (artikkel 53). Modeller med åpen kildekode er unntatt fra dokumentasjonskravene, men ikke fra opphavsrettskravene, og unntaket gjelder ikke modeller med systemisk risiko. At AI Act ennå ikke er norsk lov er irrelevant når modellen tilbys i EU.
+  husk: 'Åpen kildekode: fritak fra dokumentasjon, ikke fra opphavsrett og treningssammendrag. Markedsføring i EU ⇒ omfattet uansett hjemland.'

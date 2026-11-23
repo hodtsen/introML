@@ -1,0 +1,431 @@
+# Notatquiz, del 2: oppgavene i kapittel 2 (Nevrale nettverk) og 3 (Uveiledet læring).
+
+- id: "N38"
+  del: "5.1"
+  kilde: "2.1 Perceptron"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Et perseptron med threshold logic units har modellen $f(\mathbf{x}) = H(\mathbf{w}\mathbf{x} + b)$, der $H$ er Heaviside-stegfunksjonen (0 for negative argumenter, 1 ellers). Vi prøver å trene det som logistisk regresjon, med $\theta_{t+1} = \theta_t - \eta\, \partial\mathcal{L}/\partial\theta$. Hva er problemet?
+  alternativer:
+    - tekst: 'Vi må derivere $H$, som ikke gir en brukbar gradient'
+      riktig: true
+      forklaring: 'H er 0 overalt unntatt i hoppet, der den ikke er definert. Gradienten blir ubrukelig.'
+    - tekst: 'Perseptronet har for mange parametre til gradient descent'
+      forklaring: 'Antall parametre er det samme som for logistisk regresjon.'
+    - tekst: 'Output er binær, så vi kan ikke beregne noe tap'
+      forklaring: 'Vi kan godt beregne tap. Problemet er å derivere det.'
+    - tekst: 'Heaviside gir output utenfor $[0, 1]$'
+      forklaring: 'H gir bare 0 eller 1, altså innenfor intervallet.'
+  forklaring: |
+    Tapsfunksjonen inneholder prediksjonen og dermed $H$. For å få gradienten må vi derivere $H$, som er 0 overalt og udefinert i ett punkt. Rosenblatts opprinnelige perseptron utelater derfor leddet med den deriverte og bruker $w_i \leftarrow w_i + \eta\,(y - \hat{y})\, x_i$. Moderne nettverk erstatter $H$ med deriverbare aktiveringsfunksjoner.
+  husk: 'Heaviside er ikke brukbart deriverbar ⇒ perseptronregelen w ← w + η(y − ŷ)x i stedet for gradient descent.'
+
+- id: "N39"
+  del: "5.1"
+  kilde: "2.1 Perceptron"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et datasett har to features ($x_1$, $x_2$) og tre klasser. Et perseptron med én output-node per klasse og hver input koblet til hver output skal klassifisere dataene.
+  deler:
+    - sporsmal: 'Antall vekter (uten bias)'
+      svar: 6
+      toleranse: 0.01
+    - sporsmal: 'Antall bias-verdier'
+      svar: 3
+      toleranse: 0.01
+  losning: |
+    To input-noder koblet til tre output-noder gir $2 \cdot 3 = 6$ vekter $w_{i,j}$, og én bias per output-node gir 3. Vektene danner nå en matrise, og oppdateringen blir $w_{i,j} \leftarrow w_{i,j} + \eta\,(y_j - \hat{y}_j)\, x_i$.
+  husk: 'Vekter = antall input × antall output. Bias = antall output-noder.'
+
+- id: "N40"
+  del: "5.1"
+  kilde: "2.1 Perceptron"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Én TLU kan gjøre NOT med $(w_1, b) = (-1;\ 0{,}5)$, AND med $(w_1, w_2, b) = (1, 1, -1{,}5)$ og OR med $(1, 1, -0{,}5)$. Kan et perseptron gjøre XOR? Forklar hvordan, eller hvorfor ikke.
+  eksempelsvar: |
+    Én enkelt TLU kan ikke gjøre XOR, fordi XOR ikke er lineært separerbar: ingen rett linje skiller (0,1) og (1,0) fra (0,0) og (1,1). Ved å kombinere flere TLU-er i lag får vi det til, for eksempel $\text{XOR}(x_1, x_2) = \text{AND}(\text{OR}(x_1, x_2),\ \text{NOT}(\text{AND}(x_1, x_2)))$. Første lag beregner OR og AND, og neste lag kombinerer dem. Dette viser hvorfor vi trenger flere lag.
+  punkter:
+    - tekst: 'Én TLU klarer det ikke: XOR er ikke lineært separerbar.'
+      stikkord: ['lineært separerbar', 'ikke separerbar', 'rett linje', 'én tlu', 'en tlu']
+    - tekst: 'Kombiner AND, OR og NOT i flere lag.'
+      stikkord: ['and', 'or', 'not', 'lag', 'kombin', 'nand']
+  husk: 'XOR krever mer enn én TLU: XOR = AND(OR, NOT AND). Flere lag gir ikke-lineære beslutningsgrenser.'
+
+- id: "N41"
+  del: "5.3"
+  kilde: "2.3 Arkitektur"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I et fullt koblet nettverk er aktiveringen til node $j$ i lag $l$ gitt ved $a_j^{(l)} = g\!\left(\sum_i w_{ij}^{(l)}\, a_i^{(l-1)} + b_j^{(l)}\right)$, der lag 0 er input-laget. Hva er aktiveringen til den første (øverste) noden i det første skjulte laget?
+  alternativer:
+    - tekst: '$a_1^{(1)} = g\!\left(\sum_i w_{i1}^{(1)} x_i + b_1^{(1)}\right)$'
+      riktig: true
+      forklaring: 'Med l = 1 og j = 1 er forrige lags aktiveringer selve inputen x.'
+    - tekst: '$a_1^{(1)} = \sum_i g\!\left(w_{i1}^{(1)} x_i\right) + b_1^{(1)}$'
+      forklaring: 'Aktiveringsfunksjonen brukes på hele den vektede summen, ikke på hvert ledd.'
+    - tekst: '$a_1^{(1)} = g\!\left(\sum_j w_{1j}^{(1)} x_j + b_1^{(1)}\right)$'
+      forklaring: 'Indeksene er byttet: vi summerer over input-nodene i til node 1.'
+    - tekst: '$a_1^{(1)} = g\!\left(w_{11}^{(1)} x_1 + b_1^{(1)}\right)$'
+      forklaring: 'Noden får bidrag fra alle input-nodene, ikke bare den første.'
+  forklaring: |
+    Indeksen $i$ løper over nodene i forrige lag, $j$ er noden vi ser på, og $g$ virker på den vektede summen pluss bias. Med to features og tre skjulte noder får vi for eksempel $a_1^{(1)} = g\!\left(w_{11}^{(1)} x_1 + w_{21}^{(1)} x_2 + b_1^{(1)}\right)$.
+  husk: 'Aktivering = g(vektet sum av forrige lag + bias).'
+
+- id: "N42"
+  del: "5.6"
+  kilde: "2.6 Bygge, trene og predikere"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du bygger en Keras-modell ved å stable `Dense`-lag i en `keras.Sequential()`, men oppgir ingen input-shape. Når du kaller `model.weights` før modellen er kjørt på noen data, får du en tom liste `[]`. Hvorfor?
+  alternativer:
+    - tekst: 'Input-dimensjonen er ukjent, så vektene kan ikke opprettes'
+      riktig: true
+      forklaring: 'Antall vekter i første lag avhenger av antall input-features.'
+    - tekst: 'Vektene opprettes først når modellen kompileres'
+      forklaring: 'Kompilering velger optimerer og tap. Input-dimensjonen er fortsatt ukjent.'
+    - tekst: 'Vektene initialiseres til 0 og vises derfor ikke'
+      forklaring: 'Initialiserte vekter vises, også om de skulle være 0.'
+    - tekst: '`Dense`-lag har ingen vekter før de er trent'
+      forklaring: 'Vektene finnes med tilfeldige startverdier før trening, så snart dimensjonen er kjent.'
+  forklaring: |
+    Input er ikke et `keras.layers`-objekt og vises ikke som et lag. Modellen vet derfor ikke hvor mange vekter det første laget trenger før den kjøres på en input-tensor, eller før vi spesifiserer `keras.Input(shape=(3,))`. Med 3 input og et `Dense(6)`-lag får vi $3 \cdot 6 + 6 = 24$ parametre.
+  husk: 'Keras oppretter vektene når input-shape er kjent (via data eller keras.Input).'
+
+- id: "N43"
+  del: "5.6"
+  kilde: "2.6 Bygge, trene og predikere"
+  niva: grunnleggende
+  type: tall
+  tags: [regning, kode]
+  sporsmal: |
+    ```python
+    model = keras.Sequential()
+    model.add(keras.Input(shape=(3,)))
+    model.add(Dense(6, activation="relu", name="layer1"))
+    ```
+    Modellen kjøres på en tensor `x` med shape `(10, 3)`.
+  deler:
+    - sporsmal: 'Antall parametre i modellen'
+      svar: 24
+      toleranse: 0.01
+    - sporsmal: 'Andre dimensjon i `model(x).shape`'
+      svar: 6
+      toleranse: 0.01
+  losning: |
+    - Parametre: $3 \cdot 6$ vekter $+\ 6$ bias $= 24$.
+    - Output: `(10, 6)`. Det er 10 instanser, og antall kolonner er antall noder i siste lag. Dette følger vanlig matrisemultiplikasjon: $(10 \times 3)\cdot(3 \times 6) = (10 \times 6)$.
+  husk: 'Dense(n) etter m input: m·n + n parametre. Output-shape = (batch, noder i siste lag).'
+
+- id: "N44"
+  del: "6.1"
+  kilde: "3.1.1 k-means"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    En initialisering av k-means plasserer første sentroide tilfeldig og hver neste sentroide på datapunktet som ligger lengst fra de forrige. k-means++ velger i stedet neste sentroide tilfeldig, med sannsynlighet proporsjonal med kvadrert avstand til nærmeste eksisterende sentroide. Hvorfor er k-means++ bedre?
+  alternativer:
+    - tekst: '«Lengst borte» havner ofte i utkanten av en klynge'
+      riktig: true
+      forklaring: 'Tilfeldigheten i k-means++ øker sjansen for å havne nær midten av klyngene.'
+    - tekst: 'k-means++ trenger ikke at vi oppgir $k$'
+      forklaring: 'k må fortsatt velges. k-means++ handler bare om startposisjonene.'
+    - tekst: 'k-means++ garanterer den optimale løsningen'
+      forklaring: 'Den er forventet å være suboptimal med høyst en faktor log(k), ikke optimal.'
+    - tekst: 'k-means++ velger alltid punktene nærmest de forrige sentroidene'
+      forklaring: 'Nære punkter har lav sannsynlighet, fordi den er proporsjonal med kvadrert avstand.'
+  forklaring: |
+    Helt tilfeldig plassering havner sjelden i hver sin klynge; sannsynligheten avtar eksponentielt med $k$. «Lengst borte» sprer sentroidene, men treffer ofte uteliggere eller klyngekanter. k-means++ beholder spredningen gjennom vektingen med kvadrert avstand, men med tilfeldighet. Det er bevist at metoden i forventning er suboptimal med høyst en faktor $\log k$.
+  husk: 'k-means++: sannsynlighet ∝ kvadrert avstand. Sprer sentroidene uten å havne i kantene.'
+
+- id: "N45"
+  del: "6.2"
+  kilde: "3.1.1 k-means"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Alle læringsalgoritmer har implisitte antakelser. k-means kan mislykkes med å finne klyngene selv når vi oppgir riktig $k$. Hvilken implisitt antakelse ligger i k-means?
+  alternativer:
+    - tekst: 'Punkter i samme klynge ligger nærmere hverandre enn punkter i andre'
+      riktig: true
+      forklaring: 'k-means bruker avstand til sentroiden som likhetsmål. Lange eller sammenflettede klynger brytes opp.'
+    - tekst: 'Featurene er uavhengige av hverandre gitt hvilken klynge punktet hører til'
+      forklaring: 'Det er antakelsen i Naiv Bayes.'
+    - tekst: 'Klyngene har ulik tetthet, slik at tette områder skilles fra glisne'
+      forklaring: 'k-means sier ingenting om tetthet. Ulik tetthet er et problem for DBSCAN.'
+    - tekst: 'Dataene har kjente labels som angir klyngen til hvert punkt'
+      forklaring: 'k-means er uveiledet og bruker ingen labels.'
+  forklaring: |
+    k-means feiler typisk når avstanden innad i en klynge er større enn avstanden til naboklyngen. Det følger av at avstand brukes som mål på likhet, som i praksis betyr en antakelse om kompakte, omtrent runde klynger.
+  husk: 'k-means antar kompakte klynger der avstand = likhet.'
+
+- id: "N46"
+  del: "6.3"
+  kilde: "3.1.2 DBSCAN"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    DBSCAN har hyperparametrene $\epsilon$ (maksimal avstand mellom naboer) og `min_samples`. Et punkt har færre enn `min_samples` naboer innenfor $\epsilon$, men ligger innenfor $\epsilon$ av et kjernepunkt. Hva slags punkt er det?
+  alternativer:
+    - tekst: 'Et ikke-kjernepunkt i klyngen'
+      riktig: true
+      forklaring: 'Det tilhører klyngen, men bidrar ikke til å utvide den videre.'
+    - tekst: 'Et kjernepunkt i klyngen'
+      forklaring: 'Kjernepunkter har minst min_samples naboer innenfor ε.'
+    - tekst: 'En outlier utenfor klyngene'
+      forklaring: 'Outliers ligger ikke innenfor ε av noe kjernepunkt.'
+    - tekst: 'En ny sentroide for klyngen'
+      forklaring: 'DBSCAN bruker ikke sentroider. Det er k-means.'
+  forklaring: |
+    Prosedyren er: (1) finn kjernepunktene ved å telle naboer innenfor $\epsilon$, (2) spre klyngene fra kjernepunktene og (3) merk alle punkter som ikke tilordnes noen klynge som outliers. Punkter i utkanten blir ikke-kjernepunkter. Visualiseringsverktøyet fra forelesningen viser dette steg for steg.
+  husk: 'Kjernepunkt: ≥ min_samples naboer. Ikke-kjernepunkt: nær et kjernepunkt. Outlier: ingen av delene.'
+
+- id: "N47"
+  del: "6.3"
+  kilde: "3.1.3 Hovedkategorier"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Klyngealgoritmer deles i fire hovedkategorier: sentroidebasert, tetthetsbasert, fordelingsbasert og hierarkibasert. Hvilke kategorier hører k-means og DBSCAN til?
+  alternativer:
+    - tekst: 'k-means er sentroidebasert, DBSCAN er tetthetsbasert'
+      riktig: true
+      forklaring: 'k-means flytter sentroider til konvergens. DBSCAN definerer klynger ut fra tettheten av punkter.'
+    - tekst: 'k-means er fordelingsbasert, DBSCAN er tetthetsbasert'
+      forklaring: 'Fordelingsbaserte metoder tilpasser for eksempel gaussfordelinger. k-means bruker sentroider.'
+    - tekst: 'k-means er sentroidebasert, DBSCAN er hierarkibasert'
+      forklaring: 'DBSCAN lager ikke et hierarki av klynger. Den bruker tetthet.'
+    - tekst: 'Begge er tetthetsbaserte'
+      forklaring: 'k-means bruker avstand til sentroider, ikke tetthet.'
+  forklaring: |
+    Fordelingsbasert og hierarkibasert klynging bør du ha hørt om, men du trenger ikke kunne beskrive algoritmer fra disse to kategoriene.
+  husk: 'k-means = sentroidebasert. DBSCAN = tetthetsbasert.'
+
+- id: "N48"
+  del: "6.4"
+  kilde: "3.1.4 Dimensjonsforbannelsen igjen"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Vi trekker to tilfeldige punkter fra enhetskuben $[0,1]^d$, regner ut den euklidske avstanden og gjentar 1000 ganger, for $d = 2, 3, 10, 100, 1000, 10\,000$. Histogrammene viser at middelverdien vokser med $d$, mens spredningen blir liten sammenlignet med middelverdien. Hva betyr dette?
+  alternativer:
+    - tekst: 'Alle punkter blir omtrent like langt fra hverandre'
+      riktig: true
+      forklaring: 'Relative forskjeller i avstand forsvinner (concentration of distances), så «nær» og «langt unna» mister mening.'
+    - tekst: 'Punktene havner nærmere hverandre i høye dimensjoner'
+      forklaring: 'Avstandene blir tvert imot store. Det er de relative forskjellene som blir små.'
+    - tekst: 'Problemet løses ved å samle inn flere datapunkter'
+      forklaring: 'Problemet kommer fra hvordan avstand oppfører seg i høye dimensjoner, ikke fra datamengden.'
+    - tekst: 'Avstandene blir mer spredt og lettere å skille'
+      forklaring: 'Spredningen blir liten relativt til middelverdien, så avstandene blir vanskeligere å skille.'
+  forklaring: |
+    Dette kalles concentration of distances. Klyngealgoritmer som k-means og DBSCAN bygger på at punkter i samme klynge er nærmere hverandre enn punkter i andre klynger. Når alle avstander blir omtrent like, klarer de ikke å tildele punktene riktig. Løsningen er dimensjonsreduksjon, ikke mer data.
+  husk: 'Høy d: alle avstander blir like store relativt sett. Avstandsbaserte metoder svikter, og mer data hjelper ikke.'
+
+- id: "N49"
+  del: "6.5"
+  kilde: "3.2.1 PCA"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Forklar med egne ord hva det betyr at «prinsipalkomponentene er egenvektorene til dataenes kovariansmatrise».
+  eksempelsvar: |
+    Kovariansmatrisen beskriver hvor mye hver feature varierer (diagonalen) og hvor mye par av features samvarierer (resten). Egenvektorene til denne symmetriske matrisen er ortogonale retninger i feature-rommet, og egenverdien til hver av dem er variansen til dataene langs den retningen. Egenvektoren med størst egenverdi er retningen der dataene varierer mest, altså PC1. Neste er PC2, ortogonal på PC1, og så videre. PCA bytter altså til et nytt koordinatsystem der aksene er ukorrelerte og sortert etter hvor mye varians de fanger.
+  punkter:
+    - tekst: 'Kovariansmatrisen: varianser på diagonalen, kovarianser utenfor.'
+      stikkord: ['kovarians', 'varians', 'samvarier', 'diagonal']
+    - tekst: 'Egenverdi = varians langs egenvektoren; størst egenverdi = PC1.'
+      stikkord: ['egenverdi', 'størst', 'mest varians', 'pc1', 'varierer mest']
+    - tekst: 'Egenvektorene er ortogonale og gir nye, ukorrelerte akser.'
+      stikkord: ['ortogonal', 'uavhengig', 'ukorrelert', 'nye akser', 'koordinatsystem']
+  husk: 'PC-er = egenvektorer til kovariansmatrisen, sortert etter egenverdi (= varians langs retningen).'
+
+- id: "N50"
+  del: "6.5"
+  kilde: "3.2.1 PCA"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    To features har verdiene $x_1 = (1, 2, 3)$ og $x_2 = (2, 1, 0)$. Kovariansen er $\text{cov}(x_i, x_j) = \frac{1}{N-1}\sum_k (x_{i,k} - \bar{x}_i)(x_{j,k} - \bar{x}_j)$.
+  deler:
+    - sporsmal: '$\text{cov}(x_2, x_2)$'
+      svar: 1
+      toleranse: 0.005
+    - sporsmal: '$\text{cov}(x_1, x_2)$'
+      svar: -1
+      toleranse: 0.005
+    - sporsmal: 'Den største egenverdien til kovariansmatrisen'
+      svar: 2
+      toleranse: 0.005
+  losning: |
+    $\bar{x}_2 = 1$, så $x_2 - \bar{x}_2 = (1, 0, -1)$ og $\text{cov}(x_2, x_2) = \frac{1}{2}(1 + 0 + 1) = 1$.
+
+    Med $x_1 - \bar{x}_1 = (-1, 0, 1)$ blir $\text{cov}(x_1, x_2) = \frac{1}{2}(-1 + 0 - 1) = -1$, og
+
+    $$S = \begin{pmatrix} 1 & -1 \\ -1 & 1 \end{pmatrix}, \quad \det(S - \lambda I) = (1 - \lambda)^2 - 1 = 0 \ \Rightarrow\ \lambda = 2 \text{ eller } 0.$$
+
+    Én egenverdi er 0. Alle punktene ligger på én linje ($x_1 + x_2 = 3$), så én prinsipalkomponent fanger all variansen.
+  husk: 'Diagonalen = varianser. Egenverdi 0 betyr ingen varians i den retningen.'
+
+- id: "N51"
+  del: "6.5"
+  kilde: "3.2.1 PCA"
+  niva: avansert
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Datasettet $x_1 = (1, 2, 3, 4, 5)$, $x_2 = (1{,}6;\ 4{,}2;\ 5{,}7;\ 8{,}4;\ 9{,}2)$ har kovariansmatrise
+    $$S = \begin{pmatrix} 2{,}5 & 4{,}85 \\ 4{,}85 & 9{,}63 \end{pmatrix}.$$
+    Finn egenverdiene fra $\det(S - \lambda I) = 0$.
+  deler:
+    - sporsmal: 'Største egenverdi $\lambda_1$'
+      svar: 12.08
+      toleranse: 0.03
+    - sporsmal: 'Minste egenverdi $\lambda_2$ (tre desimaler)'
+      svar: 0.046
+      toleranse: 0.004
+    - sporsmal: 'Andelen av variansen PC1 forklarer, $\lambda_1/(\lambda_1 + \lambda_2)$'
+      svar: 0.996
+      toleranse: 0.002
+  losning: |
+    $\det(S - \lambda I) = \lambda^2 - (2{,}5 + 9{,}63)\lambda + (2{,}5 \cdot 9{,}63 - 4{,}85^2) = \lambda^2 - 12{,}13\lambda + 0{,}5525 = 0.$
+
+    Det gir $\lambda = \frac{12{,}13 \pm \sqrt{12{,}13^2 - 4 \cdot 0{,}5525}}{2}$, altså $\lambda_1 \approx 12{,}08$ og $\lambda_2 \approx 0{,}046$.
+
+    PC1 forklarer $12{,}08/12{,}13 \approx 99{,}6\,\%$ av variansen. Egenvektoren $\mathbf{e}_1 \approx (0{,}45;\ 0{,}89)$ fra $S\mathbf{e}_1 = \lambda_1\mathbf{e}_1$ peker langs linjen dataene ligger på. Det stemmer med plottet: nesten all variansen ligger langs én rett linje.
+  husk: '2×2: λ² − (spor)λ + det = 0. Andel forklart varians = λᵢ / Σλ.'
+
+- id: "N52"
+  del: "6.5"
+  kilde: "3.2.1 PCA"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Vi bruker PCA til å redusere MNIST (bilder av håndskrevne sifre, 784 piksler) til to dimensjoner. Plottet viser at klassene overlapper kraftig. Hvorfor er PCA til to dimensjoner lite egnet her?
+  alternativer:
+    - tekst: 'To lineære retninger fanger lite av variansen, og strukturen er ikke-lineær'
+      riktig: true
+      forklaring: 'PCA kan bare projisere lineært. Variansen i bildene er spredt over mange retninger.'
+    - tekst: 'PCA krever labels for å finne retningene, og vi brukte ingen'
+      forklaring: 'PCA er uveiledet og bruker aldri labels.'
+    - tekst: 'PCA kan ikke brukes på bildedata, bare på tabulære features'
+      forklaring: 'PCA fungerer på alle numeriske features, også piksler.'
+    - tekst: 'Vi tilpasset PCA på treningsdata og brukte den på testdata'
+      forklaring: 'Det er riktig praksis for PCA, som er parametrisk og kan gjenbrukes.'
+  forklaring: |
+    PCA finner de lineære retningene med mest varians. For MNIST er informasjonen fordelt på mange komponenter og ligger i ikke-lineære strukturer, så to komponenter bevarer lite av den. t-SNE, som ikke antar linearitet, skiller sifrene langt bedre i to dimensjoner.
+  husk: 'PCA er lineær. Få komponenter fanger lite når variansen er spredt og strukturen ikke-lineær.'
+
+- id: "N53"
+  del: "6.6"
+  kilde: "3.2.2 SNE"
+  niva: avansert
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    KL-divergensen er $D_{KL}(P \,\|\, Q) = \sum_x P(x) \ln \frac{P(x)}{Q(x)}$. La $P = (0{,}5;\ 0{,}5)$ og $Q = (0{,}9;\ 0{,}1)$. Bruk naturlig logaritme.
+  deler:
+    - sporsmal: '$D_{KL}(P \,\|\, Q)$'
+      svar: 0.511
+      toleranse: 0.003
+    - sporsmal: '$D_{KL}(Q \,\|\, P)$'
+      svar: 0.368
+      toleranse: 0.003
+  losning: |
+    - $D_{KL}(P\|Q) = 0{,}5 \ln\frac{0{,}5}{0{,}9} + 0{,}5 \ln\frac{0{,}5}{0{,}1} = 0{,}5(-0{,}588) + 0{,}5(1{,}609) \approx 0{,}511$
+    - $D_{KL}(Q\|P) = 0{,}9 \ln\frac{0{,}9}{0{,}5} + 0{,}1 \ln\frac{0{,}1}{0{,}5} = 0{,}529 - 0{,}161 \approx 0{,}368$
+
+    Verdiene er ulike: KL-divergensen er **ikke symmetrisk**. Den er alltid $\geq 0$, og lik 0 bare når fordelingene er like. Intuitivt måler den hvor overrasket vi blir hvis vi bruker $Q$ når dataene egentlig kommer fra $P$.
+  husk: 'KL ≥ 0, = 0 bare ved like fordelinger, og ikke symmetrisk.'
+
+- id: "N54"
+  del: "6.6"
+  kilde: "3.2.2 SNE"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    tsne = TSNE(n_components=2, learning_rate='auto', init='random', perplexity=3)
+    X_embedded = tsne.fit_transform(X)
+    ```
+    Hva er spesielt med denne kodesnutten sammenlignet med god maskinlæringspraksis, og hvorfor er det slik?
+  alternativer:
+    - tekst: 'Modellen tilpasses og brukes på de samme dataene, siden t-SNE ikke kan gjenbrukes'
+      riktig: true
+      forklaring: 'Vanligvis tilpasser vi på treningsdata og bruker på nye data, men t-SNE er ikke-parametrisk.'
+    - tekst: 'Perplexity må alltid være større enn antall dimensjoner'
+      forklaring: 'Det finnes ingen slik regel. Perplexity er omtrent antall effektive naboer.'
+    - tekst: '`init=random` gjør at resultatet ikke kan tolkes'
+      forklaring: 'Tilfeldig initialisering er en del av algoritmen. Punktene plasseres tilfeldig og flyttes så.'
+    - tekst: 'Vi burde skalert til to dimensjoner med PCA først'
+      forklaring: 'PCA kan brukes før t-SNE, men det er ikke det som er rart med koden.'
+  forklaring: |
+    t-SNE optimerer posisjonene til selve datapunktene ut fra parvise naboskapssannsynligheter. Den lager ingen funksjon vi kan bruke på nye punkter. Legger vi til punkter, endres de relative forholdene, og hele embeddingen må beregnes på nytt. PCA lager derimot nye basisvektorer som kan brukes igjen etter `.fit`.
+  husk: 't-SNE er ikke-parametrisk: fit_transform på alle data, ingen gjenbruk på nye punkter.'
+
+- id: "N55"
+  del: "6.6"
+  kilde: "3.2.2 SNE"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I t-SNE velger vi en parameter `perplexity`. Hva styrer den?
+  alternativer:
+    - tekst: 'Omtrent hvor mange naboer hvert punkts gausskurve tar hensyn til'
+      riktig: true
+      forklaring: 'Perpleksiteten angir entropien til den betingede gaussfordelingen, og variansen tilpasses for å matche den.'
+    - tekst: 'Antall dimensjoner i den nye representasjonen'
+      forklaring: 'Det er n_components.'
+    - tekst: 'Hvor mange iterasjoner gradient descent skal kjøre'
+      forklaring: 'Antall iterasjoner styres av en egen parameter.'
+    - tekst: 'Antall klynger t-SNE skal dele dataene i'
+      forklaring: 't-SNE lager ingen klynger. Den gjør dimensjonsreduksjon.'
+  forklaring: |
+    Perplexity bestemmer variansen til gaussfordelingen rundt hvert punkt i det høydimensjonale rommet, og er direkte knyttet til antall nære naboer vi forventer. Ulike verdier kan gi svært ulike plott, noe distill.pub-verktøyet fra forelesningen viser godt. Klyngestørrelser og avstander mellom klynger i et t-SNE-plott bør derfor tolkes forsiktig.
+  husk: 'Perplexity ≈ effektivt antall naboer. Resultatet er følsomt for valget.'
+
+- id: "N56"
+  del: "6.6"
+  kilde: "3.2.2 SNE"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    PCA bevarer global varians, mens t-SNE bevarer naboskap. Hvilken av metodene tror du håndterer outliers best, og hvorfor? (Notatene stiller spørsmålet uten å gi fasit, så vurder resonnementet ditt.)
+  eksempelsvar: |
+    PCA er mest følsom for outliers. Kovariansmatrisen bygger på kvadrerte avvik fra gjennomsnittet, så noen få ekstreme punkter kan dra prinsipalkomponentene mot seg og endre hele projeksjonen. t-SNE ser bare på naboskapssannsynligheter. En outlier har få nære naboer og påvirker i liten grad hvordan de andre punktene plasseres, men selve outlieren kan havne et tilfeldig sted i plottet og bør ikke tolkes ut fra posisjonen.
+  punkter:
+    - tekst: 'PCA er følsom: varians og kvadrerte avvik lar outliers dra komponentene.'
+      stikkord: ['kvadr', 'varians', 'kovarians', 'drar', 'påvirker komponent', 'følsom']
+    - tekst: 't-SNE er lokal/naboskapsbasert, så outliers påvirker de andre punktene lite.'
+      stikkord: ['nabo', 'lokal', 'naboskap', 'sannsynlighet']
+  husk: 'PCA (varians) er outlier-følsom. t-SNE (lokalt naboskap) påvirkes mindre, men posisjonen til outliers er lite meningsfull.'
+
+- id: "N57"
+  del: "6.7"
+  kilde: "3.3 Anomalideteksjon"
+  niva: avansert
+  type: tekst
+  sporsmal: |
+    Tre metoder for anomalideteksjon er k-means (avstand til nærmeste klyngesenter over en terskel), DBSCAN (punkter som ikke tilhører noen klynge får label −1) og Isolation Forest (punkter som isoleres nær rotnoden i tilfeldige trær). Gi fordeler og ulemper ved metodene.
+  eksempelsvar: |
+    **k-means:** lett å forstå og rask på store datasett, og kan trenes på treningsdata og brukes på testdata. Men vi må velge k og en terskel (for eksempel 95-persentilen), som ikke har noen sann verdi. Outliers kan dra sentroidene, og metoden svikter i høye dimensjoner.
+
+    **DBSCAN:** finner outliers direkte som en del av modelleringen og trenger ikke k. Men den er følsom for ε og min_samples, som er globale og passer dårlig når tettheten varierer. Den er ikke-parametrisk (kan ikke fit på trening og brukes på test), treg for store n og svak i høye dimensjoner.
+
+    **Isolation Forest:** trenger verken avstandsmål eller labels, isolerer anomalier effektivt og kan brukes på nye data. Men vi må anslå andelen anomalier (contamination) og velge antall trær, og tilfeldigheten gjør resultatet litt varierende.
+  punkter:
+    - tekst: 'k-means: enkel og rask, men krever valg av k og terskel; outliers drar sentroidene.'
+      stikkord: ['terskel', 'persentil', 'velge k', 'sentroide', 'rask']
+    - tekst: 'DBSCAN: finner outliers direkte, men følsom for ε/min_samples og ikke-parametrisk.'
+      stikkord: ['ε', 'epsilon', 'min_samples', 'tetthet', 'ikke-parametrisk', 'label -1', '−1']
+    - tekst: 'Isolation Forest: ingen avstandsmål, men krever contamination/antall trær.'
+      stikkord: ['contamination', 'andel', 'rotnode', 'isoler', 'trær', 'avstand']
+  husk: 'k-means: terskel på avstand. DBSCAN: label −1, ikke-parametrisk. Isolation Forest: kort vei til roten = anomali.'
