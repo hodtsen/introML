@@ -35,19 +35,51 @@ test.describe("eksamenssimulering", () => {
     expect(feil).toEqual([]);
   });
 
-  test("Inspera-regelen hindrer at et valgt svar fjernes", async ({ page }) => {
+  test("Inspera-regelen: enkeltvalg kan byttes, men ikke gjøres blanke; flervalg kan krysses av og på", async ({ page }) => {
     await page.goto("#/eksamen");
-    await page.getByRole("button", { name: "10", exact: true }).click();
     await page.getByRole("button", { name: "Uten tid" }).click();
     await page.getByRole("button", { name: "Start eksamen" }).click();
-    const knapp = page.locator(".eksamen-sporsmal .alternativ-knapp").first();
-    await knapp.click();
-    await expect(page.locator(".eksamen-topp")).toContainText("1 av 10 besvart");
+    const topp = page.locator(".eksamen-topp");
+    const radio = page.locator(".eksamen-sporsmal [role=radio]");
+    const avkrysning = page.locator(".eksamen-sporsmal [role=checkbox]");
+
+    // Finn et enkeltvalg og et flervalg blant spørsmålene.
+    await expect(page.locator(".nav-celle:not([aria-hidden])")).toHaveCount(40);
+    const antall = 40;
+    let enkelt = -1;
+    let fler = -1;
+    for (let k = 0; k < antall && (enkelt < 0 || fler < 0); k++) {
+      await page.locator(".nav-celle:not([aria-hidden])").nth(k).click();
+      await expect(page.locator("#spm-tittel")).toContainText(`Spørsmål ${k + 1} av`);
+      const instruks = await page.locator(".eksamen-sporsmal .instruks").textContent();
+      if (enkelt < 0 && instruks === "Velg ett alternativ.") enkelt = k;
+      if (fler < 0 && instruks?.startsWith("Velg ett eller flere")) fler = k;
+    }
+    expect(enkelt).toBeGreaterThanOrEqual(0);
+    expect(fler).toBeGreaterThanOrEqual(0);
+
+    // Enkeltvalg: bytte går, blankt går ikke.
+    await page.locator(".nav-celle:not([aria-hidden])").nth(enkelt).click();
+    await radio.nth(0).click();
+    await expect(topp).toContainText("1 av");
     await expect(page.getByRole("button", { name: "Fjern svaret" })).toHaveCount(0);
-    // Valgte svar kan være deaktivert (enkeltvalg) eller bare ikke la seg fjerne (flervalg).
-    // force: true gjør at testen ikke venter på en knapp som med vilje er deaktivert.
-    await knapp.click({ force: true });
-    await expect(page.locator(".eksamen-topp")).toContainText("1 av 10 besvart");
+    await radio.nth(0).click();
+    await expect(radio.nth(0)).toHaveAttribute("aria-checked", "true");
+    await radio.nth(1).click();
+    await expect(radio.nth(1)).toHaveAttribute("aria-checked", "true");
+    await expect(radio.nth(0)).toHaveAttribute("aria-checked", "false");
+    await expect(topp).toContainText("1 av");
+
+    // Flervalg: kryss kan settes og fjernes, helt til blankt.
+    await page.locator(".nav-celle:not([aria-hidden])").nth(fler).click();
+    await avkrysning.nth(0).click();
+    await avkrysning.nth(1).click();
+    await expect(topp).toContainText("2 av");
+    await avkrysning.nth(0).click();
+    await expect(avkrysning.nth(0)).toHaveAttribute("aria-checked", "false");
+    await avkrysning.nth(1).click();
+    await expect(avkrysning.nth(1)).toHaveAttribute("aria-checked", "false");
+    await expect(topp).toContainText("1 av");
   });
 
   test("H25-modus gir ti grupper", async ({ page }) => {

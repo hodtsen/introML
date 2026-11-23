@@ -161,10 +161,10 @@ export default function EksamenOppsettSide() {
             <legend>Inspera-regelen</legend>
             <label className="bryter">
               <input type="checkbox" checked={o.inspera} onChange={(e) => endre({ inspera: e.target.checked })} />
-              <span>Valgte alternativer kan ikke velges bort (som på eksamen)</span>
+              <span>Enkeltvalg kan ikke gjøres blanke igjen (som på eksamen)</span>
             </label>
             <p className="dempet">
-              Med ett riktig svar kan du bytte alternativ, men ikke gå tilbake til blankt. Med flere riktige svar kan et kryss ikke fjernes.
+              Når du skal velge ett alternativ, kan du bytte svar, men ikke gå tilbake til blankt etter at du har svart. På flervalg kan du krysse av og fjerne kryss fritt, også helt til ingen kryss.
             </p>
           </fieldset>
 

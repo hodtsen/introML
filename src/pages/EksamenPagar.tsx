@@ -74,9 +74,9 @@ export default function EksamenPagar() {
       const n = x.svar[s.id] ?? [];
       let ny: number[];
       if (fler) {
-        if (n.includes(alt)) ny = x.oppsett.inspera ? n : n.filter((v) => v !== alt);
-        else ny = [...n, alt];
-      } else ny = [alt];
+        // Flervalg: kryss kan settes og fjernes fritt, også til ingen kryss (blankt).
+        ny = n.includes(alt) ? n.filter((v) => v !== alt) : [...n, alt];
+      } else ny = [alt]; // Enkeltvalg: kan byttes, men med Inspera-regelen ikke gjøres blankt igjen.
       return { ...x, svar: { ...x.svar, [s.id]: ny } };
     });
   };
@@ -157,17 +157,14 @@ export default function EksamenPagar() {
           <ul className="alternativer" role={fler ? "group" : "radiogroup"}>
             {rekke.map((k, pos) => {
               const er = valgt.includes(k);
-              const laast = fler && er && e.oppsett.inspera;
               return (
                 <li key={k} className={`alternativ ${er ? "valgt" : ""}`}>
                   <button
                     type="button"
                     role={fler ? "checkbox" : "radio"}
                     aria-checked={er}
-                    aria-disabled={laast || undefined}
                     className="alternativ-knapp"
                     onClick={() => velg(k)}
-                    title={laast ? "Et valgt kryss kan ikke fjernes (Inspera-regelen)" : undefined}
                   >
                     <span className={`velger ${fler ? "firkant" : "rund"}`} aria-hidden="true" />
                     <span className="alternativ-bokstav" aria-hidden="true">
@@ -179,15 +176,14 @@ export default function EksamenPagar() {
               );
             })}
           </ul>
-          {!e.oppsett.inspera && valgt.length > 0 && (
+          {!fler && !e.oppsett.inspera && valgt.length > 0 && (
             <button type="button" className="knapp-tekst" onClick={fjern}>
               Fjern svaret
             </button>
           )}
-          {e.oppsett.inspera && valgt.length > 0 && (
-            <p className="dempet liten">
-              {fler ? "Kryssene står til du leverer." : "Du kan bytte alternativ, men ikke gjøre spørsmålet blankt igjen."}
-            </p>
+          {fler && valgt.length > 0 && <p className="dempet liten">Du kan fjerne kryss igjen. Uten kryss står spørsmålet blankt.</p>}
+          {!fler && e.oppsett.inspera && valgt.length > 0 && (
+            <p className="dempet liten">Du kan bytte alternativ, men ikke gjøre spørsmålet blankt igjen.</p>
           )}
           <nav className="okt-nav">
             <button type="button" className="knapp knapp-sekundaer" disabled={i === 0} onClick={() => ga(i - 1)}>
