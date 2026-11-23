@@ -114,6 +114,20 @@ Typespesifikke felt:
 - **tall:** `deler` med `sporsmal`, `svar` og enten `toleranse` (absolutt) eller `relativ` (standard 2 %), pluss `losning`.
 - **tekst:** `eksempelsvar` og `punkter` med `tekst` og `stikkord`. Stikkord brukes til å forhåndsmarkere punkter: `a|b` betyr a eller b, `a+b` betyr både a og b.
 
+### Skrive gode svaralternativer
+
+Formen på alternativene skal ikke røpe fasiten. Du skal måtte vurdere hvert alternativ faglig. Tidligere eksamener (H24 og H25) har en svak tendens til at riktig svar er det lengste, og mange gale alternativer bruker ord som «alltid», «garantert» og «kun». Portalen skal ikke lære deg å stole på slike signaler.
+
+- **Lik form:** Riktig svar skal ikke være lengre, mer detaljert eller mer nyansert enn feilalternativene. Skriv det kort og presist, og legg begrunnelsen i `forklaring`. Det korte og enkle alternativet skal være riktig like ofte som det lange.
+- **Absolutte ord på begge sider:** Bruk «alltid», «aldri», «bare» osv. også i riktige svar og sanne påstander, og la gale alternativer være nyanserte.
+- **Vanskelighetsgraden ligger i distraktorene:**
+  - *grunnleggende:* De gale alternativene er tydelig feil hvis du kan definisjonen, men ser troverdige ut på overflaten.
+  - *middels:* De gale alternativene er typiske misforståelser eller forvekslinger med beslektede begreper (for eksempel varians mot bias, eller Gini mot entropi).
+  - *avansert:* De gale alternativene er nesten riktige. Det kan være sanne utsagn som ikke svarer på spørsmålet, riktig tall med feil begrunnelse, halvt riktige kombinasjoner eller én liten avgjørende feil.
+- **Påstander:** omtrent halvparten sanne.
+
+`tests/unit/formskjevhet.test.ts` sjekker dette for hele banken: hvor ofte riktig svar er lengst (per nivå), lengdeforholdet mellom riktige og gale alternativer, andelen sanne påstander og om absolutte ord avslører svaret.
+
 En oppgave kan ha en figur: enten `figur: navn` (en registrert figur) eller data for et linje-, punkt- eller stolpediagram, se `3.3-03` (linje), `6.3-07` (punkter med `klassenavn`) og `6.5-08` (stolper). Oppgaver med figur, tabell eller kodeblokk får automatisk taggen `figur` eller `kode`.
 
 ## Publisering på GitHub Pages

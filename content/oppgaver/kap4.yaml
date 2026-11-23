@@ -8,14 +8,14 @@
   sporsmal: |
     Hva er den viktigste forutsetningen for at et ensemble av klassifikatorer med flertallsavstemning skal bli bedre enn hver enkelt modell?
   alternativer:
-    - tekst: 'At modellene er bedre enn tilfeldig gjetting og gjør (noenlunde) uavhengige feil'
+    - tekst: 'At modellene er bedre enn tilfeldig og gjør ulike feil'
       riktig: true
-      forklaring: 'Da retter flertallet opp feilene til de enkelte modellene.'
-    - tekst: 'At alle modellene er av samme type'
+      forklaring: 'Når feilene er (noenlunde) uavhengige, retter flertallet opp feilene til de enkelte modellene.'
+    - tekst: 'At alle modellene er av samme type og trent likt'
       forklaring: 'Ensembler kan godt kombinere ulike modelltyper. Ulikhet er tvert imot en fordel.'
-    - tekst: 'At hver modell har over 90 % accuracy'
+    - tekst: 'At hver modell alene har over 90 % accuracy'
       forklaring: 'Svake modeller holder, så lenge de er bedre enn tilfeldig og ulike.'
-    - tekst: 'At modellene gjør nøyaktig de samme feilene'
+    - tekst: 'At modellene gjør de samme feilene'
       forklaring: 'Da gjør flertallet de samme feilene, og ensemblet blir ikke bedre.'
   forklaring: |
     Hvis feilene er uavhengige, er det lite sannsynlig at flertallet tar feil samtidig. Er feilene korrelerte, hjelper det lite å kombinere modellene.
@@ -158,14 +158,14 @@
   sporsmal: |
     Hva er den primære effekten av å trene modellene i bagging på ulike bootstrap-utvalg?
   alternativer:
-    - tekst: 'Modellene blir ulike, og snittet av dem har lavere varians enn hver enkelt modell'
+    - tekst: 'Modellene blir ulike, så snittet får lavere varians'
       riktig: true
       forklaring: 'Diversitet er hele poenget. Aggregeringen glatter ut de individuelle svingningene.'
-    - tekst: 'Hver modell ser alle treningsdataene og blir mer nøyaktig'
+    - tekst: 'Hver modell ser mer av dataene og blir mer nøyaktig'
       forklaring: 'Hver modell ser bare et bootstrap-utvalg, omtrent 63 % unike punkter.'
-    - tekst: 'Biasen til hver modell reduseres kraftig'
+    - tekst: 'Biasen til hver enkelt modell reduseres kraftig'
       forklaring: 'Bagging endrer lite på bias. Det er variansen som reduseres.'
-    - tekst: 'Modellene blir identiske, så ensemblet blir stabilt'
+    - tekst: 'Modellene blir like, så ensemblet blir stabilt'
       forklaring: 'Identiske modeller ville ikke gitt noen gevinst.'
   forklaring: |
     Bagging virker best for modeller med lav bias og høy varians, som dype beslutningstrær.
@@ -178,16 +178,16 @@
   sporsmal: |
     Hvilke forskjeller mellom bagging og kryssvalidering er riktige?
   alternativer:
-    - tekst: 'Bagging trekker med tilbakelegging, kryssvalidering deler dataene i disjunkte folder.'
+    - tekst: 'Bagging trekker med tilbakelegging, kryssvalidering bruker disjunkte folder.'
       riktig: true
       forklaring: 'Bootstrap-utvalg overlapper og har duplikater. Folder gjør ikke det.'
-    - tekst: 'I bagging kombineres modellene til én prediksjon, i kryssvalidering brukes modellene bare til å estimere ytelse.'
+    - tekst: 'Bagging kombinerer modellene, mens kryssvalidering kaster dem etterpå.'
       riktig: true
-      forklaring: 'Kryssvalideringsmodellene kastes etterpå.'
-    - tekst: 'Målet med bagging er bedre prediksjoner, målet med kryssvalidering er et bedre ytelsesestimat.'
+      forklaring: 'I bagging blir modellene én prediksjon. I kryssvalidering brukes de bare til å estimere ytelse.'
+    - tekst: 'Bagging skal gi bedre prediksjoner, kryssvalidering et bedre estimat.'
       riktig: true
       forklaring: 'Ulike mål, ulik splitting, ulik bruk av modellene.'
-    - tekst: 'Begge trener modellene sekvensielt slik at hver modell retter opp den forrige.'
+    - tekst: 'Begge trener modellene sekvensielt, slik at hver modell retter opp feilene til den forrige.'
       forklaring: 'Det er boosting. Bagging og kryssvalidering trener modellene uavhengig.'
   forklaring: |
     De ligner fordi begge trener mange modeller på deler av dataene, men de har helt ulike formål.
@@ -235,14 +235,14 @@
   sporsmal: |
     Hva skiller random forest fra bagging med beslutningstrær?
   alternativer:
-    - tekst: 'I hver node får treet bare velge splitt blant et tilfeldig utvalg av featurene'
+    - tekst: 'Hver node velger splitt blant et tilfeldig utvalg features'
       riktig: true
-      forklaring: 'Dette er den ekstra tilfeldighetskilden i random forest.'
-    - tekst: 'Random forest bruker ikke bootstrap-utvalg'
+      forklaring: 'Dette er den ekstra tilfeldighetskilden i random forest, i tillegg til bootstrap-utvalgene.'
+    - tekst: 'Random forest trekker ikke bootstrap-utvalg'
       forklaring: 'Random forest bruker bootstrap-utvalg akkurat som bagging.'
-    - tekst: 'Trærne i random forest trenes sekvensielt'
+    - tekst: 'Trærne i random forest trenes etter hverandre'
       forklaring: 'Trærne trenes uavhengig.'
-    - tekst: 'Hvert tre får bare se noen av featurene i hele treet'
+    - tekst: 'Hvert tre får et fast, tilfeldig utvalg features'
       forklaring: 'Treet ser alle featurene. Det er utvalget per *node* som er tilfeldig.'
   forklaring: |
     To tilfeldighetskilder: bootstrap-utvalg av rader og tilfeldig utvalg av features per node.
@@ -255,14 +255,14 @@
   sporsmal: |
     Hvorfor trekker random forest tilfeldige features i hver node?
   alternativer:
-    - tekst: 'For å gjøre trærne mindre korrelerte, slik at snittet av dem får lavere varians'
+    - tekst: 'For å gjøre trærne mindre korrelerte'
       riktig: true
-      forklaring: 'Uten det ville én sterk feature blitt valgt øverst i nesten alle trærne, og trærne ville blitt like.'
+      forklaring: 'Uten det ville én sterk feature blitt valgt øverst i nesten alle trærne, og trærne ville blitt like. Mindre korrelerte trær gir lavere varians i snittet.'
     - tekst: 'For at hvert tre skal bruke alle features like ofte'
       forklaring: 'Målet er ikke lik bruk av features, men ulike trær.'
     - tekst: 'For å gjøre hvert enkelt tre mer nøyaktig'
       forklaring: 'Hvert tre blir litt dårligere, men ensemblet blir bedre.'
-    - tekst: 'For å redusere biasen til trærne'
+    - tekst: 'For å redusere biasen til hvert tre'
       forklaring: 'Gevinsten er lavere varians gjennom lavere korrelasjon.'
   forklaring: |
     Snitt av korrelerte modeller reduserer variansen lite. Ved å tvinge trærne til å bruke ulike features blir de mer uavhengige.
@@ -413,10 +413,10 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** Boosting reduserer først og fremst varians, akkurat som bagging.
-  riktig: false
+    **Påstand:** Boosting reduserer først og fremst bias, mens bagging først og fremst reduserer varians.
+  riktig: true
   forklaring: |
-    Boosting reduserer først og fremst bias: svake modeller med høy bias kombineres sekvensielt til en sterk modell. Bagging og random forest reduserer varians. Boosting kan overtilpasse hvis den får kjøre for mange runder.
+    Boosting kombinerer svake modeller med høy bias sekvensielt til en sterk modell. Bagging og random forest tar snittet av ustabile modeller og reduserer varians. Boosting kan likevel overtilpasse hvis den får kjøre for mange runder.
   husk: 'Bagging → lavere varians. Boosting → lavere bias.'
 
 - id: "4.4-05"
@@ -427,15 +427,15 @@
   sporsmal: |
     Du sammenligner et dypt beslutningstre med AdaBoost av 100 stumper på samme data. Treet har 100 % treningsaccuracy og 74 % testaccuracy. AdaBoost har 88 % treningsaccuracy og 84 % testaccuracy. Hva er den beste forklaringen?
   alternativer:
-    - tekst: 'Treet har høy varians, mens AdaBoost bygger en sterk modell av mange enkle modeller med lav varians hver'
+    - tekst: 'Treet overtilpasser, mens AdaBoost generaliserer bedre'
       riktig: true
-      forklaring: 'Lite gap mellom trening og test for AdaBoost tyder på bedre generalisering.'
-    - tekst: 'AdaBoost har høyere bias enn treet, så den er dårligere'
-      forklaring: 'Testaccuracy er det som teller, og der er AdaBoost klart best.'
-    - tekst: 'Treet er bedre fordi det har høyest treningsaccuracy'
-      forklaring: '100 % på trening og 74 % på test er tegn på overtilpasning.'
-    - tekst: 'Forskjellen skyldes at AdaBoost bruker bootstrap-utvalg'
-      forklaring: 'AdaBoost vekter dataene, den trekker ikke bootstrap-utvalg.'
+      forklaring: 'Treet har høy varians (stort gap mellom trening og test). AdaBoost bygger en sterk modell av mange enkle modeller og har lite gap.'
+    - tekst: 'AdaBoost har lavere varians fordi stumpene trenes uavhengig'
+      forklaring: 'Stumpene i AdaBoost trenes sekvensielt, og hver avhenger av feilene til de forrige.'
+    - tekst: 'Treet har høy bias, og boosting er laget for å redusere bias'
+      forklaring: 'Det stemmer at boosting reduserer bias, men treet har ikke høy bias: det er 100 % på trening. Problemet er høy varians.'
+    - tekst: 'AdaBoost generaliserer bedre fordi den trekker bootstrap-utvalg'
+      forklaring: 'AdaBoost vekter dataene. Den trekker ikke bootstrap-utvalg.'
   forklaring: |
     Hver stump har høy bias og lav varians. Boosting reduserer biasen steg for steg, og resultatet generaliserer bedre enn et ubegrenset tre.
   husk: 'Sammenlign alltid trening og test. Stort gap = varians. Boosting av stumper gir ofte god balanse.'
@@ -472,14 +472,14 @@
   sporsmal: |
     Hva trenes hver nye modell i gradient boosting med MSE-tap på?
   alternativer:
-    - tekst: 'Residualene $y - F_{t-1}(\mathbf{x})$, altså det ensemblet ennå ikke forklarer'
+    - tekst: 'Residualene $y - F_{t-1}(\mathbf{x})$'
       riktig: true
-      forklaring: 'Residualene er pseudo-residualene for MSE, minus gradienten av tapet.'
-    - tekst: 'De opprinnelige targetene $y$ med nye vekter på datapunktene'
+      forklaring: 'Residualene er det ensemblet ennå ikke forklarer, og for MSE er de minus gradienten av tapet (pseudo-residualene).'
+    - tekst: 'De opprinnelige targetene $y$, med nye vekter'
       forklaring: 'Det er AdaBoost. Gradient boosting endrer targetene.'
-    - tekst: 'Et bootstrap-utvalg av de opprinnelige targetene'
+    - tekst: 'Et bootstrap-utvalg av targetene'
       forklaring: 'Det er bagging.'
-    - tekst: 'Prediksjonene til den forrige modellen'
+    - tekst: 'Prediksjonene $F_{t-1}(\mathbf{x})$ fra ensemblet'
       forklaring: 'Den nye modellen skal lære feilen, ikke kopiere prediksjonene.'
   forklaring: |
     $r_i^{(t)} = y_i - F_{t-1}(\mathbf{x}_i)$, og $F_t = F_{t-1} + \eta h_t$, der $h_t$ er trent på $r^{(t)}$.
@@ -522,14 +522,14 @@
   sporsmal: |
     Hvorfor heter metoden *gradient* boosting?
   alternativer:
-    - tekst: 'Fordi residualen er minus gradienten av tapet med hensyn på prediksjonen, så hvert nytt tre tar et steg i retning av minus gradienten'
+    - tekst: 'Residualen er minus gradienten av tapet'
       riktig: true
-      forklaring: 'For $\tfrac12(y - F)^2$ er $\partial/\partial F = F - y = -(y - F)$.'
-    - tekst: 'Fordi trærne trenes med gradient descent på parametrene sine'
+      forklaring: 'For $\tfrac12(y - F)^2$ er $\partial/\partial F = F - y = -(y - F)$. Hvert nytt tre tar dermed et steg i retning av minus gradienten, i funksjonsrommet.'
+    - tekst: 'Trærne trenes med gradient descent på parametrene sine'
       forklaring: 'Trærne bygges med splitter, ikke gradient descent. Gradient descent skjer i funksjonsrommet.'
-    - tekst: 'Fordi læringsraten avtar gradvis'
+    - tekst: 'Læringsraten avtar gradvis, som i gradient descent'
       forklaring: 'Læringsraten er vanligvis fast.'
-    - tekst: 'Fordi datapunktene vektes etter gradienten til forrige modell'
+    - tekst: 'Datapunktene vektes etter gradienten til forrige modell'
       forklaring: 'Vekting av data er AdaBoost.'
   forklaring: |
     Oppdateringen $F_t = F_{t-1} + \eta h_t$ har samme form som $\theta_{t+1} = \theta_t - \eta \nabla \mathcal{L}$, bare i rommet av funksjoner, ett tre om gangen.
@@ -553,16 +553,16 @@
   sporsmal: |
     Du trener gradient boosting med læringsrate 0,1 og 1000 trær. Hvilke påstander stemmer?
   alternativer:
-    - tekst: 'Med for mange trær kan modellen overtilpasse, så antall trær bør velges med validering.'
+    - tekst: 'For mange trær kan gi overtilpasning.'
       riktig: true
-      forklaring: 'Hvert tre reduserer treningsfeilen, til slutt ved å tilpasse støy.'
+      forklaring: 'Hvert tre reduserer treningsfeilen, til slutt ved å tilpasse støy. Antall trær bør velges med validering.'
     - tekst: 'Lavere læringsrate krever som regel flere trær for samme treningsfeil.'
       riktig: true
       forklaring: 'Hvert tre bidrar mindre.'
-    - tekst: 'Trærne kan trenes parallelt fordi de er uavhengige.'
-      forklaring: 'Hvert tre trenes på residualene fra de forrige, så trærne avhenger av hverandre.'
-    - tekst: 'Gradient boosting vekter om datapunktene etter hver runde.'
-      forklaring: 'Det er AdaBoost.'
+    - tekst: 'Med lav læringsrate kan modellen ikke overtilpasse, uansett antall trær.'
+      forklaring: 'Lav læringsrate gjør at overtilpasningen kommer senere, men med nok trær tilpasser modellen likevel støyen.'
+    - tekst: 'Trærne kan trenes parallelt fordi hvert tre bare ser residualene.'
+      forklaring: 'Residualene avhenger av alle de forrige trærne, så trærne må trenes etter hverandre.'
   forklaring: |
     Læringsrate og antall trær henger sammen og er de viktigste hyperparametrene. Prøv figuren i 4.5 for å se effekten.
   husk: 'η og antall trær styrer læringen sammen. For mange trær gir overtilpasning.'
@@ -593,7 +593,7 @@
   sporsmal: |
     Hva er det som kjennetegner stacking?
   alternativer:
-    - tekst: 'En metamodell lærer hvordan prediksjonene fra basismodellene skal kombineres'
+    - tekst: 'En metamodell lærer å kombinere basismodellene'
       riktig: true
       forklaring: 'Basismodellenes prediksjoner er features for metamodellen.'
     - tekst: 'Modellene kombineres alltid med flertallsavstemning'
@@ -613,15 +613,15 @@
   sporsmal: |
     Hvorfor bør metamodellen i stacking ikke trenes på basismodellenes prediksjoner på de samme dataene som basismodellene ble trent på?
   alternativer:
-    - tekst: 'Fordi basismodellene er for gode på sine egne treningsdata, så metamodellen lærer å stole for mye på dem'
+    - tekst: 'Metamodellen lærer å stole for mye på basismodellene'
       riktig: true
-      forklaring: 'Metamodellen må se hvordan basismodellene gjør det på data de ikke har sett.'
-    - tekst: 'Fordi metamodellen da får for få features'
+      forklaring: 'Basismodellene er for gode på sine egne treningsdata. Metamodellen må se hvordan de gjør det på data de ikke har sett.'
+    - tekst: 'Metamodellen får da for få features å lære av'
       forklaring: 'Antall features er det samme uansett.'
-    - tekst: 'Fordi det gjør treningen tregere'
+    - tekst: 'Det gjør treningen unødvendig treg'
       forklaring: 'Problemet er overtilpasning, ikke tid.'
-    - tekst: 'Det er ingen grunn, det er helt greit'
-      forklaring: 'Det gir en metamodell som overvurderer basismodellene.'
+    - tekst: 'Basismodellene blir da undertilpasset'
+      forklaring: 'Basismodellene påvirkes ikke av hva metamodellen trenes på. Problemet er at metamodellen overvurderer dem.'
   forklaring: |
     Bruk egne data (eller kryssvaliderte prediksjoner) til metamodellen, slik at den lærer hvor pålitelige basismodellene faktisk er.
   husk: 'Metamodellen trenes på prediksjoner for data basismodellene ikke har sett.'
@@ -667,15 +667,15 @@
   sporsmal: |
     Et beslutningstre har høy varians, og en lineær modell har høy bias på samme problem. Hvilken ensemblemetode passer best til hver av dem?
   alternativer:
-    - tekst: 'Bagging eller random forest for treet, boosting for å bygge en sterkere modell av svake modeller'
+    - tekst: 'Bagging for varians-problemet, boosting for bias-problemet'
       riktig: true
-      forklaring: 'Parallelle metoder demper varians, sekvensielle metoder reduserer bias.'
-    - tekst: 'Boosting for treet, bagging for den lineære modellen'
-      forklaring: 'Det er motsatt. Bagging av en stabil lineær modell gir nesten ingen gevinst.'
-    - tekst: 'Stacking løser begge problemene automatisk'
-      forklaring: 'Stacking kan hjelpe, men retter ikke automatisk opp en høy-bias-basismodell.'
-    - tekst: 'Ingen ensemblemetode hjelper på bias eller varians'
-      forklaring: 'Ensembler er nettopp verktøy for å redusere bias eller varians.'
+      forklaring: 'Parallelle metoder demper varians (treet), sekvensielle metoder bygger en sterkere modell av svake modeller og reduserer bias.'
+    - tekst: 'Boosting for varians-problemet, bagging for bias-problemet'
+      forklaring: 'Det er motsatt. Bagging av en stabil modell med høy bias gir nesten ingen gevinst.'
+    - tekst: 'Bagging for begge, siden snitt av modeller reduserer all feil'
+      forklaring: 'Snitt av modeller reduserer varians. Biasen til snittet er omtrent den samme som for hver modell.'
+    - tekst: 'Stacking for begge, siden metamodellen retter opp bias og varians'
+      forklaring: 'Stacking kan hjelpe, men retter ikke automatisk opp en basismodell med høy bias.'
   forklaring: |
     Velg ensemble ut fra problemet: høy varians → gjennomsnitt (bagging, RF). Høy bias → boosting.
   husk: 'Høy varians → bagging/RF. Høy bias → boosting.'
@@ -721,14 +721,14 @@
 
     Hvilken påstand om koden stemmer?
   alternativer:
-    - tekst: '`r` er residualene, som er minus gradienten av $\tfrac12(y - F)^2$ med hensyn på $F$, så hvert tre tar et lite steg i retning av lavere tap'
+    - tekst: '`r` er minus gradienten av tapet, så pluss er riktig fortegn'
       riktig: true
-      forklaring: 'Derfor står det pluss: treet er trent på minus gradienten.'
-    - tekst: 'Hvert tre trenes på de opprinnelige targetene `y`, og `F` blir snittet av trærne'
+      forklaring: '`r = y - F` er minus gradienten av $\tfrac12(y - F)^2$ med hensyn på $F$. Hvert tre tar et lite steg i retning av lavere tap.'
+    - tekst: 'Hvert tre trenes på `y`, og `F` blir snittet av trærne'
       forklaring: 'Det ville vært bagging. Her trenes trærne på det ensemblet ennå ikke forklarer.'
-    - tekst: 'Trærne kan trenes parallelt, fordi `r` er den samme i alle runder'
+    - tekst: 'Trærne kan trenes parallelt, siden `r` er lik i alle runder'
       forklaring: '`r` endres etter hvert tre, så trærne må trenes etter hverandre.'
-    - tekst: 'Fortegnet er feil, det skal stå `F = F - eta * tree.predict(X)`'
+    - tekst: 'Fortegnet er feil: det skal stå `F = F - eta * tree.predict(X)`'
       forklaring: 'Minus brukes når treet trenes på gradienten (prediksjon minus target), slik notatene skriver det. Her er treet trent på residualen, som har motsatt fortegn.'
   forklaring: |
     Med MSE-tap er residualen $y - F_{t-1}(\mathbf{x})$ lik minus gradienten av tapet med hensyn på prediksjonen. Hvert tre tilnærmer denne, og ensemblet oppdateres med $F_t = F_{t-1} + \eta\,h_t$. Notatenes versjon, `new_ensemble = previous_ensemble - learning_rate * new_tree`, er den samme oppdateringen med et tre trent på gradienten i stedet for residualen. Læringsraten `eta` gjør stegene små, og grunne trær gjør hver modell svak.
@@ -753,9 +753,9 @@
   sporsmal: |
     Figuren viser trenings- og valideringsfeil for gradient boosting som funksjon av antall trær. Hva bør du gjøre?
   alternativer:
-    - tekst: 'Velge rundt 200 trær, der valideringsfeilen er lavest, fordi flere trær etter hvert overtilpasser'
+    - tekst: 'Velge rundt 200 trær, der valideringsfeilen er lavest'
       riktig: true
-      forklaring: 'Etter omtrent 200 trær fortsetter treningsfeilen å synke, mens valideringsfeilen stiger.'
+      forklaring: 'Etter omtrent 200 trær fortsetter treningsfeilen å synke, mens valideringsfeilen stiger: flere trær overtilpasser.'
     - tekst: 'Velge 1000 trær, fordi treningsfeilen er lavest der'
       forklaring: 'Treningsfeilen sier ikke hvor godt modellen generaliserer.'
     - tekst: 'Velge 10 trær, fordi boosting bare reduserer varians'

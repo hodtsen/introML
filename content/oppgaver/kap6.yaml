@@ -8,14 +8,14 @@
   sporsmal: |
     Hvilken størrelse forsøker k-means å minimere?
   alternativer:
-    - tekst: 'Summen av kvadrerte avstander fra hvert punkt til sentroiden i sin egen klynge (inertia)'
+    - tekst: 'Summen av kvadrerte avstander til egen sentroide'
       riktig: true
-      forklaring: '$\sum_c \sum_{\mathbf{x} \in C_c}\lVert\mathbf{x} - \boldsymbol{\mu}_c\rVert^2$.'
-    - tekst: 'Avstanden mellom sentroidene'
+      forklaring: 'Inertia: $\sum_c \sum_{\mathbf{x} \in C_c}\lVert\mathbf{x} - \boldsymbol{\mu}_c\rVert^2$.'
+    - tekst: 'Summen av avstandene mellom sentroidene'
       forklaring: 'k-means ser ikke direkte på avstanden mellom sentroidene.'
-    - tekst: 'Silhouette-verdien'
+    - tekst: 'Silhouette-verdien til klyngene'
       forklaring: 'Silhouette er en evalueringsmetrikk, og høy silhouette er bra. k-means optimerer den ikke.'
-    - tekst: 'Antall punkter per klynge'
+    - tekst: 'Forskjellen i antall punkter per klynge'
       forklaring: 'k-means kan gi klynger av svært ulik størrelse.'
   forklaring: |
     Begge stegene i k-means (tildel til nærmeste sentroide, flytt sentroiden til snittet) kan bare senke inertia.
@@ -94,10 +94,10 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** En sentroide i k-means er alltid et av datapunktene.
-  riktig: false
+    **Påstand:** Etter en oppdatering i k-means er hver sentroide alltid gjennomsnittet av punktene som er tildelt klyngen.
+  riktig: true
   forklaring: |
-    Sentroiden er gjennomsnittet av punktene i klyngen og ligger som regel mellom dem. Den kan starte som et datapunkt (ved initialisering), men flyttes til snittet etter første iterasjon.
+    Det er selve oppdateringssteget: sentroiden flyttes til snittet av punktene i klyngen. Den ligger derfor som regel mellom datapunktene, ikke på ett av dem. Bare ved initialisering kan den være et datapunkt.
   husk: 'Sentroide = gjennomsnitt, ikke et datapunkt.'
 
 - id: "6.1-06"
@@ -127,14 +127,14 @@
   sporsmal: |
     Hvorfor kan vi ikke bare velge den $k$ som gir lavest inertia?
   alternativer:
-    - tekst: 'Fordi inertia alltid synker når $k$ øker, og blir 0 når hvert punkt er sin egen klynge'
+    - tekst: 'Inertia synker alltid når $k$ øker'
       riktig: true
-      forklaring: 'Lavest inertia ville alltid gitt $k = n$.'
-    - tekst: 'Fordi inertia er beregningstung'
+      forklaring: 'Den blir 0 når hvert punkt er sin egen klynge, så lavest inertia ville alltid gitt $k = n$.'
+    - tekst: 'Inertia er for tung å regne ut for store $k$'
       forklaring: 'Den er billig. Problemet er at den favoriserer stor $k$.'
-    - tekst: 'Fordi inertia bare kan brukes med $k = 2$'
+    - tekst: 'Inertia kan bare brukes når $k = 2$'
       forklaring: 'Inertia kan regnes for alle $k$.'
-    - tekst: 'Fordi inertia øker med $k$'
+    - tekst: 'Inertia øker når $k$ øker'
       forklaring: 'Den synker med $k$.'
   forklaring: |
     Inertia måler bare hvor kompakte klyngene er, og den letteste måten å «hacke» den på er å legge en sentroide på hvert datapunkt ($k = n$). Silhouette og Calinski–Harabasz tar også hensyn til avstanden mellom klyngene, og kan derfor brukes til å sammenligne ulike $k$.
@@ -177,15 +177,15 @@
 
     Hvilken $k$ er best begrunnet ut fra metrikkene?
   alternativer:
-    - tekst: '$k = 3$, fordi både silhouette og Calinski–Harabasz er høyest der'
+    - tekst: '$k = 3$, der silhouette og CH er høyest'
       riktig: true
       forklaring: 'For begge metrikkene er høy verdi bra, og de peker på samme $k$.'
-    - tekst: '$k = 6$, fordi inertia er lavest der'
+    - tekst: '$k = 6$, der inertia er lavest'
       forklaring: 'Inertia synker alltid når $k$ øker. Lavest inertia får du med $k = n$.'
-    - tekst: '$k = 2$, fordi færrest klynger alltid er best'
+    - tekst: '$k = 2$, siden færrest klynger er enklest'
       forklaring: 'Både silhouette og Calinski–Harabasz er klart bedre for $k = 3$.'
-    - tekst: '$k = 5$, fordi silhouette er nærmest 0 der'
-      forklaring: 'Silhouette nær 0 betyr at punktene ligger på grensen mellom klynger. Nær 1 er best.'
+    - tekst: '$k = 4$, der inertia-kurven har albuen'
+      forklaring: 'Den store knekken i inertia er fra 920 til 380 (fra $k = 2$ til 3). Etter $k = 3$ flater kurven ut, så albuen er ved 3.'
   forklaring: |
     Inertia kan ikke brukes alene til å velge $k$, fordi den alltid blir lavere med flere klynger. Silhouette (nær 1 er best) og Calinski–Harabasz (høy er best) belønner både kompakte og godt adskilte klynger. Når flere metrikker peker på samme $k$, er valget godt begrunnet. Peker de i ulike retninger, må du vurdere dataene og formålet nærmere.
   husk: 'Silhouette: høy er bra (maks 1). CH: høy er bra. Inertia: lav er bra, men synker alltid med k.'
@@ -197,9 +197,9 @@
   sporsmal: |
     Hvilke påstander om k-means og valg av $k$ stemmer?
   alternativer:
-    - tekst: 'k-means antar implisitt at klyngene er omtrent runde (konvekse) og av lignende størrelse.'
+    - tekst: 'k-means passer best for omtrent runde klynger.'
       riktig: true
-      forklaring: 'Tildeling til nærmeste sentroide gir konvekse regioner.'
+      forklaring: 'Tildeling til nærmeste sentroide gir konvekse regioner, så k-means antar implisitt runde klynger av lignende størrelse.'
     - tekst: 'Ulike metrikker kan foreslå ulik $k$ for samme data.'
       riktig: true
       forklaring: 'Det finnes ofte ingen fasit.'
@@ -250,15 +250,15 @@
   sporsmal: |
     I DBSCAN, hva er et kjernepunkt?
   alternativer:
-    - tekst: 'Et punkt som har minst `min_samples` punkter (seg selv medregnet) innenfor avstand $\varepsilon$'
+    - tekst: 'Et punkt med minst `min_samples` naboer innen $\varepsilon$'
       riktig: true
-      forklaring: 'Kjernepunkter er de eneste som kan utvide en klynge.'
+      forklaring: 'Punktet selv regnes med. Kjernepunkter er de eneste som kan utvide en klynge.'
     - tekst: 'Punktet nærmest sentrum av klyngen'
       forklaring: 'DBSCAN har ingen sentroider.'
     - tekst: 'Et punkt som ikke tilhører noen klynge'
       forklaring: 'Det er en outlier (label $-1$).'
-    - tekst: 'Det første punktet algoritmen besøker'
-      forklaring: 'Rekkefølgen avgjør ikke om et punkt er kjernepunkt.'
+    - tekst: 'Et punkt innen $\varepsilon$ fra et kjernepunkt'
+      forklaring: 'Det er definisjonen på et grensepunkt hvis punktet selv har for få naboer. Kjernepunkt avgjøres av punktets eget nabolag.'
   forklaring: |
     Tre typer punkter: kjernepunkter (tett nabolag), ikke-kjernepunkter (i nabolaget til et kjernepunkt, men med for få naboer selv) og outliers (ingen av delene).
   husk: 'Kjernepunkt: ≥ min_samples punkter innen ε. Bare kjernepunkter utvider klynger.'
@@ -299,14 +299,14 @@
   sporsmal: |
     Hva skjer typisk hvis du senker $\varepsilon$ i DBSCAN (med samme `min_samples`)?
   alternativer:
-    - tekst: 'Færre punkter blir kjernepunkter, så du får flere, mindre klynger og flere outliers'
+    - tekst: 'Flere outliers og flere, mindre klynger'
       riktig: true
-      forklaring: 'Mindre nabolag gir færre naboer per punkt.'
+      forklaring: 'Mindre nabolag gir færre naboer per punkt, så færre punkter blir kjernepunkter.'
     - tekst: 'Klyngene slås sammen til færre, større klynger'
       forklaring: 'Det skjer når $\varepsilon$ økes.'
-    - tekst: 'Ingenting, fordi DBSCAN velger $\varepsilon$ selv'
+    - tekst: 'Ingenting, siden DBSCAN velger $\varepsilon$ selv'
       forklaring: '$\varepsilon$ er en hyperparameter du setter.'
-    - tekst: 'Alle outliers blir kjernepunkter'
+    - tekst: 'Flere punkter blir kjernepunkter'
       forklaring: 'Lavere $\varepsilon$ gir færre kjernepunkter, ikke flere.'
   forklaring: |
     For stor $\varepsilon$ slår sammen klynger, for liten deler dem opp og merker mange punkter som støy.
@@ -325,9 +325,9 @@
     - tekst: 'DBSCAN kan finne klynger med vilkårlig form.'
       riktig: true
       forklaring: 'Klynger følger kjeder av tette punkter.'
-    - tekst: 'DBSCAN merker outliers med label $-1$ i stedet for å tvinge dem inn i en klynge.'
+    - tekst: 'DBSCAN kan merke punkter som outliers.'
       riktig: true
-      forklaring: 'k-means plasserer alle punkter i en klynge.'
+      forklaring: 'Outliers får label $-1$ i stedet for å tvinges inn i en klynge, slik k-means gjør.'
     - tekst: 'DBSCAN fungerer godt når klyngene har svært ulik tetthet.'
       forklaring: 'Én $\varepsilon$ for hele datasettet passer dårlig når tettheten varierer.'
   forklaring: |
@@ -352,15 +352,15 @@
   sporsmal: |
     DBSCAN kjøres på data der alle punktene får label $-1$. Hva er den mest sannsynlige årsaken?
   alternativer:
-    - tekst: '$\varepsilon$ er for liten eller `min_samples` for høy, så ingen punkter blir kjernepunkter'
+    - tekst: 'For liten $\varepsilon$ eller for høy `min_samples`'
       riktig: true
-      forklaring: 'Uten kjernepunkter kan ingen klynge startes.'
-    - tekst: '$\varepsilon$ er for stor'
-      forklaring: 'For stor $\varepsilon$ gir få, store klynger, ikke bare outliers.'
-    - tekst: 'Dataene har for mange klynger'
-      forklaring: 'DBSCAN finner så mange klynger som tettheten tilsier.'
-    - tekst: 'DBSCAN trenger at antall klynger oppgis'
-      forklaring: 'Det trenger den ikke.'
+      forklaring: 'Begge gjør at ingen punkter får nok naboer til å bli kjernepunkter, og uten kjernepunkter kan ingen klynge startes.'
+    - tekst: 'For stor $\varepsilon$ eller for høy `min_samples`'
+      forklaring: 'For stor $\varepsilon$ gir flere naboer og flere kjernepunkter, ikke færre. Halve svaret er riktig.'
+    - tekst: 'For liten $\varepsilon$ eller for lav `min_samples`'
+      forklaring: 'Lav `min_samples` gjør det lettere å bli kjernepunkt. Halve svaret er riktig.'
+    - tekst: 'Dataene har ulik tetthet i ulike områder'
+      forklaring: 'Ulik tetthet gir typisk at de tette områdene blir klynger og de spredte blir outliers, ikke at alt blir $-1$.'
   forklaring: |
     Øk $\varepsilon$ eller senk `min_samples`. Skalering av featurene påvirker også avstandene og dermed hva som er en fornuftig $\varepsilon$.
   husk: 'Alle −1: ingen kjernepunkter. Øk ε eller senk min_samples.'
@@ -373,14 +373,14 @@
   sporsmal: |
     Hva betyr «concentration of distances» i høye dimensjoner?
   alternativer:
-    - tekst: 'Avstandene mellom tilfeldige punkter blir omtrent like store, så forskjellen mellom nærmeste og fjerneste nabo blir relativt liten'
+    - tekst: 'Avstandene mellom punktene blir omtrent like store'
       riktig: true
-      forklaring: 'Den relative spredningen i avstandene går mot 0.'
+      forklaring: 'Forskjellen mellom nærmeste og fjerneste nabo blir relativt liten. Den relative spredningen i avstandene går mot 0.'
     - tekst: 'Alle punktene samler seg nær origo'
       forklaring: 'Avstandene blir store, ikke små.'
     - tekst: 'Avstandene blir mindre og mindre'
       forklaring: 'Snittavstanden vokser omtrent som $\sqrt{d}$.'
-    - tekst: 'Punktene danner naturlige klynger'
+    - tekst: 'Punktene danner tydelige klynger'
       forklaring: 'Det motsatte: klyngestrukturen blir vanskeligere å se.'
   forklaring: |
     Når nærmeste og fjerneste punkt er omtrent like langt unna, mister avstandsbaserte metoder som k-means og DBSCAN mye av sin mening.
@@ -426,15 +426,15 @@
   sporsmal: |
     Euklidsk avstand mellom to tilfeldige punkter med $d$ uavhengige, like fordelte koordinater er roten av en sum av $d$ kvadrater. Hvordan oppfører snittet og den relative spredningen seg når $d$ vokser?
   alternativer:
-    - tekst: 'Snittet vokser omtrent som $\sqrt{d}$, og standardavvik delt på snitt går mot 0'
+    - tekst: 'Snittet vokser som $\sqrt{d}$, og den relative spredningen går mot 0'
       riktig: true
-      forklaring: 'Summen vokser lineært og har standardavvik som vokser som $\sqrt{d}$. Etter roten blir den relative spredningen liten.'
-    - tekst: 'Snittet er konstant, og spredningen vokser'
+      forklaring: 'Summen vokser lineært og har standardavvik som vokser som $\sqrt{d}$. Etter roten vokser snittet som $\sqrt{d}$, mens standardavvik delt på snitt krymper.'
+    - tekst: 'Snittet vokser som $\sqrt{d}$, og den relative spredningen også'
+      forklaring: 'Snittet er riktig, men den relative spredningen krymper. Det er derfor avstander blir lite informative.'
+    - tekst: 'Snittet vokser lineært med $d$, og den relative spredningen går mot 0'
+      forklaring: 'Det er summen av kvadratene som vokser lineært. Avstanden er roten av den og vokser som $\sqrt{d}$.'
+    - tekst: 'Snittet er konstant, og den relative spredningen går mot 0'
       forklaring: 'Flere ledd i summen gir større avstand.'
-    - tekst: 'Både snitt og relativ spredning vokser lineært'
-      forklaring: 'Den relative spredningen krymper.'
-    - tekst: 'Snittet går mot 0'
-      forklaring: 'Avstandene blir større.'
   forklaring: |
     Dette er bakgrunnen for histogrammene i kurset, der avstandsfordelingen blir smalere (relativt sett) jo flere dimensjoner.
   husk: 'Snittavstand ∝ √d, relativ spredning → 0.'
@@ -446,10 +446,10 @@
   sporsmal: |
     Du skal klynge tekstdokumenter representert som vektorer med 20 000 dimensjoner. Hva er et fornuftig første steg?
   alternativer:
-    - tekst: 'Redusere dimensjonen (for eksempel med PCA) før klyngingen'
+    - tekst: 'Redusere dimensjonen først, for eksempel med PCA'
       riktig: true
       forklaring: 'Avstander i 20 000 dimensjoner er lite informative.'
-    - tekst: 'Øke $k$ i k-means til 20 000'
+    - tekst: 'Øke $k$ i k-means så det passer til dimensjonen'
       forklaring: 'Antall klynger har ingenting med antall dimensjoner å gjøre.'
     - tekst: 'Bruke DBSCAN direkte, fordi den ikke påvirkes av dimensjonen'
       forklaring: 'DBSCAN er også avstandsbasert og rammes like hardt.'
@@ -486,9 +486,9 @@
   sporsmal: |
     Hva er de prinsipale komponentene i PCA?
   alternativer:
-    - tekst: 'Egenvektorene til kovariansmatrisen, sortert etter egenverdi fra størst til minst'
+    - tekst: 'Egenvektorene til kovariansmatrisen'
       riktig: true
-      forklaring: 'PC1 er retningen med mest varians.'
+      forklaring: 'Sortert etter egenverdi fra størst til minst. PC1 er retningen med mest varians.'
     - tekst: 'De opprinnelige featurene sortert etter varians'
       forklaring: 'PC-ene er nye retninger, lineære kombinasjoner av de opprinnelige featurene.'
     - tekst: 'Egenverdiene til kovariansmatrisen'
@@ -634,14 +634,14 @@
   sporsmal: |
     Hvorfor kan t-SNE ikke brukes til å projisere nye datapunkter etter treningen?
   alternativer:
-    - tekst: 'Fordi t-SNE bare lærer posisjoner for de punktene den ble kjørt på, ikke en avbildning fra høy til lav dimensjon'
+    - tekst: 'Den lærer posisjoner, ikke en avbildning'
       riktig: true
-      forklaring: 'Det finnes ingen funksjon eller matrise å bruke på nye punkter.'
-    - tekst: 'Fordi projeksjonsmatrisen er for stor'
+      forklaring: 't-SNE optimerer posisjonene til punktene den ble kjørt på. Det finnes ingen funksjon eller matrise å bruke på nye punkter.'
+    - tekst: 'Projeksjonsmatrisen er for stor til å lagres'
       forklaring: 'Det finnes ingen projeksjonsmatrise i t-SNE.'
-    - tekst: 'Fordi t-SNE bare fungerer på bilder'
+    - tekst: 'Den fungerer bare på bildedata'
       forklaring: 't-SNE fungerer på alle numeriske data.'
-    - tekst: 'Fordi t-SNE krever labels'
+    - tekst: 'Den krever labels for nye punkter'
       forklaring: 't-SNE er uveiledet.'
   forklaring: |
     PCA lærer en lineær avbildning som kan brukes på nye data. t-SNE optimerer posisjonene direkte med gradient descent på KL-divergensen.
@@ -685,8 +685,8 @@
     - tekst: 'Perplexity styrer omtrent hvor mange naboer hvert punkt tar hensyn til.'
       riktig: true
       forklaring: 'Den bestemmer bredden $\sigma_i$ på gaussen rundt hvert punkt.'
-    - tekst: 't-SNE er en lineær metode som PCA.'
-      forklaring: 't-SNE er ikke-lineær.'
+    - tekst: 't-SNE er en lineær metode som bevarer globale avstander, slik PCA gjør.'
+      forklaring: 't-SNE er ikke-lineær og bevarer først og fremst lokale naboskap.'
   forklaring: |
     «t» står for t-fordelingen som brukes i det lavdimensjonale rommet. Den tunge halen gir mer plass og motvirker at punktene klumper seg sammen.
   husk: 't-SNE: lokale naboskap, ikke-lineær, t-fordeling i lav dimensjon, perplexity ≈ antall naboer.'
@@ -749,14 +749,14 @@
   sporsmal: |
     Hvorfor får anomalier typisk høy anomaliskår i isolation forest?
   alternativer:
-    - tekst: 'Fordi de isoleres med få tilfeldige splitter og derfor får kort stilengde i trærne'
+    - tekst: 'De isoleres med få splitter'
       riktig: true
-      forklaring: 'Punkter langt fra resten skilles ut tidlig.'
-    - tekst: 'Fordi de krever dypere trær for å isoleres'
+      forklaring: 'Punkter langt fra resten skilles ut tidlig og får kort stilengde i trærne.'
+    - tekst: 'De krever dypere trær for å isoleres'
       forklaring: 'Det er motsatt. Normale punkter i tette områder krever mange splitter.'
-    - tekst: 'Fordi de har flest naboer'
+    - tekst: 'De har flest naboer i nærheten'
       forklaring: 'Anomalier har få naboer.'
-    - tekst: 'Fordi isolation forest trenes med labels for anomalier'
+    - tekst: 'Modellen er trent med labels for anomalier'
       forklaring: 'Isolation forest er uveiledet.'
   forklaring: |
     Skåren vokser når gjennomsnittlig stilengde over trærne synker. Mange trær gjør resultatet robust mot tilfeldighetene i hvert enkelt tre.
@@ -769,16 +769,16 @@
   sporsmal: |
     Hvilke koblinger mellom metode og definisjon av anomali er riktige?
   alternativer:
-    - tekst: 'k-means: punkter med avstand til nærmeste sentroide over en terskel (for eksempel 95. prosentil)'
+    - tekst: 'k-means: punkter langt fra nærmeste sentroide'
       riktig: true
-      forklaring: 'k-means trenger en terskel for å avgjøre hva som er langt unna.'
+      forklaring: 'Langt unna avgjøres med en terskel, for eksempel 95. prosentil av avstandene.'
     - tekst: 'DBSCAN: punkter som får label $-1$'
       riktig: true
       forklaring: 'Outliers kommer automatisk ut av DBSCAN, uten terskel.'
     - tekst: 'Isolation forest: punkter med kort gjennomsnittlig stilengde'
       riktig: true
       forklaring: 'De isoleres med få splitter.'
-    - tekst: 'PCA: punkter med høyest verdi på PC1'
+    - tekst: 'PCA: punktene med høyest verdi langs første prinsipalkomponent'
       forklaring: 'Kurset bruker k-means, DBSCAN og isolation forest til anomalideteksjon.'
   forklaring: |
     De tre metodene i kurset definerer anomalier på ulike måter: avstand, tetthet og isolerbarhet.
@@ -792,12 +792,12 @@
   sporsmal: |
     I øving 3 brukes `IsolationForest(n_estimators=100, contamination=0.05)`. Hva styrer `contamination`?
   alternativer:
-    - tekst: 'Den forventede andelen anomalier, som bestemmer terskelen for hva som merkes som anomali'
+    - tekst: 'Forventet andel anomalier'
       riktig: true
-      forklaring: 'Med 0,05 merkes omtrent 5 % av punktene som anomalier.'
+      forklaring: 'Den bestemmer terskelen: med 0,05 merkes omtrent 5 % av punktene som anomalier.'
     - tekst: 'Antall trær i skogen'
       forklaring: 'Det er `n_estimators`.'
-    - tekst: 'Hvor stor andel av dataene hvert tre trenes på'
+    - tekst: 'Andelen data hvert tre trenes på'
       forklaring: 'Det styres av andre parametre (`max_samples`).'
     - tekst: 'Hvor dype trærne kan bli'
       forklaring: 'Dybden er ikke det `contamination` styrer.'
@@ -823,15 +823,15 @@
   sporsmal: |
     Du bruker k-means til anomalideteksjon og merker punkter som anomalier når avstanden til nærmeste sentroide er over 95. prosentil av avstandene i treningsdataene. Hva er en svakhet ved denne metoden?
   alternativer:
-    - tekst: 'Den merker alltid omtrent 5 % av treningspunktene som anomalier, også hvis dataene ikke har noen'
+    - tekst: 'Den merker omtrent 5 % som anomalier uansett'
       riktig: true
-      forklaring: 'Terskelen er relativ. 95. prosentil er ikke alltid riktig valg.'
-    - tekst: 'Den kan ikke brukes på nye punkter'
+      forklaring: 'Terskelen er relativ, så omtrent 5 % av treningspunktene merkes også hvis dataene ikke har noen anomalier.'
+    - tekst: 'Den kan ikke brukes på nye punkter etter treningen'
       forklaring: 'Sentroidene og terskelen kan brukes på nye punkter.'
-    - tekst: 'Den krever labels for anomaliene'
+    - tekst: 'Den krever labels for å sette terskelen'
       forklaring: 'Metoden er uveiledet.'
-    - tekst: 'Den finner bare anomalier i klynger med vilkårlig form'
-      forklaring: 'k-means antar tvert imot runde klynger.'
+    - tekst: 'Den antar at anomaliene danner en egen klynge'
+      forklaring: 'Det er motsatt: metoden antar at anomaliene ligger langt fra alle sentroider. Danner de en egen tett klynge, kan de få sin egen sentroide og bli oversett.'
   forklaring: |
     Terskelen må tilpasses dataene og hvor mange anomalier vi forventer. I tillegg arver metoden k-means sine antakelser om runde klynger og valgt $k$.
   husk: 'Prosentilterskel = fast andel anomalier. Tilpass terskelen til dataene.'
@@ -918,13 +918,13 @@
   sporsmal: |
     Figuren viser labelene DBSCAN ga et datasett. Visuelt ser det ut til å være to grupper: en tett nede til venstre og en mer spredt oppe til høyre. Hva er den beste forklaringen på resultatet?
   alternativer:
-    - tekst: 'ε passer for den tette gruppen, men er for liten for den spredte. Fordi ε og `min_samples` gjelder for hele datasettet, blir ingen punkter i den spredte gruppen kjernepunkter'
+    - tekst: 'Én global $\varepsilon$ passer ikke begge tetthetene'
       riktig: true
-      forklaring: 'DBSCAN har én global tetthetsterskel og sliter når klyngene har ulik tetthet.'
+      forklaring: 'ε passer for den tette gruppen, men er for liten for den spredte. Fordi ε og `min_samples` gjelder hele datasettet, blir ingen punkter i den spredte gruppen kjernepunkter.'
     - tekst: 'ε er for stor, så alt slås sammen til én klynge'
       forklaring: 'Med for stor ε ville også den spredte gruppen blitt en klynge, kanskje slått sammen med den tette. Her er den merket som outliers.'
-    - tekst: 'DBSCAN fant to klynger, fordi den alltid finner like mange klynger som det er grupper i dataene'
-      forklaring: 'Figuren viser bare label 0 og −1, altså én klynge pluss outliers.'
+    - tekst: '`min_samples` er for lav, så den spredte gruppen blir støy'
+      forklaring: 'Lavere `min_samples` gjør det lettere å bli kjernepunkt. Problemet her er at kravet er for strengt for den spredte gruppen.'
     - tekst: 'DBSCAN trenger antall klynger som input, og det ble satt til 1'
       forklaring: 'DBSCAN tar ikke antall klynger som input. Den bruker ε og `min_samples`.'
   forklaring: |

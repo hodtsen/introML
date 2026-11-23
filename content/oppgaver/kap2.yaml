@@ -8,12 +8,12 @@
   sporsmal: |
     I Bayes' teorem for klassifisering, $p(C_k \mid \mathbf{x}) = \dfrac{p(\mathbf{x} \mid C_k)\,p(C_k)}{p(\mathbf{x})}$, hva er rollen til nevneren $p(\mathbf{x})$?
   alternativer:
-    - tekst: 'Den normaliserer slik at posteriorene summerer til 1, og er lik for alle klasser'
+    - tekst: 'Den normaliserer posteriorene så de summerer til 1'
       riktig: true
       forklaring: 'Evidensen avhenger ikke av $k$. Den skalerer alle klassene likt og endrer ikke hvilken som vinner.'
-    - tekst: 'Den er sannsynligheten for klassen før vi har sett dataene'
+    - tekst: 'Den er sannsynligheten for klassen før vi ser dataene'
       forklaring: 'Det er prior, $p(C_k)$.'
-    - tekst: 'Den avgjør hvilken klasse som predikeres'
+    - tekst: 'Den avgjør hvilken klasse som får høyest posterior'
       forklaring: 'Siden den er lik for alle klasser, påvirker den ikke rangeringen.'
     - tekst: 'Den er sannsynligheten for dataene gitt klassen'
       forklaring: 'Det er likelihood, $p(\mathbf{x} \mid C_k)$.'
@@ -45,13 +45,13 @@
   sporsmal: |
     Hvilke koblinger mellom navn og ledd i Bayes' teorem er riktige?
   alternativer:
-    - tekst: 'Prior: $p(C_k)$, sannsynligheten for klassen før vi ser datapunktet'
+    - tekst: 'Prior: $p(C_k)$, sannsynligheten for klassen før vi ser data'
       riktig: true
       forklaring: 'Kan estimeres fra klassefordelingen i treningsdataene.'
-    - tekst: 'Likelihood: $p(\mathbf{x} \mid C_k)$, hvor sannsynlige featurene er innen klassen'
+    - tekst: 'Likelihood: $p(\mathbf{x} \mid C_k)$, featurene gitt klassen'
       riktig: true
       forklaring: 'Dette er leddet som er vanskelig når featurene er avhengige.'
-    - tekst: 'Posterior: $p(\mathbf{x})$, sannsynligheten for dataene'
+    - tekst: 'Posterior: $p(\mathbf{x})$, hvor sannsynlig datapunktet er totalt'
       forklaring: '$p(\mathbf{x})$ er evidensen. Posterioren er $p(C_k \mid \mathbf{x})$.'
     - tekst: 'Evidens: $p(C_k \mid \mathbf{x})$, det modellen skal estimere'
       forklaring: 'Det modellen skal estimere, er posterioren.'
@@ -77,14 +77,14 @@
   sporsmal: |
     For to klasser regner du ut forholdet $\dfrac{p(\mathbf{x} \mid C_0)\,p(C_0)}{p(\mathbf{x} \mid C_1)\,p(C_1)} = 0{,}4$. Hva kan du konkludere?
   alternativer:
-    - tekst: 'Klasse 1 er mest sannsynlig, og $p(C_1 \mid \mathbf{x}) = 1/1{,}4 \approx 0{,}71$'
+    - tekst: 'Klasse 1 er mest sannsynlig, og $p(C_1 \mid \mathbf{x}) \approx 0{,}71$'
       riktig: true
       forklaring: 'Forholdet er under 1, så klasse 1 vinner. Med to klasser er $p(C_1 \mid \mathbf{x}) = 1/(1 + 0{,}4)$.'
-    - tekst: 'Klasse 0 er mest sannsynlig, med posterior 0,4'
-      forklaring: 'Et forhold under 1 betyr at nevneren (klasse 1) er størst.'
-    - tekst: 'Vi kan ikke konkludere uten å regne ut evidensen $p(\mathbf{x})$'
-      forklaring: 'Evidensen er lik for begge klasser og forkortes bort i forholdet.'
-    - tekst: 'Klasse 1 er mest sannsynlig, med posterior 0,6'
+    - tekst: 'Klasse 0 er mest sannsynlig, og $p(C_0 \mid \mathbf{x}) \approx 0{,}29$'
+      forklaring: 'Tallet $0{,}4/1{,}4 \approx 0{,}29$ er riktig for klasse 0, men det betyr at klasse 0 er minst sannsynlig. Et forhold under 1 betyr at nevneren (klasse 1) er størst.'
+    - tekst: 'Klasse 1 er mest sannsynlig, men posterioren krever $p(\mathbf{x})$'
+      forklaring: 'Evidensen er lik for begge klasser. Med to klasser er $p(C_1 \mid \mathbf{x}) = 1/(1 + 0{,}4)$, uten å regne ut $p(\mathbf{x})$.'
+    - tekst: 'Klasse 1 er mest sannsynlig, og $p(C_1 \mid \mathbf{x}) = 0{,}6$'
       forklaring: '$1 - 0{,}4$ er ikke riktig. Posterioren er $1/(1 + \text{forholdet})$.'
   forklaring: |
     La $a = p(\mathbf{x}\mid C_0)p(C_0)$ og $b = p(\mathbf{x}\mid C_1)p(C_1)$. Da er $p(C_1 \mid \mathbf{x}) = b/(a + b) = 1/(1 + a/b) = 1/1{,}4 \approx 0{,}714$.
@@ -166,10 +166,10 @@
       forklaring: 'Billettprisen bestemmes i stor grad av klassen. De to featurene er sterkt avhengige.'
     - tekst: '`Sex` og `Age`'
       forklaring: 'Kjønn og alder er omtrent uavhengige i en vanlig befolkning.'
-    - tekst: '`Sex` og et tilfeldig trukket lotteritall'
-      forklaring: 'Et tilfeldig tall er uavhengig av alt annet.'
-    - tekst: 'Alle par er like avhengige, så spørsmålet gir ikke mening'
-      forklaring: 'Graden av avhengighet varierer mye mellom par av features.'
+    - tekst: '`Sex` og `Pclass`'
+      forklaring: 'Det kan være en svak sammenheng, men kjønn bestemmer ikke billettklassen slik klassen bestemmer prisen.'
+    - tekst: 'Ingen av parene, siden de måler ulike ting'
+      forklaring: 'Features som måler ulike ting, kan likevel henge sterkt sammen. Klasse og billettpris er et tydelig eksempel.'
   forklaring: |
     Naiv Bayes kan brukes uansett, men prediksjonene blir dårligere jo mer antakelsen brytes. Sterkt avhengige features telles i praksis dobbelt.
   husk: 'Typisk avhengige features: klasse og pris, høyde og vekt. Omtrent uavhengige: kjønn og alder.'
@@ -199,8 +199,8 @@
       forklaring: 'Her er $\sigma$ satt til 1 og ikke 2, både foran og i eksponenten.'
     - tekst: '$\dfrac{1}{2\sqrt{2\pi}}e^{-1} \approx 0{,}073$'
       forklaring: 'Eksponenten skal være $4/(2 \cdot 4) = 0{,}5$, ikke $4/4$.'
-    - tekst: '0,5, fordi 7 er over snittet'
-      forklaring: '0,5 er sannsynligheten for å være over snittet. Spørsmålet er etter tettheten i $x = 7$.'
+    - tekst: '$\dfrac{1}{2\sqrt{2\pi}} \approx 0{,}199$'
+      forklaring: 'Dette er tettheten i toppunktet $x = \mu = 5$. For $x = 7$ må faktoren $e^{-(7-5)^2/(2 \cdot 2^2)} = e^{-1/2}$ med.'
   forklaring: |
     $F(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)$. Tettheten brukes som $p(x_i \mid C_k)$ i produktet for kontinuerlige features.
   husk: 'Kontinuerlige features i naiv Bayes: bruk en fordeling (for eksempel gauss) med μ og σ estimert per klasse.'
@@ -212,7 +212,7 @@
   sporsmal: |
     Hvilke påstander om naiv Bayes stemmer?
   alternativer:
-    - tekst: 'Den trenger mye mindre data enn å estimere hele simultanfordelingen $p(\mathbf{x} \mid C_k)$.'
+    - tekst: 'Den trenger mindre data enn å estimere hele $p(\mathbf{x} \mid C_k)$.'
       riktig: true
       forklaring: 'Hver én-dimensjonale fordeling kan estimeres med lite data.'
     - tekst: 'Prioren $p(C_k)$ kan estimeres fra andelen av hver klasse i treningsdataene.'
@@ -220,7 +220,7 @@
       forklaring: 'Det er den vanlige måten å sette prioren på.'
     - tekst: 'Sannsynlighetene den gir, er godt kalibrerte når featurene er avhengige.'
       forklaring: 'Avhengige features telles flere ganger, og sannsynlighetene blir typisk for ekstreme.'
-    - tekst: 'Uavhengighetsantakelsen gjelder bare numeriske features.'
+    - tekst: 'Uavhengighetsantakelsen gjelder bare numeriske features, ikke kategoriske.'
       forklaring: 'Den gjelder alle features, kategoriske og numeriske.'
   forklaring: |
     Naiv Bayes byr på en enkel modell som trenger lite data, men betaler med en sterk antakelse.
@@ -275,13 +275,13 @@
   sporsmal: |
     Hvilke påstander om dimensjonsforbannelsen stemmer?
   alternativer:
-    - tekst: 'Den er en grunn til at naiv Bayes antar uavhengige features i stedet for å estimere simultanfordelingen.'
+    - tekst: 'Den er en grunn til at naiv Bayes antar uavhengighet.'
       riktig: true
       forklaring: 'Simultanfordelingen krever data i hver celle av et eksponentielt stort rom.'
-    - tekst: 'Den gjør avstandsbaserte metoder som klynging vanskeligere i høye dimensjoner.'
+    - tekst: 'Den gjør avstandsbaserte metoder svakere i høye dimensjoner.'
       riktig: true
       forklaring: 'Avstander konsentreres: nærmeste og fjerneste punkt blir omtrent like langt unna (kapittel 6).'
-    - tekst: 'Datamengden som trengs, vokser lineært med antall features.'
+    - tekst: 'Datamengden som trengs, vokser omtrent lineært med antall features.'
       forklaring: 'Den vokser eksponentielt.'
     - tekst: 'Med nok data forsvinner problemet for alle realistiske antall features.'
       forklaring: 'For MNIST med $d = 784$ ville $10^{785}$ punkter vært nødvendig, langt mer enn det finnes atomer i universet.'
@@ -391,10 +391,10 @@
     - tekst: 'Undersampling kaster informasjon og kan gi undertilpasning (høy bias).'
       riktig: true
       forklaring: 'Mange punkter fra den store klassen fjernes.'
-    - tekst: 'Oversampling kan gi overtilpasning (høy varians) fordi de samme punktene gjentas.'
+    - tekst: 'Oversampling kan gi overtilpasning.'
       riktig: true
-      forklaring: 'Modellen kan lære seg duplikatene utenat.'
-    - tekst: 'Oversampling tilfører ny informasjon om den lille klassen.'
+      forklaring: 'De samme punktene gjentas, og modellen kan lære seg duplikatene utenat (høy varians).'
+    - tekst: 'Oversampling tilfører ny informasjon om den lille klassen, så modellen generaliserer bedre.'
       forklaring: 'Den kopierer bare punkter som allerede finnes.'
     - tekst: 'Resampling skal gjøres på hele datasettet før splitt i trening og test.'
       forklaring: 'Resampling gjøres bare på treningsdataene. Testdataene skal ha den virkelige fordelingen, og duplikater i begge sett gir lekkasje.'
@@ -409,14 +409,14 @@
   sporsmal: |
     Du bruker vektet binær cross-entropy $\mathcal{L} = -w_1 y\ln y_{\text{pred}} - w_0(1-y)\ln(1 - y_{\text{pred}})$. Den positive klassen er sjelden og viktig. Hvordan bør vektene velges?
   alternativer:
-    - tekst: '$w_1 > w_0$, for eksempel omvendt proporsjonalt med klassestørrelsen'
+    - tekst: '$w_1 > w_0$'
       riktig: true
-      forklaring: 'Feil på de sjeldne positive punktene skal koste mer.'
-    - tekst: '$w_0 > w_1$, fordi den negative klassen har flest punkter'
+      forklaring: 'Feil på de sjeldne positive punktene skal koste mer, for eksempel med vekter omvendt proporsjonale med klassestørrelsen.'
+    - tekst: '$w_0 > w_1$, siden flest punkter er negative'
       forklaring: 'Det ville forsterket ubalansen.'
-    - tekst: '$w_0 = w_1 = 0{,}5$'
-      forklaring: 'Like vekter gir vanlig cross-entropy (skalert), uten noen korrigering.'
-    - tekst: '$w_1 = 0$, slik at modellen fokuserer på den store klassen'
+    - tekst: '$w_0 = w_1$, siden ulike vekter forskyver sannsynlighetene'
+      forklaring: 'Det stemmer at vekting forskyver sannsynlighetene, men målet er å fange den sjeldne klassen. Like vekter korrigerer ingenting.'
+    - tekst: '$w_1 = 0$, så modellen fokuserer på den store klassen'
       forklaring: 'Da ville modellen ikke lært noe om den positive klassen i det hele tatt.'
   forklaring: |
     $w_1$ vekter leddet for punkter med $y = 1$. Med 950 negative og 50 positive kan for eksempel $w_1 = 19$ og $w_0 = 1$ gi klassene like stor samlet vekt.
@@ -565,15 +565,15 @@
   sporsmal: |
     En kandidatsplitt gir to grener med nøyaktig samme klassefordeling som foreldrenoden. Hva er informasjonsgevinsten?
   alternativer:
-    - tekst: '0, fordi den vektede entropien etter er lik entropien før'
+    - tekst: '0'
       riktig: true
-      forklaring: 'Splitten har ikke skilt klassene i det hele tatt.'
-    - tekst: 'Positiv, fordi to mindre noder alltid er renere'
+      forklaring: 'Den vektede entropien etter er lik entropien før, så splitten har ikke skilt klassene i det hele tatt.'
+    - tekst: 'Positiv, fordi hver gren har færre punkter'
       forklaring: 'Renhet avhenger av fordelingen i nodene, ikke størrelsen.'
-    - tekst: 'Negativ, fordi splitten gjør treet større'
+    - tekst: 'Negativ, fordi splitten gjør treet mer komplekst'
       forklaring: 'Informasjonsgevinst kan ikke bli negativ. Den måler bare endring i urenhet.'
-    - tekst: '1 bit'
-      forklaring: '1 bit ville betydd at en 50/50-node ble splittet i to rene grener.'
+    - tekst: 'Avhenger av hvor mange punkter som havner i hver gren'
+      forklaring: 'Når begge grenene har samme fordeling som foreldrenoden, er gevinsten 0 uansett hvordan punktene fordeles mellom dem.'
   forklaring: |
     Hvis begge grenene har samme andel positive som roten, er $I_i = I_{\text{før}}$ for hver gren, og det vektede snittet er $I_{\text{før}}$. Gevinsten er 0.
   husk: 'En splitt som ikke endrer klassefordelingen, gir null gevinst.'
@@ -609,13 +609,13 @@
     - tekst: 'Alle punktene i noden har samme klasse.'
       riktig: true
       forklaring: 'En ren node kan ikke bli bedre.'
-    - tekst: 'Det finnes ingen features igjen å splitte på, eller ingen splitt som reduserer urenheten.'
+    - tekst: 'Ingen splitt reduserer urenheten.'
       riktig: true
-      forklaring: 'Da kan noden ikke deles på en nyttig måte.'
+      forklaring: 'Da kan noden ikke deles på en nyttig måte. Det samme gjelder om det ikke finnes features igjen å splitte på.'
     - tekst: 'Treet har nådd maksimal dybde (`max_depth`).'
       riktig: true
       forklaring: 'En hyperparameter som begrenser hvor komplekst treet blir.'
-    - tekst: 'Noden har flere positive enn negative punkter.'
+    - tekst: 'Noden har flere positive enn negative punkter, så flertallet er avgjort.'
       forklaring: 'Flertallet bestemmer prediksjonen, ikke om vi skal fortsette å splitte.'
   forklaring: |
     Algoritmen er rekursiv: velg beste splitt, del dataene, og kall den samme prosedyren på hver gren til et stoppkriterium slår inn.
@@ -629,14 +629,14 @@
   sporsmal: |
     Et beslutningstre uten dybdegrense får 100 % accuracy på treningsdataene og 71 % på valideringsdataene. Hva er det beste neste tiltaket?
   alternativer:
-    - tekst: 'Begrense dybden (`max_depth`) og velge verdien med kryssvalidering'
+    - tekst: 'Begrense `max_depth`, valgt med kryssvalidering'
       riktig: true
       forklaring: 'Treet har overtilpasset. Mindre dybde gir en enklere modell.'
-    - tekst: 'Øke dybden til treet blir enda mer presist'
+    - tekst: 'Øke dybden så treet fanger flere mønstre'
       forklaring: 'Treet er allerede perfekt på treningsdataene. Mer dybde gir mer overtilpasning.'
-    - tekst: 'Skalere featurene'
+    - tekst: 'Skalere featurene før treningen'
       forklaring: 'Trær splitter på terskler og påvirkes ikke av skala.'
-    - tekst: 'Bytte fra Gini til entropi'
+    - tekst: 'Bytte splitt-kriterium fra Gini til entropi'
       forklaring: 'De gir nesten like trær. Problemet er kompleksiteten, ikke kriteriet.'
   forklaring: |
     Stor forskjell mellom trenings- og valideringsresultat er tegn på høy varians. For trær styres kompleksiteten av blant annet `max_depth`, og verdien velges med validering eller kryssvalidering.
@@ -647,10 +647,10 @@
   niva: grunnleggende
   type: pastand
   sporsmal: |
-    **Påstand:** Beslutningstrær krever at featurene skaleres før trening, akkurat som logistisk regresjon med gradient descent.
-  riktig: false
+    **Påstand:** Et beslutningstre velger de samme splittene enten featurene er min–maks-skalert eller ikke.
+  riktig: true
   forklaring: |
-    Et tre splitter på terskler for én feature om gangen («er $x_j < 3{,}2$?»). Skalering endrer verdiene, men ikke rekkefølgen, så de samme splittene blir valgt. Logistisk regresjon trenes med gradienter som påvirkes av skalaen.
+    Et tre splitter på terskler for én feature om gangen («er $x_j < 3{,}2$?»). Min–maks-skalering endrer verdiene, men ikke rekkefølgen, så de samme punktene havner på hver side av splitten. Bare terskeltallene blir andre. Logistisk regresjon og nevrale nett trenes derimot med gradienter som påvirkes av skalaen.
   husk: 'Trær: ingen skalering nødvendig. Logistisk regresjon og nevrale nett: skaler.'
 
 - id: "2.6-05"
@@ -660,14 +660,14 @@
   sporsmal: |
     To klasser skilles av den diagonale linjen $x_1 = x_2$. Hvorfor sliter et beslutningstre med dette, mens logistisk regresjon løser det lett?
   alternativer:
-    - tekst: 'Treet lager bare akseparallelle splitter, så det må tilnærme diagonalen med en trapp av mange splitter'
+    - tekst: 'Hver splitt er akseparallell, så diagonalen blir en trapp'
       riktig: true
-      forklaring: 'Hver splitt er en terskel på én feature. En diagonal grense krever mange slike.'
-    - tekst: 'Treet kan bare bruke én feature totalt'
-      forklaring: 'Treet kan bruke ulike features i ulike noder, men hver splitt bruker én.'
-    - tekst: 'Treet trenger skalerte features for diagonale grenser'
+      forklaring: 'Hver splitt er en terskel på én feature. En diagonal grense må tilnærmes med mange slike splitter.'
+    - tekst: 'Hver gren av treet kan bare bruke én av featurene'
+      forklaring: 'Nodene langs én gren kan bruke ulike features. Men hver enkelt splitt bruker bare én.'
+    - tekst: 'Treet trenger skalerte features for å finne diagonale grenser'
       forklaring: 'Skalering endrer ikke at splittene er akseparallelle.'
-    - tekst: 'Treet kan ikke løse ikke-lineære problemer'
+    - tekst: 'Trær kan ikke lage grenser som ikke er lineære'
       forklaring: 'Trær er gode på ikke-lineære problemer. Svakheten er skrå grenser.'
   forklaring: |
     Logistisk regresjon gir én lineær grense i vilkårlig retning, så $x_1 - x_2 = 0$ er enkelt. Treet håndterer derimot godt grenser som følger aksene og ikke-lineære mønstre som XOR.
@@ -713,15 +713,15 @@
 
     Recall på testsettet blir svært høy. Hva er hovedproblemet?
   alternativer:
-    - tekst: 'Kopier av de samme positive punktene havner både i trening og test, og testsettet har ikke den virkelige klassefordelingen, så resultatet er for optimistisk'
+    - tekst: 'Kopier av samme punkt havner i både trening og test'
       riktig: true
-      forklaring: 'Modellen testes delvis på punkter den har sett, og på en kunstig balansert fordeling.'
-    - tekst: 'Recall kan ikke brukes på ubalanserte data'
-      forklaring: 'Recall er nettopp en nyttig metrikk på ubalanserte data. Problemet er hvordan testsettet ble laget.'
-    - tekst: 'Oversampling gir alltid undertilpasning'
+      forklaring: 'Modellen testes delvis på punkter den har sett. I tillegg har testsettet en kunstig 50/50-fordeling. Begge deler gjør resultatet for optimistisk.'
+    - tekst: 'Recall er misvisende her, og accuracy burde vært brukt'
+      forklaring: 'Recall er nettopp en nyttig metrikk på ubalanserte data, mens accuracy er den misvisende. Problemet er hvordan testsettet ble laget.'
+    - tekst: 'Oversampling gir undertilpasning fordi de negative mister vekt'
       forklaring: 'Oversampling kan heller gi overtilpasning, fordi de samme punktene gjentas.'
-    - tekst: 'Koden er riktig. Resampling skal gjøres før splitten, slik at begge delene blir balanserte'
-      forklaring: 'Resampling skal bare gjøres på treningsdataene, etter splitten.'
+    - tekst: 'Testsettet burde vært oversamplet separat, etter splitten'
+      forklaring: 'Det fjerner lekkasjen, men testsettet får fortsatt en kunstig fordeling. Testdata skal ikke resamples i det hele tatt.'
   forklaring: |
     Riktig rekkefølge er å splitte først, og så resample bare treningsdelen. Testsettet skal ligne dataene modellen møter i bruk, med den virkelige, ubalanserte fordelingen. Ellers lekker duplikater fra trening til test, og metrikkene blir for gode.
   husk: 'Splitt først, resample bare treningsdataene. Testsettet beholder den virkelige fordelingen.'
@@ -741,15 +741,15 @@
 
     Hvilke påstander stemmer?
   alternativer:
-    - tekst: '`max_depth=4` begrenser hvor mange splitter treet kan gjøre etter hverandre, og motvirker overtilpasning.'
+    - tekst: '`max_depth=4` motvirker overtilpasning.'
       riktig: true
-      forklaring: 'Dybden er den viktigste måten å styre variansen til et tre på.'
-    - tekst: 'Med `criterion="entropy"` velges splitter etter informasjonsgevinst, og treet blir som regel nokså likt.'
+      forklaring: 'Dybden begrenser hvor mange splitter treet kan gjøre etter hverandre, og er den viktigste måten å styre variansen til et tre på.'
+    - tekst: '`criterion="entropy"` ville som regel gitt et nokså likt tre.'
       riktig: true
       forklaring: 'Gini og entropi gir i hovedsak de samme splittene.'
-    - tekst: '`max_depth` er en hyperparameter som bør velges med validering eller kryssvalidering.'
+    - tekst: '`max_depth` bør velges med kryssvalidering.'
       riktig: true
-      forklaring: 'Den læres ikke av `fit`, men settes før treningen.'
+      forklaring: 'Den er en hyperparameter som ikke læres av `fit`, men settes før treningen.'
     - tekst: 'Featurene må skaleres før `fit`, ellers velger treet feil splitter.'
       forklaring: 'Et tre sammenligner én feature med en terskel om gangen, så skalering endrer ikke hvilke splitter som er best.'
   forklaring: |
