@@ -10,7 +10,9 @@ test.describe("notatquiz", () => {
     await expect(page.getByRole("heading", { name: "Oppgavene i forelesningsnotatene" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Eksempler på eksamensspørsmål" })).toBeVisible();
     await expect(page.locator(".notatquiz-sett").first()).toContainText("85 oppgaver");
-    await expect(page.locator(".notatquiz-sett").nth(1)).toContainText("10 oppgaver");
+    await expect(page.getByRole("heading", { name: "Spørsmålene i øvingene og prosjektet" })).toBeVisible();
+    await expect(page.locator(".notatquiz-sett").nth(1)).toContainText("47 oppgaver");
+    await expect(page.locator(".notatquiz-sett").nth(2)).toContainText("10 oppgaver");
     expect(feil).toEqual([]);
   });
 
@@ -32,5 +34,14 @@ test.describe("notatquiz", () => {
     await page.getByRole("link", { name: "6 AI Act" }).click();
     await expect(page.locator(".brodsmuler")).toContainText("kapittel 6: AI Act");
     await expect(page.locator(".okt-prikk")).toHaveCount(3);
+  });
+
+  test("øve på ett prosjekt", async ({ page }) => {
+    const feil = fangFeil(page);
+    await page.goto("#/notatquiz");
+    await page.getByRole("link", { name: "Prosjekt 4: forklarbar KI" }).click();
+    await expect(page.locator(".brodsmuler")).toContainText("Prosjektspørsmål, Prosjekt 4: forklarbar KI");
+    await expect(page.locator(".oppgave-kilde")).toContainText("Prosjekt 4 XAI");
+    expect(feil).toEqual([]);
   });
 });

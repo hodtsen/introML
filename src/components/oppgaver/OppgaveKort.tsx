@@ -86,7 +86,7 @@ export default function OppgaveKort({ o, nummer, antall, onVurdert }: { o: Oppga
             {o.del} {del?.tittel}
           </Link>
         </p>
-        {o.kilde && <p className="oppgave-kilde">Fra forelesningsnotatene, avsnitt {o.kilde}</p>}
+        {o.kilde && <p className="oppgave-kilde">{/^\d/.test(o.kilde) ? `Fra forelesningsnotatene, avsnitt ${o.kilde}` : `Fra ${o.kilde}`}</p>}
         {tidligere && fase === "svarer" && (
           <p className="tidligere">
             Sist: {tidligere.score >= 0.999 ? "riktig" : tidligere.score > 0 ? `${Math.round(tidligere.score * 100)} %` : "feil"},{" "}
