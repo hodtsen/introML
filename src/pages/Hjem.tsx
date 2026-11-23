@@ -125,7 +125,7 @@ export default function Hjem() {
           </div>
           <div>
             <dt>Valgte svar</dt>
-            <dd>Et alternativ du har valgt, kan ikke velges bort igjen. Er du usikker, la spørsmålet stå blankt.</dd>
+            <dd>Med ett riktig svar kan du bytte alternativ, men ikke gjøre spørsmålet blankt igjen. Er du usikker, la det stå blankt. På flervalg kan kryss fjernes fritt, og du kan levere uten kryss.</dd>
           </div>
           <div>
             <dt>Hjelpemidler</dt>
