@@ -51,6 +51,7 @@ export default function Layout() {
             <NavLink to="/trening" className={({ isActive }) => (isActive || pathname.startsWith("/trening") || pathname.startsWith("/eksamen") ? "active" : "")}>
               Eksamenstrening
             </NavLink>
+            <NavLink to="/notatquiz">Notatquiz</NavLink>
             <NavLink to="/formelark">Formelark</NavLink>
             <NavLink to="/begreper">Begreper</NavLink>
             <NavLink to="/fremgang">Fremgang</NavLink>

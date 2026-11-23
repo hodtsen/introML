@@ -2,6 +2,7 @@
 //
 //   content/pensum/NN-*.md      -> src/generated/pensum/kapN.json (+ indeks, begreper, søk)
 //   content/oppgaver/kapN.yaml  -> src/generated/oppgaver/kapN.json (+ indeks)
+//   content/notatquiz/*.yaml    -> src/generated/notatquiz/{notater,eksempler}.json
 //
 // Skriptet stopper med feilkode hvis innholdet ikke er gyldig: manglende
 // seksjoner, formler som ikke lar seg sette, oppgaver som peker til ukjente
@@ -293,6 +294,98 @@ function byggFigur(f, hvor) {
   return undefined;
 }
 
+function byggOppgave(o, hvor) {
+  // Fanger LaTeX i doble anførselstegn i YAML, der \f, \b osv. blir kontrolltegn.
+  const sjekkTegn = (v, sti) => {
+    if (typeof v === "string" && /[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(v))
+      feil(hvor, `kontrolltegn i ${sti}: bruk enkle anførselstegn eller blokk (|) for tekst med LaTeX`);
+    else if (Array.isArray(v)) v.forEach((x, i) => sjekkTegn(x, `${sti}[${i}]`));
+    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) sjekkTegn(x, `${sti}.${k}`);
+  };
+  sjekkTegn(o, "oppgaven");
+  krev(o, "id", hvor);
+  if (oppgaveIds.has(o.id)) feil(hvor, "id finnes fra før");
+  oppgaveIds.add(o.id);
+  const del = String(o.del ?? "");
+  if (!delkapIds.has(del)) feil(hvor, `ukjent delkapittel «${del}»`);
+  const kap = Number(del.split(".")[0]);
+  if (!NIVAER.includes(o.niva)) feil(hvor, `ugyldig nivå «${o.niva}»`);
+  if (!TYPER.includes(o.type)) feil(hvor, `ugyldig type «${o.type}»`);
+  krev(o, "sporsmal", hvor);
+  krev(o, "husk", hvor);
+  const ut = {
+    id: o.id,
+    del,
+    kap,
+    niva: o.niva,
+    type: o.type,
+    tags: [...new Set([...(o.tags ?? []), ...(o.figur || /\|---/.test(String(o.sporsmal)) ? ["figur"] : []), ...(/```/.test(String(o.sporsmal)) ? ["kode"] : [])])],
+    sporsmalHtml: renderMarkdown(o.sporsmal, hvor),
+    kort: tilRentekst(String(o.sporsmal ?? "")).slice(0, 170),
+    huskHtml: renderMarkdown(o.husk, hvor, { inline: true }),
+    figur: byggFigur(o.figur, hvor),
+  };
+  if (o.forklaring) ut.forklaringHtml = renderMarkdown(o.forklaring, hvor);
+  if (o.kilde) ut.kilde = String(o.kilde);
+  if (o.type === "enkeltvalg" || o.type === "flervalg") {
+    const alt = o.alternativer;
+    if (!Array.isArray(alt) || alt.length < 3) feil(hvor, "trenger minst tre alternativer");
+    else {
+      const riktige = alt.filter((a) => a.riktig === true).length;
+      if (o.type === "enkeltvalg" && riktige !== 1) feil(hvor, `enkeltvalg må ha nøyaktig ett riktig svar (har ${riktige})`);
+      if (o.type === "flervalg" && riktige < 1) feil(hvor, "flervalg må ha minst ett riktig svar");
+      alt.forEach((a, i) => {
+        if (!a.tekst && a.tekst !== 0) feil(hvor, `alternativ ${i + 1} mangler tekst`);
+        if (!a.forklaring) feil(hvor, `alternativ ${i + 1} mangler forklaring`);
+      });
+      const tekster = alt.map((a) => String(a.tekst));
+      if (new Set(tekster).size !== tekster.length) feil(hvor, "to alternativer har samme tekst");
+      ut.alternativer = alt.map((a) => ({
+        html: renderMarkdown(String(a.tekst), hvor, { inline: true }),
+        riktig: a.riktig === true,
+        forklaringHtml: renderMarkdown(a.forklaring, hvor, { inline: true }),
+      }));
+    }
+    ut.eksamen = o.eksamen !== false;
+    if (!o.forklaring) feil(hvor, "mangler samlet forklaring («forklaring»)");
+  }
+  if (o.type === "pastand") {
+    if (typeof o.riktig !== "boolean") feil(hvor, "påstand trenger «riktig: true/false»");
+    ut.riktig = o.riktig;
+    krev(o, "forklaring", hvor);
+  }
+  if (o.type === "tall") {
+    if (!Array.isArray(o.deler) || o.deler.length === 0) feil(hvor, "regneoppgave trenger «deler»");
+    else
+      ut.deler = o.deler.map((d, i) => {
+        if (typeof d.svar !== "number") feil(hvor, `del ${i + 1}: «svar» må være et tall`);
+        return {
+          sporsmalHtml: renderMarkdown(d.sporsmal ?? "", hvor, { inline: true }),
+          svar: d.svar,
+          toleranse: d.toleranse ?? null,
+          relativ: d.relativ ?? (d.toleranse === undefined ? 0.02 : null),
+          enhet: d.enhet ?? "",
+        };
+      });
+    krev(o, "losning", hvor);
+    ut.losningHtml = renderMarkdown(o.losning, hvor);
+  }
+  if (o.type === "tekst") {
+    krev(o, "eksempelsvar", hvor);
+    ut.eksempelsvarHtml = renderMarkdown(o.eksempelsvar, hvor);
+    if (!Array.isArray(o.punkter) || o.punkter.length < 2) feil(hvor, "tekstoppgave trenger minst to vurderingspunkter");
+    else
+      ut.punkter = o.punkter.map((p, i) => {
+        if (!p.tekst) feil(hvor, `vurderingspunkt ${i + 1} mangler tekst`);
+        if (!Array.isArray(p.stikkord) || p.stikkord.length === 0) feil(hvor, `vurderingspunkt ${i + 1} mangler stikkord`);
+        return { html: renderMarkdown(p.tekst, hvor, { inline: true }), tekst: p.tekst, stikkord: p.stikkord ?? [] };
+      });
+    ut.sporsmalTekst = tilRentekst(String(o.sporsmal));
+    ut.eksempelsvarTekst = tilRentekst(String(o.eksempelsvar ?? ""));
+  }
+  return { ut, del, kap };
+}
+
 const oppgFiler = fs.existsSync(oppgaveDir)
   ? fs.readdirSync(oppgaveDir).filter((f) => /^kap\d+\.ya?ml$/.test(f)).sort()
   : [];
@@ -310,94 +403,8 @@ for (const fil of oppgFiler) {
   }
   for (const o of liste) {
     const hvor = `${fil} ${o?.id ?? "(uten id)"}`;
-    // Fanger LaTeX i doble anførselstegn i YAML, der \f, \b osv. blir kontrolltegn.
-    const sjekkTegn = (v, sti) => {
-      if (typeof v === "string" && /[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(v))
-        feil(hvor, `kontrolltegn i ${sti}: bruk enkle anførselstegn eller blokk (|) for tekst med LaTeX`);
-      else if (Array.isArray(v)) v.forEach((x, i) => sjekkTegn(x, `${sti}[${i}]`));
-      else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) sjekkTegn(x, `${sti}.${k}`);
-    };
-    sjekkTegn(o, "oppgaven");
-    krev(o, "id", hvor);
-    if (oppgaveIds.has(o.id)) feil(hvor, "id finnes fra før");
-    oppgaveIds.add(o.id);
-    const del = String(o.del ?? "");
-    if (!delkapIds.has(del)) feil(hvor, `ukjent delkapittel «${del}»`);
-    const kap = Number(del.split(".")[0]);
+    const { ut, del, kap } = byggOppgave(o, hvor);
     if (`kap${kap}.yaml` !== fil && `kap${kap}.yml` !== fil) feil(hvor, `delkapittel ${del} hører ikke hjemme i ${fil}`);
-    if (!NIVAER.includes(o.niva)) feil(hvor, `ugyldig nivå «${o.niva}»`);
-    if (!TYPER.includes(o.type)) feil(hvor, `ugyldig type «${o.type}»`);
-    krev(o, "sporsmal", hvor);
-    krev(o, "husk", hvor);
-    const ut = {
-      id: o.id,
-      del,
-      kap,
-      niva: o.niva,
-      type: o.type,
-      tags: [...new Set([...(o.tags ?? []), ...(o.figur || /\|---/.test(String(o.sporsmal)) ? ["figur"] : []), ...(/```/.test(String(o.sporsmal)) ? ["kode"] : [])])],
-      sporsmalHtml: renderMarkdown(o.sporsmal, hvor),
-      kort: tilRentekst(String(o.sporsmal ?? "")).slice(0, 170),
-      huskHtml: renderMarkdown(o.husk, hvor, { inline: true }),
-      figur: byggFigur(o.figur, hvor),
-    };
-    if (o.forklaring) ut.forklaringHtml = renderMarkdown(o.forklaring, hvor);
-    if (o.type === "enkeltvalg" || o.type === "flervalg") {
-      const alt = o.alternativer;
-      if (!Array.isArray(alt) || alt.length < 3) feil(hvor, "trenger minst tre alternativer");
-      else {
-        const riktige = alt.filter((a) => a.riktig === true).length;
-        if (o.type === "enkeltvalg" && riktige !== 1) feil(hvor, `enkeltvalg må ha nøyaktig ett riktig svar (har ${riktige})`);
-        if (o.type === "flervalg" && riktige < 1) feil(hvor, "flervalg må ha minst ett riktig svar");
-        alt.forEach((a, i) => {
-          if (!a.tekst && a.tekst !== 0) feil(hvor, `alternativ ${i + 1} mangler tekst`);
-          if (!a.forklaring) feil(hvor, `alternativ ${i + 1} mangler forklaring`);
-        });
-        const tekster = alt.map((a) => String(a.tekst));
-        if (new Set(tekster).size !== tekster.length) feil(hvor, "to alternativer har samme tekst");
-        ut.alternativer = alt.map((a) => ({
-          html: renderMarkdown(String(a.tekst), hvor, { inline: true }),
-          riktig: a.riktig === true,
-          forklaringHtml: renderMarkdown(a.forklaring, hvor, { inline: true }),
-        }));
-      }
-      ut.eksamen = o.eksamen !== false;
-      if (!o.forklaring) feil(hvor, "mangler samlet forklaring («forklaring»)");
-    }
-    if (o.type === "pastand") {
-      if (typeof o.riktig !== "boolean") feil(hvor, "påstand trenger «riktig: true/false»");
-      ut.riktig = o.riktig;
-      krev(o, "forklaring", hvor);
-    }
-    if (o.type === "tall") {
-      if (!Array.isArray(o.deler) || o.deler.length === 0) feil(hvor, "regneoppgave trenger «deler»");
-      else
-        ut.deler = o.deler.map((d, i) => {
-          if (typeof d.svar !== "number") feil(hvor, `del ${i + 1}: «svar» må være et tall`);
-          return {
-            sporsmalHtml: renderMarkdown(d.sporsmal ?? "", hvor, { inline: true }),
-            svar: d.svar,
-            toleranse: d.toleranse ?? null,
-            relativ: d.relativ ?? (d.toleranse === undefined ? 0.02 : null),
-            enhet: d.enhet ?? "",
-          };
-        });
-      krev(o, "losning", hvor);
-      ut.losningHtml = renderMarkdown(o.losning, hvor);
-    }
-    if (o.type === "tekst") {
-      krev(o, "eksempelsvar", hvor);
-      ut.eksempelsvarHtml = renderMarkdown(o.eksempelsvar, hvor);
-      if (!Array.isArray(o.punkter) || o.punkter.length < 2) feil(hvor, "tekstoppgave trenger minst to vurderingspunkter");
-      else
-        ut.punkter = o.punkter.map((p, i) => {
-          if (!p.tekst) feil(hvor, `vurderingspunkt ${i + 1} mangler tekst`);
-          if (!Array.isArray(p.stikkord) || p.stikkord.length === 0) feil(hvor, `vurderingspunkt ${i + 1} mangler stikkord`);
-          return { html: renderMarkdown(p.tekst, hvor, { inline: true }), tekst: p.tekst, stikkord: p.stikkord ?? [] };
-        });
-      ut.sporsmalTekst = tilRentekst(String(o.sporsmal));
-      ut.eksempelsvarTekst = tilRentekst(String(o.eksempelsvar ?? ""));
-    }
     if (!oppgaver.has(kap)) oppgaver.set(kap, []);
     oppgaver.get(kap).push(ut);
     indeks.push({
@@ -412,6 +419,40 @@ for (const fil of oppgFiler) {
       antallRiktige: ut.alternativer?.filter((a) => a.riktig).length ?? 0,
     });
   }
+}
+
+// ---------------------------------------------------------------- notatquiz
+// content/notatquiz/notater-*.yaml og eksempler.yaml -> src/generated/notatquiz/{notater,eksempler}.json
+// Notatquizen holdes utenfor oppgavebanken: den får ikke plass i indeksen, eksamenspoolen eller statistikken.
+const notatquizDir = path.join(root, "content", "notatquiz");
+const notatquiz = { notater: [], eksempler: [] };
+if (fs.existsSync(notatquizDir)) {
+  for (const fil of fs.readdirSync(notatquizDir).filter((f) => /\.ya?ml$/.test(f)).sort()) {
+    const sett = fil.startsWith("notater") ? "notater" : fil.startsWith("eksempler") ? "eksempler" : null;
+    if (!sett) {
+      feil(`notatquiz/${fil}`, "filnavnet må starte med «notater» eller «eksempler»");
+      continue;
+    }
+    let liste;
+    try {
+      liste = yaml.load(fs.readFileSync(path.join(notatquizDir, fil), "utf8"));
+    } catch (e) {
+      feil(`notatquiz/${fil}`, `YAML-feil: ${e.message}`);
+      continue;
+    }
+    if (!Array.isArray(liste)) {
+      feil(`notatquiz/${fil}`, "filen må være en liste med oppgaver");
+      continue;
+    }
+    for (const o of liste) {
+      const hvor = `notatquiz/${fil} ${o?.id ?? "(uten id)"}`;
+      if (!o.kilde) feil(hvor, "mangler feltet «kilde» (avsnitt i forelesningsnotatene)");
+      notatquiz[sett].push(byggOppgave(o, hvor).ut);
+    }
+  }
+  const sorter = (a, b) => a.id.localeCompare(b.id, "nb", { numeric: true });
+  notatquiz.notater.sort(sorter);
+  notatquiz.eksempler.sort(sorter);
 }
 
 // ---------------------------------------------------------------- skriv ut
@@ -436,6 +477,9 @@ skriv(path.join(outDir, "sok.json"), sok);
 skriv(path.join(outDir, "oppgave-indeks.json"), indeks);
 for (let k = 1; k <= kapitler.length; k++) skriv(path.join(oppgOut, `kap${k}.json`), oppgaver.get(k) ?? []);
 skriv(path.join(outDir, "figurer-i-bruk.json"), [...figurerIBruk].sort());
+fs.mkdirSync(path.join(outDir, "notatquiz"), { recursive: true });
+skriv(path.join(outDir, "notatquiz", "notater.json"), notatquiz.notater);
+skriv(path.join(outDir, "notatquiz", "eksempler.json"), notatquiz.eksempler);
 
 const perType = {};
 for (const o of indeks) perType[o.type] = (perType[o.type] ?? 0) + 1;
@@ -444,7 +488,7 @@ for (const o of indeks) perNiva[o.niva] = (perNiva[o.niva] ?? 0) + 1;
 console.log(
   `Pensum: ${kapitler.length} kapitler, ${delkapIds.size} delkapitler, ${begreper.length} begreper. ` +
     `Oppgaver: ${indeks.length} (${Object.entries(perType).map(([t, n]) => `${t} ${n}`).join(", ")}; ` +
-    `${Object.entries(perNiva).map(([t, n]) => `${t} ${n}`).join(", ")}). Formler: ${mathCount}.`
+    `${Object.entries(perNiva).map(([t, n]) => `${t} ${n}`).join(", ")}). Notatquiz: ${notatquiz.notater.length} + ${notatquiz.eksempler.length}. Formler: ${mathCount}.`
 );
 if (errors.length) {
   console.error(`\n${errors.length} feil i innholdet:`);

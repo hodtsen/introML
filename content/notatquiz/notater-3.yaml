@@ -1,0 +1,453 @@
+# Notatquiz, del 3: oppgavene i kapittel 4 (Reinforcement learning) og 5 (Explainable AI).
+
+- id: "N58"
+  del: "7.1"
+  kilde: "4.1 Markov Decision Processes"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I RL-loopen gir miljøet agenten en tilstand $S_t$. Agenten velger en handling $A_t$, får belønning $R_{t+1}$, og miljøet går til en ny tilstand $S_{t+1}$. Agenten velger neste handling bare basert på $S_{t+1}$, uten informasjon om tidligere tilstander. Hvilken antakelse svarer dette til?
+  alternativer:
+    - tekst: 'Markov-egenskapen'
+      riktig: true
+      forklaring: 'Fremtiden avhenger bare av nåværende tilstand og handling, ikke av historien.'
+    - tekst: 'At miljøet er stokastisk'
+      forklaring: 'Markov-egenskapen gjelder både deterministiske og stokastiske miljøer. I kurset er miljøene deterministiske.'
+    - tekst: 'At belønningen er konstant'
+      forklaring: 'Belønningen kan variere med tilstand og handling.'
+    - tekst: 'At agenten har perfekt policy'
+      forklaring: 'Antakelsen gjelder miljøet, ikke hvor god agenten er.'
+  forklaring: |
+    En prosess med Markov-egenskapen er «memoryless»: fremtiden er uavhengig av fortiden gitt nåtiden. En beslutningsprosess med denne egenskapen kalles en Markov decision process (MDP), formelt $(S, A, P_A, R_A)$.
+  husk: 'Markov: neste tilstand avhenger bare av (S_t, A_t). Fremtiden er uavhengig av fortiden gitt nåtiden.'
+
+- id: "N59"
+  del: "7.2"
+  kilde: "4.1 Markov Decision Processes"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Agenten trenger en verdifunksjon (value function) for å lære en god policy $\pi(A_t \mid S_t)$. Forklar forskjellen mellom **reward** og **verdi**, og hvorfor agenten ikke bare kan bruke umiddelbar reward.
+  eksempelsvar: |
+    Reward er den umiddelbare tilbakemeldingen miljøet gir etter en handling i en tilstand. Verdien angir hvor bra en tilstand (og handling) er på lang sikt: forventet kumulativ fremtidig reward hvis agenten gjør handlingen og deretter følger policyen. Reward får vi fra miljøet, mens verdien (for eksempel Q) må læres. Agenten trenger verdien fordi handlinger kan ha langsiktige konsekvenser. I tre-på-rad får agenten ingen reward før spillet er over, men verdiene forteller hvilke trekk som fører mot seier.
+  punkter:
+    - tekst: 'Reward er umiddelbar og kommer fra miljøet.'
+      stikkord: ['umiddelbar', 'miljø', 'environment', 'tilbakemelding']
+    - tekst: 'Verdi er forventet kumulativ fremtidig reward under en policy.'
+      stikkord: ['kumulativ', 'fremtidig', 'lang sikt', 'forventet', 'policy']
+    - tekst: 'Verdien må læres; den fanger langsiktige konsekvenser.'
+      stikkord: ['læres', 'lære', 'langsiktig', 'konsekvens']
+  husk: 'Reward = umiddelbar, fra miljøet. Verdi = forventet kumulativ reward, må læres.'
+
+- id: "N60"
+  del: "7.3"
+  kilde: "4.2 Q-verdier"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Q-verdiene oppdateres med
+    $$Q_\text{ny}(S_t, A_t) \leftarrow (1 - \alpha)\, Q(S_t, A_t) + \alpha \left(R_{t+1} + \gamma \max_A Q(S_{t+1}, A)\right).$$
+    Hva skjer med læringsraten $\alpha = 0$ og med $\alpha = 1$?
+  alternativer:
+    - tekst: '$\alpha = 0$: ingen læring. $\alpha = 1$: gammel verdi erstattes helt.'
+      riktig: true
+      forklaring: 'Med α = 0 står Q stille. Med α = 1 blir Q lik det nye estimatet R + γ max Q.'
+    - tekst: '$\alpha = 0$: gammel verdi erstattes helt. $\alpha = 1$: ingen læring.'
+      forklaring: 'Det er motsatt: faktoren (1 − α) foran den gamle verdien er 1 når α = 0.'
+    - tekst: '$\alpha = 0$: bare umiddelbar reward teller. $\alpha = 1$: fremtiden teller fullt.'
+      forklaring: 'Det beskriver discount-faktoren γ, ikke læringsraten α.'
+    - tekst: '$\alpha = 0$: bare tilfeldige handlinger. $\alpha = 1$: bare grådige handlinger.'
+      forklaring: 'Det beskriver exploration-faktoren ε.'
+  forklaring: |
+    $\alpha$ bestemmer hvor mye av den gamle verdien som beholdes og hvor mye det nye estimatet teller. En liten $\alpha$ gir langsom, stabil læring. En stor $\alpha$ reagerer raskt på ny erfaring, men kan bli ustabil.
+  husk: 'α = 0: lærer ingenting. α = 1: glemmer den gamle verdien helt.'
+
+- id: "N61"
+  del: "7.3"
+  kilde: "4.2 Q-verdier"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    I Bellman-oppdateringen $Q_\text{ny} \leftarrow (1 - \alpha) Q + \alpha\left(R_{t+1} + \gamma \max_A Q(S_{t+1}, A)\right)$ kalles $\gamma$ discount factor. Hva gjør en liten og en stor verdi av $\gamma$?
+  alternativer:
+    - tekst: 'Liten: kortsiktig agent. Stor: fremtidig verdi teller nesten like mye som nå.'
+      riktig: true
+      forklaring: 'γ vekter verdien av neste tilstand. Med γ ≈ 0 bryr agenten seg nesten bare om umiddelbar reward.'
+    - tekst: 'Liten: agenten utforsker mer. Stor: agenten utnytter mer.'
+      forklaring: 'Utforskning styres av ε, ikke γ.'
+    - tekst: 'Liten: Q-verdiene oppdateres sakte. Stor: de oppdateres raskt.'
+      forklaring: 'Oppdateringshastigheten styres av læringsraten α.'
+    - tekst: 'Liten: langsiktig agent. Stor: bare umiddelbar reward teller.'
+      forklaring: 'Det er motsatt. Stor γ gir mer vekt på fremtiden.'
+  forklaring: |
+    Med $\gamma$ vektes rewards som kommer senere ulikt fra de som kommer tidlig. $\gamma$ nær 0 gir en «grådig» agent som maksimerer umiddelbar reward. $\gamma$ nær 1 gir en agent som planlegger langsiktig, noe som er viktig når reward først kommer på slutten, som i tre-på-rad eller Frozen Lake.
+  husk: 'γ: hvor mye fremtiden teller. α: læringsrate. ε: utforskning.'
+
+- id: "N62"
+  del: "7.5"
+  kilde: "4.4 Agenter: exploration, exploitation og læring"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Med epsilon greedy velger agenten handlingen med høyest Q-verdi med sannsynlighet $1 - \epsilon$, og ellers en tilfeldig handling. Hvilke utsagn stemmer?
+  alternativer:
+    - tekst: 'Høy $\epsilon$ betyr mye utforskning (exploration)'
+      riktig: true
+      forklaring: 'Mange tilfeldige handlinger gjør at agenten finner tilstander og handlinger den ikke har prøvd.'
+    - tekst: 'Det er lurest med mange tilfeldige handlinger tidlig i treningen'
+      riktig: true
+      forklaring: 'Tidlig vet agenten lite, og Q-verdiene er ikke lært. Derfor starter vi med høy ε og reduserer den (epsilon decay).'
+    - tekst: 'Det er ofte lurt å beholde en liten $\epsilon > 0$ også etter treningen'
+      riktig: true
+      forklaring: 'Selv en godt trent agent kan kjøre seg fast og trenge et tilfeldig dytt.'
+    - tekst: 'Lav $\epsilon$ betyr at agenten unngår kjente gode handlinger'
+      forklaring: 'Lav ε betyr utnyttelse (exploitation), altså at agenten velger det den vet gir høy verdi.'
+    - tekst: 'Den optimale $\epsilon$ kan regnes ut på forhånd for ethvert miljø'
+      forklaring: 'Exploration–exploitation-avveiningen har ingen universell løsning. Vi måtte kjent utfallet av handlinger med ukjent utfall.'
+  forklaring: |
+    Exploration betyr å ta handlinger med ukjent utfall, og exploitation betyr å ta handlinger med kjent utfall. Den ene går på bekostning av den andre. En god og mye brukt strategi er epsilon greedy med epsilon decay: høy $\epsilon$ tidlig og en liten (men ikke null) $\epsilon$ sent. Når $\epsilon$ bør være lav, avhenger av størrelsen på state–action-rommet.
+  husk: 'Høy ε tidlig (utforsk), lav ε sent (utnytt), men ikke helt 0.'
+
+- id: "N63"
+  del: "7.5"
+  kilde: "4.5 Q-tabell"
+  niva: middels
+  type: tall
+  tags: [regning, kode]
+  sporsmal: |
+    ```python
+    def update_exp_factor(self):
+        if self.exp_factor > self.exp_min:
+            self.exp_factor *= self.epsilon_decay
+    ```
+    Funksjonen kalles én gang per steg. Anta `exp_factor = 1.0`, `epsilon_decay = 0.99` og `exp_min = 0.05`.
+  deler:
+    - sporsmal: '`exp_factor` etter 100 kall (tre desimaler)'
+      svar: 0.366
+      toleranse: 0.002
+    - sporsmal: 'Antall kall før `exp_factor` første gang er under 0,05'
+      svar: 299
+      toleranse: 0.5
+  losning: |
+    Funksjonen gir eksponentielt avtagende utforskning: $\epsilon_n = 0{,}99^n$ så lenge $\epsilon > \epsilon_\text{min}$.
+
+    - $0{,}99^{100} \approx 0{,}366$
+    - $0{,}99^n < 0{,}05 \ \Leftrightarrow\ n > \ln 0{,}05 / \ln 0{,}99 \approx 298{,}1$, altså $n = 299$.
+
+    Når $\epsilon$ har gått under `exp_min`, slutter den å minke. Siste multiplikasjon kan altså gi en verdi litt under `exp_min`. En tommelfingerregel er at en agent som ikke har lært noe innen $\epsilon$ når `exp_min`, sannsynligvis ikke lærer noe vettugt ved å trene videre. Da bør vi heller endre andre deler av koden, for eksempel tapsfunksjonen.
+  husk: 'Epsilon decay: ε_n = decay^n, stopper ved ε_min.'
+
+- id: "N64"
+  del: "7.4"
+  kilde: "4.5 Q-tabell"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En agent har lært å spille tre-på-rad. Rutene er nummerert 0–8 radvis fra øverst til venstre, så rute 4 er midten. For det tomme brettet har agenten disse Q-verdiene:
+
+    | Rute | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+    |---|---|---|---|---|---|---|---|---|---|
+    | Q | 1,93 | 1,55 | 1,56 | 2,14 | 2,48 | 0,66 | 1,02 | 1,39 | 1,67 |
+
+    Hvor vil en grådig agent sette den første X-en?
+  alternativer:
+    - tekst: 'I midten (rute 4)'
+      riktig: true
+      forklaring: 'Rute 4 har høyest Q-verdi, 2,48. Det svarer til optimalt spill.'
+    - tekst: 'I hjørnet øverst til venstre (rute 0)'
+      forklaring: 'Rute 0 er det beste hjørnet (1,93), men lavere enn rute 4 og 3.'
+    - tekst: 'Midt på venstre kant (rute 3)'
+      forklaring: 'Rute 3 har nest høyest verdi, 2,14, men ikke høyest.'
+    - tekst: 'Hvor som helst, siden reward først kommer når spillet er over'
+      forklaring: 'Q-verdiene inneholder nettopp forventet fremtidig reward, så de skiller mellom trekkene.'
+  forklaring: |
+    En grådig agent velger $\arg\max_A Q(S, A)$. Agenten får ikke reward før spillet er over, men Q-verdiene representerer forventet kumulativ fremtidig reward ved å gjøre handlingen og deretter følge policyen. Se på størrelsesforholdene, ikke de nøyaktige tallene, som varierer mellom treninger.
+  husk: 'Q(S, A) = forventet fremtidig reward. Grådig policy = argmax over A.'
+
+- id: "N65"
+  del: "7.6"
+  kilde: "4.6.2 DQN: Q network og target network"
+  niva: grunnleggende
+  type: tall
+  sporsmal: |
+    I Frozen Lake (4×4) kan agenten stå på 16 ruter (tilstandene 0–15) og har 4 handlinger (venstre, ned, høyre, opp). Vi lager et nevralt nettverk som skal estimere Q-verdier, og tilstanden one-hot-encodes.
+  deler:
+    - sporsmal: 'Antall noder i input-laget'
+      svar: 16
+      toleranse: 0.01
+    - sporsmal: 'Antall noder i output-laget'
+      svar: 4
+      toleranse: 0.01
+  losning: |
+    - **Output:** én Q-verdi per handling, altså 4 noder.
+    - **Input:** i stedet for én node som tar inn et tall fra 0 til 15, one-hot-encoder vi tilstanden til en vektor med lengde 16. Da tolker ikke nettverket tilstandsnummeret som en størrelse, der rute 15 ville vært «mer» enn rute 3.
+  husk: 'DQN: input = tilstandsrepresentasjonen (one-hot: antall tilstander), output = én Q-verdi per handling.'
+
+- id: "N66"
+  del: "7.6"
+  kilde: "4.6.3 DRL: loss av Q-verdier og backpropagation"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Q-nettverket gir én Q-verdi per handling. Fra replay bufferet har vi $(S_t, A_t, R_{t+1}, S_{t+1})$, og target network gir $R_{t+1} + \gamma \max_A Q(S_{t+1}, A)$. Hva er utfordringen når vi skal regne ut loss for backpropagation, og hvordan løses den?
+  alternativer:
+    - tekst: 'Vi har target bare for handlingen som ble utført, så loss regnes bare for den'
+      riktig: true
+      forklaring: 'De andre handlingene har ingen ny informasjon, så vi henter ut Q(S_t, A_t) og sammenligner med target.'
+    - tekst: 'Vi har target for alle handlingene, så loss regnes over alle utgangene'
+      forklaring: 'Vi observerte bare utfallet av én handling. De andre har ingen oppdatert verdi.'
+    - tekst: 'Reward er ikke deriverbar, så vi kan ikke bruke backpropagation'
+      forklaring: 'Reward inngår i target som et tall. Vi deriverer loss med hensyn på nettverksparametrene.'
+    - tekst: 'Handlinger valgt ved utforskning må fjernes fra bufferet'
+      forklaring: 'Også handlinger valgt tilfeldig gir gyldig erfaring og brukes i læringen.'
+  forklaring: |
+    Prediksjonen er $Q(S_t, A_t)$, og target er $R_{t+1} + \gamma \max_A Q(S_{t+1}, A)$, beregnet med target network (uten gradient). Siden vi bare har oppdatert verdi for handlingen agenten faktisk gjorde, regner vi loss mellom predikert og oppdatert Q-verdi for denne handlingen og backpropagerer den gjennom Q-nettverket.
+  husk: 'DQN-loss bare på Q(S_t, A_t) for utført handling. Target fra target network.'
+
+- id: "N67"
+  del: "7.6"
+  kilde: "4.6.4 Oversikt og resultat"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    env = gym.make('FrozenLake-v1', map_name="4x4", is_slippery=False, render_mode="human")
+    agent = dqn_agent.DQNAgent(env, epsilon_max=0.1)
+    done, truncated = False, False
+    state, _ = env.reset()
+    state = preprocess_state(state)
+    while not done:
+        env.render()
+        action = agent.select_action(state)
+        state, reward, done, truncated, _ = env.step(action)
+        state = preprocess_state(state)
+        if done or truncated:
+            break
+    ```
+    Hva gjør denne koden?
+  alternativer:
+    - tekst: 'Spiller én episode og viser den, med noen tilfeldige handlinger'
+      riktig: true
+      forklaring: 'Løkken går til agenten når mål, faller i et hull eller når stegbegrensningen. ε = 0,1 gir noen tilfeldige handlinger.'
+    - tekst: 'Trener agenten til den alltid når målet'
+      forklaring: 'Løkken kaller ingen læringsfunksjon. Den bare velger handlinger og tar steg.'
+    - tekst: 'Spiller mange episoder og regner ut gjennomsnittlig reward'
+      forklaring: 'Løkken avsluttes etter første episode (done eller truncated).'
+    - tekst: 'Velger alltid handlingen med høyest Q-verdi, helt uten tilfeldighet'
+      forklaring: 'Med epsilon_max = 0,1 er omtrent 10 % av handlingene tilfeldige.'
+  forklaring: |
+    Koden er laget for visuell inspeksjon av agentens oppførsel etter treningen. `render_mode="human"` viser brettet. Tilstanden one-hot-encodes før den gis til nettverket, og løkken stopper når `done` (mål eller hull) eller `truncated` (for mange steg) er sann. En liten $\epsilon$ er i tråd med rådet om ikke å sette utforskningen helt til 0.
+  husk: 'Inspeksjonsløkke: reset → (velg handling, step, preprosesser) til done eller truncated.'
+
+- id: "N68"
+  del: "8.3"
+  kilde: "5.2.1 Shapley-verdier"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Taxiproblemet: tre passasjerer deler en taxi. Verdien (kostnaden i km) for hver koalisjon er:
+
+    | $S$ | {} | {1} | {2} | {3} | {1,2} | {1,3} | {2,3} | {1,2,3} |
+    |---|---|---|---|---|---|---|---|---|
+    | $v(S)$ | 0 | 3 | 7 | 10 | 7 | 10 | 10 | 10 |
+
+    Med tre spillere får koalisjonene uten spiller $i$ vektene $\tfrac{1}{3}$ (tom), $\tfrac{1}{6}$, $\tfrac{1}{6}$ (én annen spiller) og $\tfrac{1}{3}$ (begge de andre), ganget med det marginale bidraget $v(S \cup \{i\}) - v(S)$. For eksempel er $\phi_1 = 1$.
+  deler:
+    - sporsmal: '$\phi_2$'
+      svar: 3
+      toleranse: 0.01
+    - sporsmal: '$\phi_3$'
+      svar: 6
+      toleranse: 0.01
+  losning: |
+    $\phi_2 = \tfrac{1}{3}(7 - 0) + \tfrac{1}{6}(7 - 3) + \tfrac{1}{6}(10 - 10) + \tfrac{1}{3}(10 - 10) = \tfrac{7}{3} + \tfrac{2}{3} = 3$
+
+    $\phi_3 = \tfrac{1}{3}(10 - 0) + \tfrac{1}{6}(10 - 3) + \tfrac{1}{6}(10 - 7) + \tfrac{1}{3}(10 - 7) = \tfrac{10}{3} + \tfrac{7}{6} + \tfrac{3}{6} + 1 = 6$
+
+    Sjekk: $1 + 3 + 6 = 10 = v(\{1,2,3\})$.
+  husk: 'Shapley = vektet snitt av marginale bidrag over alle koalisjoner uten spilleren.'
+
+- id: "N69"
+  del: "8.3"
+  kilde: "5.2.1 Shapley-verdier"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I taxiproblemet (turen til passasjer 1, 2 og 3 er henholdsvis 3, 7 og 10 km, og de deler én taxi) får vi Shapley-verdiene $\phi_1 = 1$, $\phi_2 = 3$ og $\phi_3 = 6$. Hva representerer disse?
+  alternativer:
+    - tekst: 'En rettferdig fordeling av kostnaden mellom passasjerene'
+      riktig: true
+      forklaring: 'De første 3 km deles på tre, de neste 4 på to og de siste 3 betales av passasjer 3 alene.'
+    - tekst: 'Hvor langt hver passasjer reiser alene'
+      forklaring: 'Alene reiser de 3, 7 og 10 km. Shapley-verdiene er mindre fordi turen deles.'
+    - tekst: 'Rekkefølgen passasjerene går av i'
+      forklaring: 'Verdiene er en kostnadsfordeling, ikke en rekkefølge.'
+    - tekst: 'Hvor mye hver passasjer sparer på å dele taxi'
+      forklaring: 'Besparelsen er avstanden alene minus Shapley-verdien: 2, 4 og 4 km.'
+  forklaring: |
+    Shapley-verdien fordeler verdien til storkoalisjonen (10 km) rettferdig mellom spillerne, basert på hvert enkelt bidrag i alle mulige koalisjoner. I XAI er spillerne features og verdien modellens prediksjon.
+  husk: 'Shapley-verdier = rettferdig fordeling av totalverdien mellom spillerne (features).'
+
+- id: "N70"
+  del: "8.3"
+  kilde: "5.2.1 Shapley-verdier"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Shapley-dekomposisjonen oppfyller fire aksiomer: symmetri, effektivitet, nullspiller (dummy) og additivitet. Hvilket kan du sjekke direkte med tallene fra taxiproblemet ($\phi = 1, 3, 6$ og $v(\{1,2,3\}) = 10$)?
+  alternativer:
+    - tekst: 'Effektivitet'
+      riktig: true
+      forklaring: 'Verdiene summerer til storkoalisjonens verdi: 1 + 3 + 6 = 10.'
+    - tekst: 'Additivitet'
+      forklaring: 'Additivitet handler om to spill med samme spillere. Her har vi bare ett spill.'
+    - tekst: 'Nullspiller'
+      forklaring: 'Ingen passasjer har bidrag 0 i alle koalisjoner, så aksiomet kan ikke testes her.'
+    - tekst: 'Symmetri'
+      forklaring: 'Ingen to passasjerer bidrar likt til alle koalisjoner, så det er ingenting å sammenligne.'
+  forklaring: |
+    Effektivitet krever at Shapley-verdiene summerer til verdien av storkoalisjonen. Det ser vi direkte. De andre aksiomene gjelder, men taxi-eksempelet gir ikke noe tilfelle der vi kan se dem. Shapley-dekomposisjonen er den eneste fordelingen som oppfyller alle fire.
+  husk: 'Effektivitet: Σφᵢ = v(alle). Den eneste fordelingen med alle fire aksiomene er Shapley.'
+
+- id: "N71"
+  del: "8.3"
+  kilde: "5.2.1 Shapley-verdier"
+  niva: avansert
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Tre katter fanger mus alene, i par og alle tre sammen:
+
+    | $S$ | {} | {1} | {2} | {3} | {1,2} | {1,3} | {2,3} | {1,2,3} |
+    |---|---|---|---|---|---|---|---|---|
+    | $v(S)$ | 0 | 2 | 4 | 5 | 3 | 3 | 2 | 3 |
+
+    Regn ut Shapley-verdien for hver katt. Med tre spillere har koalisjonene uten spiller $i$ vektene $\tfrac{1}{3}$, $\tfrac{1}{6}$, $\tfrac{1}{6}$ og $\tfrac{1}{3}$.
+  deler:
+    - sporsmal: '$\phi_1$'
+      svar: 0.5
+      toleranse: 0.01
+    - sporsmal: '$\phi_2$'
+      svar: 1
+      toleranse: 0.01
+    - sporsmal: '$\phi_3$'
+      svar: 1.5
+      toleranse: 0.01
+  losning: |
+    - $\phi_1 = \tfrac{1}{3}(2 - 0) + \tfrac{1}{6}(3 - 4) + \tfrac{1}{6}(3 - 5) + \tfrac{1}{3}(3 - 2) = \tfrac{2}{3} - \tfrac{1}{6} - \tfrac{2}{6} + \tfrac{1}{3} = 0{,}5$
+    - $\phi_2 = \tfrac{1}{3}(4 - 0) + \tfrac{1}{6}(3 - 2) + \tfrac{1}{6}(2 - 5) + \tfrac{1}{3}(3 - 3) = \tfrac{4}{3} + \tfrac{1}{6} - \tfrac{3}{6} = 1$
+    - $\phi_3 = \tfrac{1}{3}(5 - 0) + \tfrac{1}{6}(3 - 2) + \tfrac{1}{6}(2 - 4) + \tfrac{1}{3}(3 - 3) = \tfrac{5}{3} + \tfrac{1}{6} - \tfrac{2}{6} = 1{,}5$
+
+    Effektivitet: $0{,}5 + 1 + 1{,}5 = 3 = v(\{1,2,3\})$. Marginale bidrag kan være negative. Kattene fanger færre mus sammen enn alene, kanskje fordi de forstyrrer hverandre.
+  husk: 'Kontroller alltid med effektivitet: summen skal bli v(storkoalisjonen).'
+
+- id: "N72"
+  del: "8.4"
+  kilde: "5.2.3 Image SHAP"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    En bildeklassifiserer for MNIST (håndskrevne sifre) forklares med `shap.DeepExplainer`. `shap.image_plot` viser for hvert testbilde én kopi per mulig klasse (0–9), der hver piksel er farget rød eller blå etter SHAP-verdien. Hva forteller et slikt plott, og hvordan tolker vi SHAP-verdiene?
+  eksempelsvar: |
+    Hver kopi forklarer modellens output for én klasse. Røde piksler har positiv SHAP-verdi og trekker prediksjonen mot den klassen, mens blå piksler har negativ verdi og trekker mot. For det riktige sifferet ser vi typisk mye rødt langs strekene som kjennetegner sifferet, og for de andre klassene mest blått eller lite farge. Fargestyrken angir hvor stort bidraget er. SHAP-verdiene er lokale: de forklarer akkurat denne prediksjonen for akkurat dette bildet.
+  punkter:
+    - tekst: 'Én forklaring per klasse.'
+      stikkord: ['klasse', 'hver klasse', 'per klasse', 'siffer']
+    - tekst: 'Rød/positiv trekker mot klassen, blå/negativ trekker mot den.'
+      stikkord: ['rød', 'blå', 'positiv', 'negativ', 'mot', 'bidrag']
+    - tekst: 'Forklaringen er lokal, for det ene bildet.'
+      stikkord: ['lokal', 'dette bildet', 'én prediksjon', 'enkelt']
+  husk: 'SHAP-bildeplott: rødt trekker mot klassen, blått mot. Én forklaring per klasse, og den er lokal.'
+
+- id: "N73"
+  del: "8.5"
+  kilde: "5.3 LIME: lokale surrogatmodeller"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du bruker LIME (`explain_instance`) på en modell for Titanic-dataene, både for en passasjer modellen er sikker på og for en der overlevelse er usikker (sannsynlighet nær 0,5). Hva bør du forvente?
+  alternativer:
+    - tekst: 'Forklaringene kan være svært ulike, fordi LIME er lokal'
+      riktig: true
+      forklaring: 'LIME tilpasser en enkel surrogatmodell rundt hvert enkelt datapunkt.'
+    - tekst: 'Forklaringene er like, fordi modellen er den samme'
+      forklaring: 'En ikke-lineær modell kan bruke featurene ulikt i ulike deler av inputrommet.'
+    - tekst: 'LIME gir ingen forklaring for usikre prediksjoner'
+      forklaring: 'LIME kan forklare enhver prediksjon, også usikre.'
+    - tekst: 'Forklaringen for den usikre passasjeren viser modellens globale oppførsel'
+      forklaring: 'LIME-forklaringer er alltid lokale, uansett hvor sikker modellen er.'
+  forklaring: |
+    LIME forstyrrer datapunktet, ser hvordan modellen svarer og tilpasser en tolkbar modell (typisk lineær) som etterligner modellen lokalt. Nær beslutningsgrensen kan små endringer i features avgjøre utfallet, og forklaringen kan se helt annerledes ut enn for et punkt langt fra grensen.
+  husk: 'LIME = lokal surrogatmodell. Ulike punkter kan gi helt ulike forklaringer.'
+
+- id: "N74"
+  del: "8.6"
+  kilde: "5.4.2 Konsepter og features"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    TCAV-skåren for konsept $C$, klasse $k$ og lag $l$ er andelen av inputene fra klasse $k$ der prediksjonen for $k$ øker når aktiveringene i lag $l$ flyttes litt i retning av konseptvektoren. Hva betyr en TCAV-skår på 0,8 for konseptet «prikkete» og klassen «dalmatiner»?
+  alternativer:
+    - tekst: 'For 80 % av dalmatinerbildene øker «prikkete» modellens dalmatiner-prediksjon'
+      riktig: true
+      forklaring: 'TCAV teller andelen inputer med positiv retningsderivert mot konseptet.'
+    - tekst: 'Modellen er 80 % sikker på at prikkete bilder er dalmatinere'
+      forklaring: 'TCAV måler følsomhet for et konsept, ikke en predikert sannsynlighet.'
+    - tekst: '80 % av dalmatinerbildene inneholder prikker'
+      forklaring: 'TCAV sier noe om modellen, ikke om innholdet i bildene.'
+    - tekst: 'Konseptet forklarer 80 % av variansen i prediksjonene'
+      forklaring: 'TCAV er en andel inputer med positiv sensitivitet, ikke forklart varians.'
+  forklaring: |
+    Sensitiviteten $S_{C,k,l}(x)$ er retningsderiverten av prediksjonen for $k$ i retning av konseptvektoren $\mathbf{v}_C$. TCAV-skåren er andelen $x \in X_k$ der denne er positiv. En skår på 0,8 betyr at konseptet i stor grad trekker modellen mot «dalmatiner».
+  husk: 'TCAV = andel av klassens inputer der konseptet øker prediksjonen.'
+
+- id: "N75"
+  del: "8.6"
+  kilde: "5.4.2 Konsepter og features"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Er TCAV en lokal eller en global forklaringsmetode?
+  alternativer:
+    - tekst: 'Global, fordi skåren oppsummerer en hel klasse'
+      riktig: true
+      forklaring: 'TCAV-skåren beregnes over alle inputene i klassen.'
+    - tekst: 'Lokal, fordi den bruker gradienten for hver input'
+      forklaring: 'Gradientene regnes per input, men skåren aggregeres over hele klassen.'
+    - tekst: 'Lokal, akkurat som LIME og SHAP'
+      forklaring: 'LIME og SHAP er lokale. TCAV er det motsatte.'
+    - tekst: 'Global, fordi den er modellagnostisk'
+      forklaring: 'TCAV er modellspesifikk (bruker aktiveringer og gradienter), og agnostisk/spesifikk er en annen akse enn lokal/global.'
+  forklaring: |
+    TCAV sier noe om hvordan modellen bruker et konsept for en hel klasse, ikke om én enkelt prediksjon. Den er i tillegg modellspesifikk, siden den trenger tilgang til aktiveringene og gradientene i et lag.
+  husk: 'TCAV: global og modellspesifikk. LIME/SHAP: lokale og modellagnostiske.'
+
+- id: "N76"
+  del: "8.7"
+  kilde: "5.5 Begrepene oppsummert"
+  niva: avansert
+  type: flervalg
+  sporsmal: |
+    For hvert XAI-begrep (surrogatmodell, modellagnostisk, modellspesifikk, post-hoc, lokal, global) skal du finne eksempler fra metodene i kurset. Hvilke koblinger stemmer?
+  alternativer:
+    - tekst: 'LIME – surrogatmodell'
+      riktig: true
+      forklaring: 'LIME erstatter modellen lokalt med en tolkbar modell som etterligner den.'
+    - tekst: 'SHAP – modellagnostisk'
+      riktig: true
+      forklaring: 'SHAP-verdiene er definert via v uavhengig av modellens indre, selv om noen explainers er laget for bestemte modelltyper.'
+    - tekst: 'TCAV – modellspesifikk'
+      riktig: true
+      forklaring: 'TCAV bruker aktiveringer og gradienter fra et lag i nettverket.'
+    - tekst: 'Alle metodene i kurset – post-hoc'
+      riktig: true
+      forklaring: 'Alle forklarer en modell som allerede er trent.'
+    - tekst: 'TCAV – lokal'
+      forklaring: 'TCAV-skåren oppsummerer en hel klasse og er global.'
+    - tekst: 'LIME – global'
+      forklaring: 'LIME forklarer én prediksjon, altså lokalt.'
+  forklaring: |
+    Begrepene er ulike akser: hvordan forklaringen lages (surrogat, agnostisk eller spesifikk), når den lages (post-hoc) og hva den gjelder (lokal eller global). Én metode har en plass på hver akse. LIME er for eksempel både surrogatbasert, modellagnostisk, post-hoc og lokal.
+  husk: 'LIME: surrogat, agnostisk, lokal. SHAP: agnostisk, lokal. TCAV: spesifikk, global. Alle er post-hoc.'

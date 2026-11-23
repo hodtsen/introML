@@ -13,6 +13,7 @@ Når branchen er merget til `main` og GitHub Pages er slått på (se [Publiserin
 | **Formelark og begrepsliste** | Alle formler samlet per kapittel, og 329 begreper med lenke til der de forklares. Søk med Ctrl+K. |
 | **Oppgavebank** | 375 oppgaver, 6–9 per delkapittel, på tre nivåer: 169 enkeltvalg, 58 flervalg, 57 påstander, 39 regneoppgaver og 52 tekstoppgaver. 24 handler om å lese eller rette Python-kode, 13 om å tolke plott eller tabeller, og 38 er knyttet til øvingene og prosjekt 4. |
 | **Øving** | Per delkapittel, per kapittel, blandet (filtrer på kapittel, nivå og type), kode- og figuroppgaver samlet, og repetisjon av feil. Fasit vises først etter at du har svart. |
+| **Notatquiz** | Egen fane med to quizer fra forelesningsnotatene (versjonen 23. november 2026): alle 85 «Oppgave:»-ene, skrevet om med nok kontekst til å besvares alene, og de 10 eksempelspørsmålene fra notatenes siste kapittel. Kan filtreres på kapittel i notatene. Holdes utenfor oppgavebanken, eksamenssimuleringen og mestringstallene. |
 | **Eksamenssimulering** | 40 flervalgsspørsmål fra hele pensum, med klokke, Inspera-regelen (valgte svar kan ikke fjernes) og poeng etter 2026-kunngjøringen eller som eksamen 2025. Som på H25 er omtrent hvert tiende spørsmål om kode (H25-modus har en egen kodegruppe). Faste sett A–C eller tilfeldige sett, rapport med karakteranslag, mestring per kapittel og anbefalinger. |
 | **Fremgang** | Mestringskart, historikk og eksport/import av fremgangen. Alt lagres lokalt i nettleseren. |
 
@@ -52,6 +53,7 @@ Workflowen `Kontroll` kjører alt dette på pull requests.
 content/
   pensum/            01-…md … 09-…md   faginnholdet, ett kapittel per fil
   oppgaver/          kap1.yaml … kap9.yaml
+  notatquiz/         notater-1…4.yaml (oppgavene i notatene) og eksempler.yaml (eksempelspørsmålene)
 scripts/
   build-content.mjs  markdown/YAML → src/generated/*.json, med KaTeX og validering
 src/
@@ -129,6 +131,10 @@ Formen på alternativene skal ikke røpe fasiten. Du skal måtte vurdere hvert a
 `tests/unit/formskjevhet.test.ts` sjekker dette for hele banken: hvor ofte riktig svar er lengst (per nivå), lengdeforholdet mellom riktige og gale alternativer, andelen sanne påstander og om absolutte ord avslører svaret.
 
 En oppgave kan ha en figur: enten `figur: navn` (en registrert figur) eller data for et linje-, punkt- eller stolpediagram, se `3.3-03` (linje), `6.3-07` (punkter med `klassenavn`) og `6.5-08` (stolper). Oppgaver med figur, tabell eller kodeblokk får automatisk taggen `figur` eller `kode`.
+
+### Notatquizen
+
+Filene i `content/notatquiz/` bruker samme format som oppgavebanken, med ett ekstra påkrevd felt, `kilde`, som angir avsnittet i forelesningsnotatene (for eksempel `"1.2.5 Klassifiseringsterskel"`). Det første tallet i `kilde` bestemmer hvilket notatkapittel oppgaven filtreres under. `del` peker fortsatt på et delkapittel i portalen, slik at «Les igjen»-lenken virker. Filer som starter med `notater` havner i den første quizen, og `eksempler.yaml` i den andre. Id-ene (`N01`…, `E01`…) må ikke finnes i oppgavebanken. `tests/unit/notatquiz.test.ts` sjekker dette, at alle sju kapitlene i notatene er dekket og at alternativene ikke røper fasit gjennom lengden.
 
 ## Publisering på GitHub Pages
 

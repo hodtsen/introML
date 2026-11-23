@@ -81,3 +81,15 @@ export function useAsync<T>(fn: () => Promise<T>, deps: unknown[]): { data?: T; 
   }, deps);
   return state;
 }
+
+// Notatquizen ligger utenfor oppgavebanken (OPPGAVER), så den påvirker ikke eksamenspoolen eller mestringstallene.
+export type NotatquizSett = "notater" | "eksempler";
+const notatquizLastere: Record<NotatquizSett, () => Promise<{ default: unknown }>> = {
+  notater: () => import("../generated/notatquiz/notater.json"),
+  eksempler: () => import("../generated/notatquiz/eksempler.json"),
+};
+const notatquizCache = new Map<NotatquizSett, Promise<Oppgave[]>>();
+export function lastNotatquiz(sett: NotatquizSett): Promise<Oppgave[]> {
+  if (!notatquizCache.has(sett)) notatquizCache.set(sett, notatquizLastere[sett]().then((m) => m.default as Oppgave[]));
+  return notatquizCache.get(sett)!;
+}

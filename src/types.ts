@@ -125,6 +125,8 @@ export interface Oppgave {
   kort: string;
   huskHtml: string;
   forklaringHtml?: string;
+  /** Avsnitt i forelesningsnotatene (brukes av notatquizen). */
+  kilde?: string;
   figur?: { navn?: string; data?: FigurData };
   // enkeltvalg / flervalg
   alternativer?: Alternativ[];

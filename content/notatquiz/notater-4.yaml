@@ -1,0 +1,191 @@
+# Notatquiz, del 4: oppgavene i kapittel 6 (AI Act) og 7 (Etiske prinsipper).
+# Notatene ber om egne eksempler. Her er oppgavene gjort om til å vurdere konkrete systemer.
+
+- id: "N77"
+  del: "9.4"
+  kilde: "6.5.1 Uakseptabel risiko"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Artikkel 5 i AI Act forbyr AI-praksiser med uakseptabel risiko. Hvilket av disse systemene ville vært **forbudt** i EU?
+  alternativer:
+    - tekst: 'En tjeneste som bygger en ansiktsgjenkjenningsdatabase av bilder hentet ukritisk fra internett'
+      riktig: true
+      forklaring: 'Ukritisk innsamling av ansiktsbilder fra internett eller overvåkingskameraer er eksplisitt forbudt.'
+    - tekst: 'Et system som sorterer jobbsøknader og rangerer kandidatene før intervju'
+      forklaring: 'Rekruttering er et høyrisikoområde (Anneks 3). Det er strengt regulert, men ikke forbudt.'
+    - tekst: 'En chatbot som svarer på kundehenvendelser i en nettbutikk'
+      forklaring: 'Den har transparenskrav: brukeren skal vite at det er en AI. Den er ikke forbudt.'
+    - tekst: 'Et system som gjenkjenner følelser hos pasienter i medisinsk behandling'
+      forklaring: 'Forbudet mot følelsesgjenkjenning gjelder arbeidsplass og utdanning, med unntak for medisinske formål og sikkerhetsformål.'
+  forklaring: |
+    Andre forbudte praksiser er manipulerende teknikker som kan gi betydelig skade, utnyttelse av sårbarheter, sosial scoring som gir urimelig negativ behandling, prediksjon av lovbrudd bare basert på profilering, biometrisk kategorisering for å utlede sensitive egenskaper og biometrisk fjernidentifisering i sanntid på offentlige steder for politiformål (med snevre unntak). Fra 2. desember 2026 er også såkalte nudify-apper og systemer som lager overgrepsmateriale av barn forbudt.
+  husk: 'Forbudt: manipulering, sosial scoring, ukritisk skraping av ansikter, følelsesgjenkjenning på jobb/skole m.m.'
+
+- id: "N78"
+  del: "9.4"
+  kilde: "6.5.2 Høy risiko"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvilket av disse systemene vil måtte oppfylle kravene til et **høyrisikosystem** i AI Act?
+  alternativer:
+    - tekst: 'Et system en bank bruker til kredittvurdering av privatpersoner'
+      riktig: true
+      forklaring: 'Kredittvurdering avgjør tilgang til viktige private tjenester og står i Anneks 3.'
+    - tekst: 'Et spamfilter i en e-posttjeneste'
+      forklaring: 'Spamfiltrering er ikke i et av områdene i Anneks 3 og har minimal risiko.'
+    - tekst: 'En anbefalingsalgoritme for musikk i en strømmetjeneste'
+      forklaring: 'Musikkanbefalinger er ikke et høyrisikoområde.'
+    - tekst: 'En app som lager realistiske nakenbilder av personer uten samtykke'
+      forklaring: 'Dette er ikke høyrisiko, men forbudt (fra 2. desember 2026).'
+  forklaring: |
+    Et system er høyrisiko enten fordi det er (en sikkerhetskomponent i) et produkt regulert i Anneks 1, som medisinsk utstyr, leketøy eller heiser, eller fordi det brukes i et område i Anneks 3. Anneks 3 omfatter blant annet biometri, kritisk infrastruktur, utdanning, arbeidsliv, tilgang til viktige tjenester (som kreditt og forsikring), rettshåndhevelse, migrasjon og rettspleie. Kravene omfatter blant annet risikostyring, datakvalitet, dokumentasjon, menneskelig kontroll og robusthet.
+  husk: 'Høyrisiko: Anneks 1-produkter eller Anneks 3-områder (utdanning, arbeid, kreditt, politi, migrasjon …).'
+
+- id: "N79"
+  del: "9.5"
+  kilde: "6.5.4 General purpose"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    AI Act definerer en general-purpose AI-modell (GPAI) som en modell som viser betydelig generalitet, kan utføre et bredt spekter av oppgaver og kan integreres i mange systemer. Hvilken av disse er et eksempel på en GPAI-modell?
+  alternativer:
+    - tekst: 'En stor språkmodell som GPT-4 eller Llama'
+      riktig: true
+      forklaring: 'Store språkmodeller er trent med selvveiledet læring i stor skala og kan brukes til svært mange oppgaver.'
+    - tekst: 'En bildeklassifiserer som skiller katter fra hunder'
+      forklaring: 'Den har et smalt anvendelsesområde. Notatene bruker nettopp dette som eksempel på det motsatte.'
+    - tekst: 'Et beslutningstre som avgjør lånesøknader'
+      forklaring: 'Det er en smal, oppgavespesifikk modell (og et mulig høyrisikosystem).'
+    - tekst: 'En DQN-agent som spiller Frozen Lake'
+      forklaring: 'Agenten løser bare én bestemt oppgave.'
+  forklaring: |
+    Forordningen skiller mellom selve GPAI-modellen og et GPAI-system, som er et AI-system bygget på en slik modell, for eksempel en chatbot. Reglene for GPAI-modeller har gjeldt siden 2. august 2025, og modeller med systemisk risiko (blant annet over $10^{25}$ FLOP i trening) har ekstra krav.
+  husk: 'GPAI = generell modell for mange oppgaver (store språkmodeller), i motsetning til smale modeller.'
+
+- id: "N80"
+  del: "9.6"
+  kilde: "7.1 Beneficence"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Prinsippet **beneficence** («velgjørenhet») sier at AI-systemer skal gjøre godt: fremme menneskers velferd, ivareta menneskeverdet og bidra til å bevare planeten. Et system som oppfyller prinsippet, etterlater samfunnet bedre enn før. Hvilket system er det tydeligste eksempelet på at prinsippet er **oppfylt**?
+  alternativer:
+    - tekst: 'Et system som oppdager tegn på kreft tidligere i medisinske bilder'
+      riktig: true
+      forklaring: 'Systemet bidrar aktivt til bedre helse og etterlater samfunnet bedre stilt.'
+    - tekst: 'En app som maksimerer skjermtid gjennom endeløs scrolling'
+      forklaring: 'Den er laget for å holde på oppmerksomheten, ikke for å fremme velferd. Den bryter heller med prinsippet.'
+    - tekst: 'Et regnearkprogram som summerer kolonner uten feil'
+      forklaring: 'Det gjør ingen skade, men er mer et eksempel på non-maleficence enn på aktiv velgjørenhet.'
+    - tekst: 'Et system som genererer falske produktanmeldelser'
+      forklaring: 'Det villeder forbrukere og bryter med prinsippet.'
+  forklaring: |
+    Beneficence handler om å *gjøre godt*, ikke bare om å unngå skade. Det skiller prinsippet fra non-maleficence.
+  husk: 'Beneficence = aktivt gjøre godt for mennesker og planeten.'
+
+- id: "N81"
+  del: "9.6"
+  kilde: "7.2 Non-maleficence"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    **Non-maleficence** («ikke-skade») sier at AI-systemer ikke skal påføre mennesker eller samfunnet skade, heller ikke utilsiktet gjennom feil eller dårlig sikkerhet. Prinsippet er ikke det samme som beneficence. Hvilket system oppfyller non-maleficence, men **ikke** beneficence?
+  alternativer:
+    - tekst: 'Et sikkert, personvernvennlig spill uten nytte utover underholdning'
+      riktig: true
+      forklaring: 'Det skader ingen, men bidrar heller ikke aktivt til velferd eller samfunnet.'
+    - tekst: 'Et diagnosesystem som lekker pasientdata'
+      forklaring: 'Det kan gjøre godt, men bryter non-maleficence gjennom brudd på personvern.'
+    - tekst: 'Et system som hjelper flere å få tidlig behandling, uten sikkerhetshull'
+      forklaring: 'Det oppfyller begge prinsippene.'
+    - tekst: 'En agent med misalignment som tar ut penger fra feil konto'
+      forklaring: 'Det gjør utilsiktet skade og bryter non-maleficence.'
+  forklaring: |
+    Å unnlate å gjøre skade er noe annet enn å gjøre godt. Særlig relevante brudd på non-maleficence er brudd på personvern, svak cybersikkerhet, misalignment i agenter og kappløp om autonome våpen. Prinsippet forutsetter ikke onde hensikter.
+  husk: 'Non-maleficence = ikke skade (også utilsiktet). Det er ikke det samme som å gjøre godt.'
+
+- id: "N82"
+  del: "9.6"
+  kilde: "7.3 Autonomy"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    **Autonomy** krever at overføringen av beslutningsmakt til AI skjer på menneskers premisser (meta-autonomi). Mennesker skal kunne bestemme hva som overlates til maskinen og trekke det tilbake, og den enkelte skal kunne velge bort eller påvirke AI-beslutninger som angår en selv. Hvilket system **bryter** med prinsippet?
+  alternativer:
+    - tekst: 'En søknadsbehandling der avslag fra modellen ikke kan klages eller overprøves'
+      riktig: true
+      forklaring: 'Den som rammes kan verken velge bort eller påvirke beslutningen, og ingen kan trekke den tilbake.'
+    - tekst: 'En navigasjonsapp som foreslår rute, men lar sjåføren velge en annen'
+      forklaring: 'Brukeren beholder kontrollen og kan overstyre forslaget.'
+    - tekst: 'En e-posttjeneste der du kan slå av AI-sortering av innboksen'
+      forklaring: 'Du kan velge bort AI-funksjonen, i tråd med prinsippet.'
+    - tekst: 'Et støtteverktøy der legen tar den endelige beslutningen'
+      forklaring: 'Mennesket har beholdt beslutningsmakten.'
+  forklaring: |
+    For å kunne gjøre informerte valg om hva vi overlater til et system, må vi forstå noe av hvordan det virker. Derfor henger autonomi tett sammen med explicability. AI Act krever menneskelig tilsyn med høyrisikosystemer (artikkel 14).
+  husk: 'Autonomy: mennesker bestemmer hva som overlates til AI, og kan velge bort eller overstyre.'
+
+- id: "N83"
+  del: "9.6"
+  kilde: "7.4 Justice"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    **Justice** handler om at AI ikke skal diskriminere urettmessig, og i tillegg om at AI bør rette opp tidligere urett, at fordelene fordeles i stedet for å konsentreres, og at AI ikke skaper ny urettferdighet eller svekker solidariteten. Hvilket system **bryter** tydeligst med prinsippet?
+  alternativer:
+    - tekst: 'En rekrutteringsmodell trent på historiske ansettelser, som nedprioriterer kvinner'
+      riktig: true
+      forklaring: 'Modellen viderefører og forsterker tidligere urett, i stedet for å rette den opp.'
+    - tekst: 'En gratis tale-til-tekst-tjeneste som gjør digitale tjenester tilgjengelige for flere'
+      forklaring: 'Den sprer fordelene ved AI og er heller i tråd med prinsippet.'
+    - tekst: 'En modell med like lav feilrate for kvinner og menn'
+      forklaring: 'Like feilrater er et fairness-krav, og det er i tråd med prinsippet.'
+    - tekst: 'Et system som oppdager skjevheter i tildeling av offentlige tjenester'
+      forklaring: 'Det kan bidra til å rette opp urett.'
+  forklaring: |
+    I maskinlæringslitteraturen brukes *fairness* om matematiske krav om likebehandling av grupper, for eksempel like feilrater. *Justice* rommer mer: fordeling av fordeler, retting av tidligere urett og samfunnets solidaritet.
+  husk: 'Justice > fairness: ikke bare likebehandling, men også fordeling og retting av urett.'
+
+- id: "N84"
+  del: "9.6"
+  kilde: "7.5 Explicability"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    **Explicability** har to komponenter: *intelligibility* («hvordan virker det?») og *accountability* («hvem er ansvarlig?»). De kan være oppfylt uavhengig av hverandre. Hvilket eksempel oppfyller **accountability, men ikke intelligibility**?
+  alternativer:
+    - tekst: 'Et uforklarlig nevralt nett, der kommunen er tydelig ansvarlig for vedtakene'
+      riktig: true
+      forklaring: 'Det er avklart hvem som står til ansvar, men ingen kan forklare hvordan vedtakene blir til.'
+    - tekst: 'Et lite beslutningstre med åpen kildekode som ingen tar ansvar for'
+      forklaring: 'Det er forståelig, men ansvaret er uklart. Det er motsatt kombinasjon.'
+    - tekst: 'En tolkbar modell der leverandøren har tydelig ansvar for feil'
+      forklaring: 'Begge komponentene er oppfylt.'
+    - tekst: 'En svart boks fra en ukjent leverandør uten avklart ansvar'
+      forklaring: 'Ingen av komponentene er oppfylt.'
+  forklaring: |
+    Explicability er det eneste av de fem prinsippene som ikke kommer fra bioetikken. Det er ofte en forutsetning for de andre: vi må forstå systemet for å kunne vurdere om det gjør godt eller skade, ta informerte valg om hva vi overlater til det og vurdere rettferdighet. AI Act gir under visse vilkår rett til en forklaring (artikkel 86).
+  husk: 'Explicability = intelligibility (hvordan) + accountability (hvem). De kan oppfylles hver for seg.'
+
+- id: "N85"
+  del: "9.6"
+  kilde: "7.6 Kobling til AI Act"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Floridi og Cowls oppsummerer etiske KI-rammeverk i fem prinsipper: beneficence, non-maleficence, autonomy, justice og explicability. EUs rammeverk for tillitsverdig KI (2019) har fire etiske prinsipper: *respect for human autonomy*, *prevention of harm*, *fairness* og *explicability*, og sju nøkkelkrav, blant annet *societal and environmental well-being*. Hvilket av de fem prinsippene mangler som eget prinsipp blant EUs fire, men gjenfinnes i nøkkelkravet om samfunnsmessig og miljømessig velferd?
+  alternativer:
+    - tekst: 'Beneficence'
+      riktig: true
+      forklaring: 'Velgjørenhet, å fremme velferd og bevare planeten, svarer til «societal and environmental well-being».'
+    - tekst: 'Non-maleficence'
+      forklaring: 'Den svarer til «prevention of harm».'
+    - tekst: 'Justice'
+      forklaring: 'Den svarer til «fairness».'
+    - tekst: 'Autonomy'
+      forklaring: 'Den svarer til «respect for human autonomy».'
+  forklaring: |
+    Autonomy, non-maleficence, justice og explicability har direkte motstykker blant EUs fire prinsipper. Beneficence finnes ikke som eget prinsipp, men er dekket av nøkkelkravet om samfunnsmessig og miljømessig velferd. Andre nøkkelkrav, som «human agency and oversight», «transparency» og «accountability», henger sammen med autonomy og explicability.
+  husk: 'EU: autonomy, prevention of harm, fairness, explicability + 7 krav. Beneficence ≈ societal and environmental well-being.'

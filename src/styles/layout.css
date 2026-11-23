@@ -1132,3 +1132,55 @@ main {
   gap: 0.6rem;
   font-size: 0.9375rem;
 }
+
+/* ---------------------------------------------------------------- notatquiz */
+.notatquiz-sett {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.notatquiz-sett h2 {
+  margin-top: 0;
+}
+.notatquiz-sett p {
+  max-width: 70ch;
+}
+.notatquiz-start {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.notatquiz-kapitler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.brikke-lenke {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+.brikke-lenke:hover {
+  border-color: var(--accent);
+}
+.notatquiz-feilede {
+  padding-left: 1.1rem;
+}
+.notatquiz-feilede li {
+  margin-bottom: 0.4rem;
+}
+@media (max-width: 760px) {
+  .notatquiz-sett {
+    flex-direction: column;
+  }
+  .notatquiz-start {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}

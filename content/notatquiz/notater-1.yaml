@@ -1,0 +1,808 @@
+# Notatquiz, del 1: oppgavene i kapittel 1 (Veiledet læring) i forelesningsnotatene.
+# Hver oppgave er skrevet om slik at den kan besvares uten notatene ved siden av.
+# «kilde» angir avsnittet i forelesningsnotatene der oppgaven står.
+
+- id: "N01"
+  del: "1.1"
+  kilde: "1.1 Data"
+  niva: grunnleggende
+  type: flervalg
+  sporsmal: |
+    Titanic-datasettet har kolonnene `PassengerId` (løpenummer), `Pclass` (billettklasse 1, 2 eller 3), `Name`, `Sex` (male/female), `Age` (alder i år) og `Survived` (0 eller 1). Hvilke av variablene er **binære**?
+  alternativer:
+    - tekst: '`Sex`'
+      riktig: true
+      forklaring: 'Kjønn har bare to verdier i datasettet, male og female.'
+    - tekst: '`Survived`'
+      riktig: true
+      forklaring: 'Target tar bare verdiene 0 og 1.'
+    - tekst: '`Pclass`'
+      forklaring: 'Billettklasse er kategorisk, men har tre kategorier, ikke to.'
+    - tekst: '`Age`'
+      forklaring: 'Alder er en kontinuerlig variabel.'
+  forklaring: |
+    En binær variabel har nøyaktig to mulige verdier. Både `Sex` og `Survived` er dermed binære (og samtidig kategoriske). `Pclass` er kategorisk med tre verdier, og `Age` er kontinuerlig.
+  husk: 'Binær = kategorisk med to verdier. Pclass har tre kategorier.'
+
+- id: "N02"
+  del: "1.1"
+  kilde: "1.1 Data"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    I Titanic-datasettet (`PassengerId`, `Pclass`, `Name`, `Sex`, `Age`, `Survived`): hvilken variabel er **kontinuerlig**?
+  alternativer:
+    - tekst: '`Age`'
+      riktig: true
+      forklaring: 'Alder er en numerisk verdi på en kontinuerlig skala.'
+    - tekst: '`Pclass`'
+      forklaring: 'Klasse 1, 2 og 3 er tall, men de angir kategorier. Det gir ingen mening å ha klasse 2,4.'
+    - tekst: '`PassengerId`'
+      forklaring: 'Id-en er et løpenummer. Vi kan i høyden se på hver Id som en egen kategori.'
+    - tekst: '`Survived`'
+      forklaring: 'Survived er binær (0 eller 1).'
+  forklaring: |
+    At en variabel er lagret som tall gjør den ikke kontinuerlig. `Pclass` og `PassengerId` er tall, men verdiene representerer kategorier. Bare `Age` er en ekte kontinuerlig størrelse.
+  husk: 'Tall er ikke automatisk kontinuerlige: Pclass er kategorisk selv om den er lagret som 1, 2, 3.'
+
+- id: "N03"
+  del: "1.1"
+  kilde: "1.1 Data"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Vi skal lage en modell som predikerer `Survived` i Titanic-datasettet. Hvilke av variablene `PassengerId`, `Pclass`, `Name`, `Sex` og `Age` bør vi **ikke** bruke som features, og hvorfor?
+  eksempelsvar: |
+    Vi bør droppe `PassengerId` og `Name`. PassengerId er et løpenummer som sannsynligvis er tilfeldig tildelt og ikke sier noe om passasjerens egenskaper. Name kunne i prinsippet inneholdt informasjon, men bare for en modell som forstår språk godt nok til å koble navn til noe relevant. For modellene vi lager her inneholder navnet ingen nyttig informasjon.
+  punkter:
+    - tekst: 'PassengerId: tilfeldig løpenummer uten informasjon om passasjeren.'
+      stikkord: ['passengerid', 'id', 'løpenummer', 'tilfeldig']
+    - tekst: 'Name: gir ikke relevant informasjon for våre modeller (ville krevd språkforståelse).'
+      stikkord: ['name', 'navn', 'språk']
+  husk: 'Fjern variabler uten informasjon om datapunktet (Id) eller som modellen ikke kan utnytte (Name).'
+
+- id: "N04"
+  del: "1.1"
+  kilde: "1.1 Data"
+  niva: middels
+  type: flervalg
+  sporsmal: |
+    Etter at vi har valgt features ser et utdrag av Titanic-dataene slik ut:
+
+    | | $x_1$ (Pclass) | $x_2$ (Sex) | $x_3$ (Age) | $y$ |
+    |---|---|---|---|---|
+    | 5 | 3 | male | 35 | 0 |
+    | 6 | 3 | male | | 0 |
+    | 7 | 1 | male | 54 | 0 |
+
+    Hva bør vi gjøre **før** vi plotter dataene? Velg alle som stemmer.
+  alternativer:
+    - tekst: 'Fjerne eller fylle inn raden der alderen mangler'
+      riktig: true
+      forklaring: 'Manglende verdier gir feilmelding ved plotting. `dropna()` fjerner slike rader.'
+    - tekst: 'Gjøre om `Sex` fra tekst til tall'
+      riktig: true
+      forklaring: 'Strenger kan ikke plottes uten videre. En LabelEncoder kan mappe female til 0 og male til 1.'
+    - tekst: 'Skalere `Age`, som har en helt annen størrelsesorden'
+      riktig: true
+      forklaring: 'Age ligger opp mot 80, mens de andre ligger rundt 0–3. Det kan gi misvisende plott. MinMaxScaler skalerer til [0, 1].'
+    - tekst: 'Fjerne `Pclass`, siden den bare har tre verdier'
+      forklaring: 'Få verdier er ikke noe problem. Pclass er en informativ feature.'
+  forklaring: |
+    Notatene peker på tre problemer: en manglende verdi, ikke-numeriske verdier og ulik størrelsesorden. Slike operasjoner (fjerne rader, encode, skalere) kalles preprosessering. Plotting og preprosessering skjer gjerne om hverandre, fordi plottene også gir idéer til hvordan dataene bør behandles.
+  husk: 'Preprosessering: håndter manglende verdier (dropna), encode kategorier (LabelEncoder), skaler (MinMaxScaler).'
+
+- id: "N05"
+  del: "1.3"
+  kilde: "1.2.1 Trening og tapsfunksjon"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    For binær klassifisering kan sannsynligheten for riktig klassifisering skrives kompakt som
+
+    $$y_\text{pred}^{\,y}\,(1 - y_\text{pred})^{1-y},$$
+
+    der $y \in \{0, 1\}$ er target og $y_\text{pred}$ er modellens predikerte sannsynlighet for klasse 1. Regn ut uttrykket for disse kombinasjonene:
+  deler:
+    - sporsmal: '$y_\text{pred} = 1$ og $y = 1$'
+      svar: 1
+      toleranse: 0.001
+    - sporsmal: '$y_\text{pred} = 1$ og $y = 0$'
+      svar: 0
+      toleranse: 0.001
+    - sporsmal: '$y_\text{pred} = 0{,}8$ og $y = 0$'
+      svar: 0.2
+      toleranse: 0.001
+  losning: |
+    Eksponentene «velger» faktor: når $y = 1$ blir uttrykket $y_\text{pred}$, og når $y = 0$ blir det $1 - y_\text{pred}$.
+
+    - $1^1 \cdot 0^0 = 1$: perfekt og riktig prediksjon.
+    - $1^0 \cdot 0^1 = 0$: modellen er helt sikker, men tar feil.
+    - $0{,}8^0 \cdot 0{,}2^1 = 0{,}2$: modellen gir bare 20 % sannsynlighet til den riktige klassen.
+
+    Setter vi inn $y_\text{pred} = \sigma(\mathbf{w}\mathbf{x} + b)$ får vi likelihooden. Tar vi minus logaritmen, får vi cross-entropy loss.
+  husk: 'Uttrykket er sannsynligheten modellen gir til riktig klasse. −ln av det er cross-entropy.'
+
+- id: "N06"
+  del: "1.5"
+  kilde: "1.2.4 Evaluering"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    Under trening bruker vi en tapsfunksjon (for eksempel cross-entropy), mens vi rapporterer ytelsen med evalueringsmetrikker. Gi flere grunner til at vi **ikke** bør bruke samme størrelse til begge formålene.
+  eksempelsvar: |
+    Tapsfunksjonen må være deriverbar for at gradient descent skal fungere, mens en metrikk ikke trenger å være det (accuracy er det for eksempel ikke). Metrikker bør gi mening for mennesker og si noe om hva modellen er god og dårlig på, for eksempel hvor mange syke den finner. Et tall for tap gir lite intuitiv mening. Tap og treffsikkerhet alene forteller bare en liten del av historien og viser ikke hvilke typer datapunkter modellen feiler på. Derfor bør vi velge én eller flere metrikker som passer problemet.
+  punkter:
+    - tekst: 'Tapet må være deriverbart; metrikken trenger ikke være det.'
+      stikkord: ['deriverbar', 'derivere', 'gradient', 'differensierbar']
+    - tekst: 'Metrikker skal være tolkbare og meningsfulle for mennesker.'
+      stikkord: ['mennesker', 'tolkbar', 'intuitiv', 'mening', 'forstå']
+    - tekst: 'Tapet sier lite om styrker og svakheter / hvilke feil modellen gjør.'
+      stikkord: ['styrker', 'svakheter', 'feil', 'hvilke', 'type']
+  husk: 'Tap: deriverbart, for optimering. Metrikk: tolkbar, for mennesker, kan være ikke-deriverbar.'
+
+- id: "N07"
+  del: "1.5"
+  kilde: "1.2.4 Evaluering"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Du skal levere en modell til et sykehus som skal finne pasienter med en dødelig sykdom. Det er svært alvorlig om modellen gir en **falsk negativ**, altså overser en syk pasient. Hvilken metrikk bør modellen skåre høyt på?
+  alternativer:
+    - tekst: 'Recall (TPR)'
+      riktig: true
+      forklaring: 'Recall = TP/(TP+FN). Få falske negative gir høy recall.'
+    - tekst: 'Presisjon (PPV)'
+      forklaring: 'Presisjon straffer falske positive, ikke de oversette syke.'
+    - tekst: 'Spesifisitet (TNR)'
+      forklaring: 'Spesifisitet handler om andelen friske som klassifiseres som friske.'
+    - tekst: 'Accuracy'
+      forklaring: 'Når de syke er få, kan accuracy være høy selv om nesten alle syke overses.'
+  forklaring: |
+    Recall angir hvor stor andel av de faktisk positive modellen fanger opp. Når kostnaden ved å bomme på en positiv instans er høy, som ved diagnostisering av alvorlig sykdom, er høy recall viktigst.
+  husk: 'Dyr falsk negativ → høy recall.'
+
+- id: "N08"
+  del: "1.5"
+  kilde: "1.2.4 Evaluering"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du skal levere en modell som avgjør om det skal skytes raketter mot et mål. Det er alvorlig om modellen gir en **falsk positiv**, fordi rakettene er dyre. Hvilken metrikk bør denne modellen skåre **lavt** på?
+  alternativer:
+    - tekst: 'False positive rate (FPR)'
+      riktig: true
+      forklaring: 'FPR = FP/(FP+TN). Få falske alarmer gir lav FPR.'
+    - tekst: 'False negative-andelen, FN/(TP+FN)'
+      forklaring: 'Den måler oversette positive, men her er det falske alarmer som koster.'
+    - tekst: 'Recall'
+      forklaring: 'Recall vil vi ikke ha lav. Den sier ingenting om falske alarmer.'
+    - tekst: 'Spesifisitet'
+      forklaring: 'Spesifisitet = 1 − FPR, så den vil vi tvert imot ha høy.'
+  forklaring: |
+    Når falske alarmer er dyre, vil vi ha lav FPR, eller tilsvarende høy spesifisitet og høy presisjon. Spørsmålet ber om en metrikk som skal være *lav*, og da er FPR svaret.
+  husk: 'Dyr falsk positiv → lav FPR (høy presisjon og spesifisitet).'
+
+- id: "N09"
+  del: "1.6"
+  kilde: "1.2.5 Klassifiseringsterskel"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    En ROC-kurve plotter TPR mot FPR for klassifiseringsterskler fra 1 til 0. Prediksjoner over terskelen tolkes som positiv klasse. Hva blir FPR og TPR når terskelen er **0**?
+  alternativer:
+    - tekst: 'Begge blir omtrent 1'
+      riktig: true
+      forklaring: 'Med terskel 0 blir nesten alt predikert positivt. Alle positive fanges (TPR ≈ 1), men også alle negative (FPR ≈ 1).'
+    - tekst: 'Begge blir omtrent 0'
+      forklaring: 'Det gjelder terskel 1, der nesten ingenting predikeres positivt.'
+    - tekst: 'TPR blir 1 og FPR blir 0'
+      forklaring: 'Det er det perfekte punktet øverst til venstre, ikke det en ekstrem terskel gir.'
+    - tekst: 'TPR blir 0 og FPR blir 1'
+      forklaring: 'Det ville vært en modell som alltid tar feil, uavhengig av terskel.'
+  forklaring: |
+    Vi ønsker høy TPR og lav FPR. Terskel 1 gir nesten ingen positive prediksjoner, så begge er lave. Terskel 0 gir nesten bare positive prediksjoner, så begge er høye. Derfor starter ROC-kurven i (0, 0) og ender i (1, 1). Det interessante er hva som skjer imellom.
+  husk: 'Terskel 1 → (0, 0). Terskel 0 → (1, 1). Vi vil ha høy TPR og lav FPR.'
+
+- id: "N10"
+  del: "1.6"
+  kilde: "1.2.5 Klassifiseringsterskel"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvordan ser ROC-kurven (TPR mot FPR) ut for en «modell» som avgjør klassen ved å kaste mynt?
+  alternativer:
+    - tekst: 'Diagonalen fra (0, 0) til (1, 1)'
+      riktig: true
+      forklaring: 'Tilfeldig gjetning gir TPR = FPR for alle terskler, og AUC = 0,5.'
+    - tekst: 'En horisontal linje ved TPR = 0,5'
+      forklaring: 'Kurven må gå fra (0, 0) til (1, 1), så den kan ikke ligge konstant på 0,5.'
+    - tekst: 'Et enkelt punkt i (0,5; 0,5)'
+      forklaring: 'Én terskel gir ett punkt, men ROC-kurven samler alle terskler.'
+    - tekst: 'En kurve som bøyer opp mot (0, 1)'
+      forklaring: 'Det kjennetegner en god modell, ikke tilfeldig gjetning.'
+  forklaring: |
+    Ved tilfeldig gjetning er sannsynligheten for å kalle et punkt positivt den samme uansett klasse, så TPR = FPR. Kurven blir diagonalen, og arealet under er 0,5. En nyttig modell må ligge over diagonalen, med AUC over 0,5.
+  husk: 'Myntkast = diagonalen = AUC 0,5.'
+
+- id: "N11"
+  del: "1.6"
+  kilde: "1.2.5 Klassifiseringsterskel"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Presisjon er $\frac{TP}{TP + FP}$ og recall er $\frac{TP}{TP + FN}$. Når er presisjon lik recall?
+  alternativer:
+    - tekst: 'Når $FP = FN$'
+      riktig: true
+      forklaring: 'Brøkene har samme teller, og nevnerne blir like når FP = FN.'
+    - tekst: 'Når $TP = TN$'
+      forklaring: 'TN inngår ikke i noen av brøkene.'
+    - tekst: 'Når klassifiseringsterskelen er 0,5'
+      forklaring: 'Terskelen påvirker begge, men 0,5 gir ingen garanti for at de er like.'
+    - tekst: 'Når klassene er like store'
+      forklaring: 'Balanserte klasser betyr ikke at modellen gjør like mange FP som FN.'
+  forklaring: |
+    Begge har TP i telleren, så de er like nøyaktig når nevnerne er like, altså når antall falske positive er lik antall falske negative. I precision–recall-kurven er dette punktet der den ene øker på bekostning av den andre.
+  husk: 'Presisjon = recall ⇔ FP = FN.'
+
+- id: "N12"
+  del: "1.6"
+  kilde: "1.2.5 Klassifiseringsterskel"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Du evaluerer samme modell på to testsett. I det ene er 50 % av datapunktene positive, i det andre 5 %. Modellen er like god per klasse i begge. Hvilken metrikk endrer seg mest mellom testsettene?
+  alternativer:
+    - tekst: 'Presisjon'
+      riktig: true
+      forklaring: 'Presisjon blander inn FP fra den negative klassen. Flere negative gir flere FP og lavere presisjon.'
+    - tekst: 'Recall'
+      forklaring: 'Recall regnes bare innenfor den positive klassen og påvirkes ikke av hvor mange negative det er.'
+    - tekst: 'FPR'
+      forklaring: 'FPR regnes bare innenfor den negative klassen.'
+    - tekst: 'ROC AUC'
+      forklaring: 'ROC bygger på TPR og FPR, som begge regnes innad i én klasse.'
+  forklaring: |
+    Recall (TPR) og FPR er rater innad i én klasse. Presisjon sammenligner derimot TP med FP, som kommer fra hver sin klasse, og avhenger derfor av fordelingen mellom klassene. Det er grunnen til at precision–recall-kurven er mer informativ enn ROC når klassene er skjevfordelt.
+  husk: 'Presisjon avhenger av klassefordelingen. Recall og FPR gjør det ikke.'
+
+- id: "N13"
+  del: "2.2"
+  kilde: "1.2.8 Ikke-uavhengige features"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Naiv Bayes antar at features er uavhengige gitt klassen. I forelesningen plottet vi andelen kvinner og menn i hver billettklasse i Titanic-dataene, med `pd.crosstab(df.Pclass, df.Sex, normalize="index")`. Hva viser et slikt plott, og hva betyr det for Naiv Bayes?
+  alternativer:
+    - tekst: 'Kjønnsfordelingen varierer med klasse, så antakelsen brytes'
+      riktig: true
+      forklaring: 'Hvis andelen kvinner er ulik i ulike klasser, forteller den ene featuren noe om den andre.'
+    - tekst: 'Kjønnsfordelingen er lik i alle klasser, så antakelsen holder'
+      forklaring: 'Det er det motsatte av det vi så. Fordelingene er ulike.'
+    - tekst: 'Plottet viser at Pclass bestemmer Survived'
+      forklaring: 'Plottet inneholder ikke Survived. Det viser sammenhengen mellom to features.'
+    - tekst: 'Plottet viser at Sex bør fjernes som feature'
+      forklaring: 'Avhengighet mellom features er ingen grunn til å fjerne dem, men den svekker Naiv Bayes-estimatet.'
+  forklaring: |
+    `normalize="index"` gir kjønnsfordelingen *innad i hver klasse*. Er den ulik på tvers av klassene, er Pclass og Sex avhengige, og Naiv Bayes-produktet $\prod_i p(x_i \mid C_k)$ blir en tilnærming. Naiv Bayes kan likevel fungere greit så lenge antakelsen holder tilnærmingsvis. Det er også grunn til å tro at for eksempel alder og klasse henger sammen.
+  husk: 'Ulik fordeling av én feature på tvers av verdiene til en annen ⇒ avhengighet ⇒ Naiv Bayes er bare en tilnærming.'
+
+- id: "N14"
+  del: "2.3"
+  kilde: "1.2.8–1.2.9 Dimensjonsforbannelsen"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Vi vil estimere simultanfordelingen til $d$ kontinuerlige features med et histogram. Hver feature deles i 10 bins, og vi krever 10 datapunkter per bin.
+  deler:
+    - sporsmal: 'Antall datapunkter vi trenger for $d = 3$'
+      svar: 10000
+      toleranse: 0.5
+    - sporsmal: 'Antall datapunkter for $d = 10$, skrevet som $10^k$. Oppgi $k$.'
+      svar: 11
+      toleranse: 0.01
+  losning: |
+    Med $d$ features får vi $10^d$ bins, og med 10 punkter i hver trenger vi $10 \cdot 10^d = 10^{d+1}$ datapunkter.
+
+    - $d = 3$: $10^4 = 10\,000$ datapunkter. Det er overkommelig.
+    - $d = 10$: $10^{11}$ datapunkter.
+    - $d = 784$ (MNIST): $10^{785}$. Det er langt flere enn antall atomer i universet (rundt $10^{82}$).
+
+    Allerede for Titanic, med tre features, inneholder mange celler i tabellen svært få datapunkter. Det er en miniversjon av dimensjonsforbannelsen.
+  husk: 'Datamengden vokser eksponentielt med antall dimensjoner: 10^(d+1) her.'
+
+- id: "N15"
+  del: "2.3"
+  kilde: "1.2.9 Dimensjonsforbannelsen"
+  niva: avansert
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Volumet til en $d$-dimensjonal kule med radius $r$ er $K_d\, r^d$, der $K_d$ er en konstant. Hvor stor andel av volumet til en enhetskule ($r = 1$) ligger i det ytre skallet med tykkelse $\epsilon$?
+  deler:
+    - sporsmal: 'Andelen for $d = 3$ og $\epsilon = 0{,}01$'
+      svar: 0.0297
+      toleranse: 0.0005
+    - sporsmal: 'Andelen for $d = 10$ og $\epsilon = 0{,}1$'
+      svar: 0.651
+      toleranse: 0.003
+    - sporsmal: 'Andelen for $d = 784$ og $\epsilon = 0{,}01$'
+      svar: 0.9996
+      toleranse: 0.0005
+  losning: |
+    Volumet innenfor skallet er $K_d (1 - \epsilon)^d$, så andelen i skallet er
+
+    $$\frac{K_d \cdot 1^d - K_d (1 - \epsilon)^d}{K_d \cdot 1^d} = 1 - (1 - \epsilon)^d.$$
+
+    Konstanten $K_d$ forsvinner. Vi får:
+
+    - $1 - 0{,}99^3 \approx 0{,}030$
+    - $1 - 0{,}9^{10} \approx 0{,}651$
+    - $1 - 0{,}99^{784} \approx 0{,}9996$
+
+    I høye dimensjoner ligger nesten alt volumet i et tynt ytre skall, og nesten hele rommet er «tomt» i midten.
+  husk: 'Andel i skall = 1 − (1 − ε)^d → 1 når d vokser.'
+
+- id: "N16"
+  del: "2.4"
+  kilde: "1.2.10 Trening på ubalanserte data"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    På et jobbintervju får du spørsmålet: «Vi har et datasett fra helsevesenet og skal lage en modell som klassifiserer friske og syke personer. Modellen får 99 % treffsikkerhet (accuracy), men klarer nesten ikke å identifisere syke personer. Hva har skjedd?» Hva svarer du, og hva kan gjøres?
+  eksempelsvar: |
+    Klassene er trolig svært ubalanserte: de syke er kanskje rundt 1 % av dataene. Modellen blir da belønnet for å predikere at alle er friske, og får høy accuracy uten å være nyttig. Dette kalles prior probability shift, fordi prediksjonen domineres av $p(C_k)$ og ikke av featurene. Recall for de syke blir svært lav, så vi må se på flere metrikker enn accuracy. Tiltak er å senke klassifiseringsterskelen (som endrer hvordan vi tolker prediksjonene, men ikke modellen), resample dataene (undersampling eller oversampling) eller bruke en vektet tapsfunksjon som straffer feil på de syke hardere.
+  punkter:
+    - tekst: 'Skjeve klasser: modellen predikerer stort sett majoritetsklassen.'
+      stikkord: ['ubalanse', 'skjev', 'majoritet', 'overrepresent', 'få syke', 'friske']
+    - tekst: 'Accuracy er misvisende; se på recall eller andre metrikker.'
+      stikkord: ['recall', 'metrikk', 'accuracy', 'misvisende', 'presisjon']
+    - tekst: 'Tiltak: terskel, resampling eller vektet tap.'
+      stikkord: ['terskel', 'undersampl', 'oversampl', 'resampl', 'vekt']
+  husk: 'Høy accuracy + lav recall på minoritetsklassen = ubalanserte klasser. Tiltak: terskel, resampling, vektet tap.'
+
+- id: "N17"
+  del: "2.4"
+  kilde: "1.2.10 Trening på ubalanserte data"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Et datasett har 100 datapunkter fra den ene klassen og 1000 fra den andre. Vi vil ha like mange i hver klasse.
+  deler:
+    - sporsmal: 'Totalt antall datapunkter med **bare undersampling**'
+      svar: 200
+      toleranse: 0.5
+    - sporsmal: 'Totalt antall datapunkter med **bare oversampling**'
+      svar: 2000
+      toleranse: 0.5
+    - sporsmal: 'Antall duplikater ved oversampling'
+      svar: 900
+      toleranse: 0.5
+  losning: |
+    - **Undersampling:** vi trekker 100 av de 1000 i majoritetsklassen og får $100 + 100 = 200$ punkter. Vi kaster mye informasjon.
+    - **Oversampling:** vi kopierer minoritetsklassen opp til 1000 og får $1000 + 1000 = 2000$ punkter. Av disse er $1000 - 100 = 900$ duplikater.
+
+    Mange duplikater kan få modellen til å overtilpasse seg minoritetsklassen.
+  husk: 'Undersampling kaster data. Oversampling lager duplikater og fare for overtilpasning.'
+
+- id: "N18"
+  del: "2.5"
+  kilde: "1.3.2 Gini Impurity"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [figur]
+  sporsmal: |
+    Tabellen viser noden vi får med tre ulike splitter, med antall datapunkter fra hver klasse ($n_1$, $n_2$) og Gini-urenheten $1 - p_1^2 - p_2^2$:
+
+    | | $n_1$ | $n_2$ | $p_1$ | $p_2$ | Gini |
+    |---|---|---|---|---|---|
+    | Splitt 1 | 0 | 10 | 0 | 1 | 0 |
+    | Splitt 2 | 3 | 7 | 0,3 | 0,7 | 0,42 |
+    | Splitt 3 | 5 | 5 | 0,5 | 0,5 | 0,5 |
+
+    Hvilken splitt bør vi velge?
+  alternativer:
+    - tekst: 'Splitt 1, fordi den har lavest Gini-urenhet'
+      riktig: true
+      forklaring: 'Gini = 0 betyr en ren node. Vi velger splitten med lavest urenhet.'
+    - tekst: 'Splitt 3, fordi den har høyest Gini-urenhet'
+      forklaring: 'Høy Gini betyr mest blandet node, altså størst usikkerhet. Det er det vi vil unngå.'
+    - tekst: 'Splitt 2, fordi klassene er blandet uten å være 50/50'
+      forklaring: 'Balanse er ikke målet. Vi vil ha så rene noder som mulig.'
+    - tekst: 'Splitt 3, fordi den deler dataene likt i to'
+      forklaring: 'En jevn fordeling av klassene i noden betyr maksimal usikkerhet.'
+  forklaring: |
+    Gini-urenheten angir sannsynligheten for å feilklassifisere et tilfeldig punkt hvis det får et tilfeldig label etter klassefordelingen i noden. Vi velger splitten som reduserer usikkerheten mest, altså lavest Gini. For binær klassifisering ligger Gini i $[0;\ 0{,}5]$.
+  husk: 'Velg splitten med lavest (vektet) Gini. 0 = ren node, 0,5 = maksimalt blandet.'
+
+- id: "N19"
+  del: "2.5"
+  kilde: "1.3.3 Entropi"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Entropien til en fordeling over $k$ klasser er $I(p_1, \dots, p_k) = -\sum_i p_i \log_2 p_i$. Regn ut entropien til fordelingene under.
+  deler:
+    - sporsmal: '$(0{,}5;\ 0{,}5)$'
+      svar: 1
+      toleranse: 0.005
+    - sporsmal: '$(0{,}01;\ 0{,}99)$ (tre desimaler)'
+      svar: 0.081
+      toleranse: 0.002
+  losning: |
+    - $-2 \cdot 0{,}5 \log_2 0{,}5 = 1$. Dette er maksimal entropi for en binær fordeling.
+    - $-0{,}01 \log_2 0{,}01 - 0{,}99 \log_2 0{,}99 \approx 0{,}0664 + 0{,}0144 = 0{,}081$.
+
+    Nesten all sannsynlighet på én klasse gir lav usikkerhet. Entropien er 0 når alle punktene tilhører samme klasse.
+  husk: 'Binær entropi: 1 ved 50/50, 0 ved ren node.'
+
+- id: "N20"
+  del: "2.6"
+  kilde: "1.3.3 Entropi"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    En beslutningsnode har $p = 9$ positive og $n = 5$ negative datapunkter. Vi splitter i to noder med $(p_1, n_1) = (4, 5)$ og $(p_2, n_2) = (5, 0)$. Bruk entropi med $\log_2$.
+  deler:
+    - sporsmal: 'Entropien før splitten, $I_\text{før}$'
+      svar: 0.940
+      toleranse: 0.003
+    - sporsmal: 'Forventet entropi etter splitten, $E[I_\text{etter}]$'
+      svar: 0.637
+      toleranse: 0.008
+    - sporsmal: 'Informasjonsgevinsten $\Delta I$'
+      svar: 0.303
+      toleranse: 0.008
+  losning: |
+    - $I_\text{før} = I\!\left(\tfrac{9}{14}, \tfrac{5}{14}\right) = -\tfrac{9}{14}\log_2\tfrac{9}{14} - \tfrac{5}{14}\log_2\tfrac{5}{14} \approx 0{,}940$
+    - Venstre node: $I\!\left(\tfrac{4}{9}, \tfrac{5}{9}\right) \approx 0{,}991$. Høyre node er ren, så $I = 0$.
+    - $E[I_\text{etter}] = \tfrac{9}{14} \cdot 0{,}991 + \tfrac{5}{14} \cdot 0 \approx 0{,}64$
+    - $\Delta I = 0{,}940 - 0{,}637 \approx 0{,}30$
+
+    Vi velger splitten som gir størst endring i entropi.
+  husk: 'ΔI = I_før − vektet snitt av entropien i barna. Vekt = andel datapunkter i hver node.'
+
+- id: "N21"
+  del: "2.5"
+  kilde: "1.3.4 Bygge beslutningstrær"
+  niva: middels
+  type: pastand
+  sporsmal: |
+    **Påstand:** Plotter vi Gini-urenhet og entropi som funksjon av $p$ på intervallet $[0, 1]$ for en binær fordeling, har kurvene ulik form, og de to kriteriene vil derfor i hovedsak velge ulike splitter.
+  riktig: false
+  forklaring: |
+    Begge kurvene er 0 i endepunktene og har maksimum ved $p = 0{,}5$ (Gini 0,5, entropi 1). De har nesten samme form, bare med ulik skala, og gir i hovedsak de samme splittene. Hovedforskjellen er at entropi krever en logaritme og er dyrere å regne ut. Gini er derfor default i `DecisionTreeClassifier`.
+  husk: 'Gini og entropi oppfører seg likt. Gini er raskere og er default i sklearn.'
+
+- id: "N22"
+  del: "2.6"
+  kilde: "1.3.4 Bygge beslutningstrær"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    `DecisionTreeClassifier` i sklearn lar deg velge splittkriteriet `gini`, `entropy` eller `log_loss`. Sammenlign uttrykkene: $1 - \sum_i p_i^2$, $-\sum_i p_i \log p_i$ og cross-entropy (log loss). Hvilket utsagn stemmer?
+  alternativer:
+    - tekst: 'Entropi og log loss har samme form; Gini er raskest å evaluere'
+      riktig: true
+      forklaring: 'Når fordelingen sammenlignes med seg selv, blir cross-entropy det samme som entropi. Gini trenger bare kvadrater.'
+    - tekst: 'Gini og entropi har samme form; log loss er raskest å evaluere'
+      forklaring: 'Gini har kvadrater og ingen logaritme. Log loss har logaritme og er ikke raskest.'
+    - tekst: 'Alle tre har ulik form; entropi er raskest å evaluere'
+      forklaring: 'Entropi og log loss har samme form, og logaritmen gjør entropi dyrere enn Gini.'
+    - tekst: 'Gini og log loss har samme form; entropi er raskest å evaluere'
+      forklaring: 'Gini inneholder ingen logaritme, og entropi er ikke raskest.'
+  forklaring: |
+    Entropi er $-\sum p \log p$, og cross-entropy er $-\sum p \log q$. Med $q = p$, som når vi måler urenheten i en node, blir de like. Gini bruker bare kvadrering og er derfor billigst å regne ut.
+  husk: 'Log loss ≈ entropi som splittkriterium. Gini er raskest (ingen logaritme).'
+
+- id: "N23"
+  del: "3.1"
+  kilde: "1.4.1 Data og tapsfunksjon"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Vi går fra logistisk regresjon (klassifisering) til lineær regresjon $f(\mathbf{x}) = \beta_0 + \beta_1 x_1 + \dots + \beta_n x_n$ med kontinuerlig target. Mye av koden og gradient descent kan gjenbrukes. Hva kan vi **ikke** gjenbruke?
+  alternativer:
+    - tekst: 'Tapsfunksjonen'
+      riktig: true
+      forklaring: 'Cross-entropy forutsetter sannsynligheter for klasser. For regresjon bruker vi typisk MSE.'
+    - tekst: 'Gradient descent som optimeringsmetode'
+      forklaring: 'Vi bruker fortsatt gradient descent for å tilpasse parametrene.'
+    - tekst: 'Oppdateringsregelen $\theta \leftarrow \theta - \eta\, \partial\mathcal{L}/\partial\theta$'
+      forklaring: 'Regelen er den samme. Bare tapsfunksjonen og dermed gradienten endres.'
+    - tekst: 'Splitten i trenings- og testdata'
+      forklaring: 'Data skal fortsatt splittes, uansett oppgavetype.'
+  forklaring: |
+    Regresjonsmodellen gjør ikke klassifisering, så vi trenger en tapsfunksjon som måler avstanden mellom en kontinuerlig prediksjon og target. Den vanligste er $\text{MSE} = \frac{1}{2N}\sum_i \left(y^{(i)} - f(\mathbf{x}^{(i)})\right)^2$. Sigmoid i output faller også bort.
+  husk: 'Regresjon: ny tapsfunksjon (MSE). Gradient descent og treningsløkken er de samme.'
+
+- id: "N24"
+  del: "3.1"
+  kilde: "1.4.1 Data og tapsfunksjon"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    En lineær modell $f(x) = \beta_0 + \beta_1 x_1$ er trent med $\text{MSE} = \frac{1}{2N}\sum (y - f(x))^2$. Modellen **overestimerer konsekvent** for alle verdier av $x_1$, med samme avstand overalt. Gradienten er $\frac{\partial\mathcal{L}}{\partial\beta_0} = \frac{1}{N}\sum (f(x^{(i)}) - y^{(i)})$. Hva stemmer?
+  alternativer:
+    - tekst: '$\beta_0$ er for høy og $\partial\mathcal{L}/\partial\beta_0 > 0$'
+      riktig: true
+      forklaring: 'Alle feil f − y er positive, så gradienten er positiv og gradient descent senker β₀.'
+    - tekst: '$\beta_0$ er for lav og $\partial\mathcal{L}/\partial\beta_0 < 0$'
+      forklaring: 'Med for lav β₀ ville modellen underestimert, ikke overestimert.'
+    - tekst: '$\beta_0$ er for høy og $\partial\mathcal{L}/\partial\beta_0 < 0$'
+      forklaring: 'Med negativ gradient ville gradient descent økt β₀ og gjort det verre.'
+    - tekst: '$\beta_1$ er for høy, mens $\beta_0$ er riktig'
+      forklaring: 'For høy β₁ gir et avvik som vokser med x. Her er avviket likt for alle x.'
+  forklaring: |
+    Et konstant avvik oppover betyr at skjæringspunktet $\beta_0$ er for stort. Da er $f - y > 0$ for alle punkter og $\partial\mathcal{L}/\partial\beta_0 > 0$: tapet øker når $\beta_0$ øker. Oppdateringen $\beta_0 \leftarrow \beta_0 - \eta\, \partial\mathcal{L}/\partial\beta_0$ senker derfor $\beta_0$. Slike kontrollspørsmål er en god måte å sjekke at de deriverte gir mening.
+  husk: 'Konsekvent overestimering → β₀ for høy → positiv gradient → β₀ senkes.'
+
+- id: "N25"
+  del: "3.1"
+  kilde: "1.4.1 Data og tapsfunksjon"
+  niva: avansert
+  type: enkeltvalg
+  sporsmal: |
+    Tilsvarende kontroll kan gjøres for stigningstallet, der $\frac{\partial\mathcal{L}}{\partial\beta_1} = \frac{1}{N}\sum x^{(i)} \left(f(x^{(i)}) - y^{(i)}\right)$. Dataene er sentrert rundt $x = 0$. Modellen overestimerer for positive $x$ og underestimerer for negative $x$. Hva stemmer?
+  alternativer:
+    - tekst: 'Linjen er for bratt, og $\partial\mathcal{L}/\partial\beta_1 > 0$'
+      riktig: true
+      forklaring: 'For x > 0 er f − y > 0, og for x < 0 er f − y < 0. Produktet x(f − y) er positivt i begge tilfeller.'
+    - tekst: 'Linjen er for slak, og $\partial\mathcal{L}/\partial\beta_1 > 0$'
+      forklaring: 'En for slak linje ville underestimert for positive x, det motsatte av det vi ser.'
+    - tekst: 'Linjen er for bratt, og $\partial\mathcal{L}/\partial\beta_1 < 0$'
+      forklaring: 'Fortegnet blir positivt, siden x og feilen har samme fortegn.'
+    - tekst: 'Gradienten er 0, fordi feilene kansellerer hverandre'
+      forklaring: 'Feilene kan kansellere i ∂L/∂β₀, men ikke når de vektes med x.'
+  forklaring: |
+    Når $x$ og feilen $f - y$ har samme fortegn overalt, er $\partial\mathcal{L}/\partial\beta_1 > 0$. Gradient descent senker da $\beta_1$, slik at linjen blir slakere, som er riktig retning. For $\beta_0$ ville feilene her omtrent kansellert hverandre.
+  husk: 'Feil som vokser med x → sjekk β₁: x(f − y) > 0 betyr for bratt linje.'
+
+- id: "N26"
+  del: "3.2"
+  kilde: "1.4.2 Polynomisk regresjon og feature engineering"
+  niva: grunnleggende
+  type: tekst
+  sporsmal: |
+    Et datasett er generert fra et andregradspolynom (en parabel) med gaussisk støy. Hvor godt vil lineær regresjon $y = \beta_0 + \beta_1 x$ fungere for å predikere $y$ for nye $x$? Begrunn med antakelsen som ligger i lineær regresjon, og si hva du ville gjort i stedet.
+  eksempelsvar: |
+    Dårlig. Lineær regresjon antar at sammenhengen mellom feature og target er lineær, altså en rett linje. En parabel kan ikke beskrives av en rett linje, så modellen får høy bias og underestimerer eller overestimerer systematisk i ulike områder. Bedre er feature engineering: lag en ny feature $x_2 = x^2$ og tilpass $y = \beta_0 + \beta_1 x + \beta_2 x^2$. Det er fortsatt lineær regresjon, men nå i de genererte featurene.
+  punkter:
+    - tekst: 'Lineær regresjon antar lineær sammenheng og passer derfor dårlig til en parabel.'
+      stikkord: ['lineær', 'rett linje', 'antakelse', 'dårlig']
+    - tekst: 'Løsning: polynomisk feature, x², med lineær regresjon i de nye featurene.'
+      stikkord: ['x^2', 'x²', 'kvadrat', 'polynom', 'feature engineering', 'polynomialfeatures']
+  husk: 'Lineær regresjon antar en lineær sammenheng. Ikke-linearitet håndteres med feature engineering (x → x²).'
+
+- id: "N27"
+  del: "3.1"
+  kilde: "1.4.2 Polynomisk regresjon og feature engineering"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    En lineær modell tilpasset parabel-data får MSE ≈ 960. Gjennomsnittet av targets er omtrent 28, og gjennomsnittet av prediksjonene omtrent 32. Er MSE = 960 høyt?
+  alternativer:
+    - tekst: 'Ja, for $\sqrt{960} \approx 31$, på størrelse med targets selv'
+      riktig: true
+      forklaring: 'Et typisk avvik på rundt 30 når verdiene selv ligger rundt 30 er et stort tap.'
+    - tekst: 'Ja, for en MSE over 1 er alltid høy'
+      forklaring: 'MSE har enheten til y² og ingen fast skala. Det finnes ingen universell grense.'
+    - tekst: 'Nei, for gjennomsnittene er nesten like, 28 mot 32'
+      forklaring: 'Like gjennomsnitt kan skjule store avvik i begge retninger for enkeltpunkter.'
+    - tekst: 'Nei, for MSE måles i kvadrerte enheter og kan ikke tolkes'
+      forklaring: 'Vi kan tolke den ved å ta kvadratroten og sammenligne med størrelsen på targets.'
+  forklaring: |
+    Vi kan ikke si generelt hva som er en høy MSE. Det avhenger av skalaen på dataene. Siden MSE er kvadrerte avvik, kan vi sammenligne $\sqrt{\text{MSE}}$ med typiske verdier av $y$. Her er avviket omtrent like stort som targets, og det er et forholdsvis stort tap.
+  husk: 'MSE har ingen absolutt skala. Sammenlign √MSE med størrelsen på targets.'
+
+- id: "N28"
+  del: "3.2"
+  kilde: "1.4.2 Polynomisk regresjon og feature engineering"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Du har et plott av støyete data generert fra et polynom av ukjent grad. Kan du lese av fra plottet hvilken grad du bør generere features til?
+  alternativer:
+    - tekst: 'Bare som et hint; graden bør velges ved å sammenligne på valideringsdata'
+      riktig: true
+      forklaring: 'Formen kan antyde en rimelig grad, men støy gjør det usikkert. For lav og for høy grad gir begge problemer.'
+    - tekst: 'Ja, antall vendepunkter i plottet gir alltid riktig grad'
+      forklaring: 'Med støy kan vi se «vendepunkter» som bare er tilfeldig variasjon.'
+    - tekst: 'Nei, så vi bør velge en høy grad for å være sikre'
+      forklaring: 'Høy grad kan overtilpasse støyen. En mer kompleks modell gir ikke nødvendigvis lavere tap på nye data.'
+    - tekst: 'Ja, graden er den som gir lavest MSE på treningsdataene'
+      forklaring: 'Treningstapet synker nesten alltid med høyere grad. Det avslører ikke overtilpasning.'
+  forklaring: |
+    I notatene ser vi grad 1, 3 og 15 på de samme dataene. Grad 1 er for enkel, mens grad 15 følger støyen. Plotting gir intuisjon, men graden er en hyperparameter som bør velges med valideringsdata (eller kryssvalidering), ikke ut fra treningstapet.
+  husk: 'Både for lav og for høy modellkompleksitet er problematisk. Velg grad på valideringsdata.'
+
+- id: "N29"
+  del: "3.2"
+  kilde: "1.4.2 Polynomisk regresjon og feature engineering"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Når vi bruker `PolynomialFeatures` for å transformere $x$ til $(x, x^2, \dots, x^M)$, er graden $M$ en …
+  alternativer:
+    - tekst: 'hyperparameter'
+      riktig: true
+      forklaring: 'M velges før treningen og styrer modellens kompleksitet. Den læres ikke av gradient descent.'
+    - tekst: 'modellparameter'
+      forklaring: 'Modellparametrene er koeffisientene β, som tilpasses under trening.'
+    - tekst: 'feature'
+      forklaring: 'Featurene er x, x², … . M bestemmer hvor mange slike features vi lager.'
+    - tekst: 'target'
+      forklaring: 'Target er y, verdien vi prøver å predikere.'
+  forklaring: |
+    Modellparametre ($\beta_0, \dots, \beta_M$) læres fra treningsdataene. Hyperparametre, som graden $M$, velges utenfor treningen, typisk ved å sammenligne ytelsen på valideringsdata.
+  husk: 'Polynomgrad = hyperparameter. Koeffisientene β = parametre.'
+
+- id: "N30"
+  del: "3.4"
+  kilde: "1.4.4 Kryssvalidering"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Hvordan bør vi velge hvilke datapunkter som havner i trenings-, validerings- og testsettet, og påvirker valget testresultatet?
+  alternativer:
+    - tekst: 'Tilfeldig, men resultatet varierer med splitten'
+      riktig: true
+      forklaring: 'Splitten skal være tilfeldig, men en annen tilfeldig splitt gir et litt annet testresultat.'
+    - tekst: 'Tilfeldig, og da påvirker splitten ikke resultatet'
+      forklaring: 'Tilfeldig splitt gir varians i testresultatet, særlig med få datapunkter.'
+    - tekst: 'De vanskeligste punktene bør legges i testsettet'
+      forklaring: 'Da blir testen ikke representativ for nye data.'
+    - tekst: 'De første radene til trening og de siste til test'
+      forklaring: 'Rekkefølgen kan være systematisk (for eksempel sortert), og det gir skjeve sett.'
+  forklaring: |
+    Vi må forvente noe varians i testresultatet avhengig av splitten. I tillegg får vi færre treningsdata når vi setter av data til validering og testing. Kryssvalidering løser begge deler: alle datapunktene brukes både til trening og testing, og resultatene midles.
+  husk: 'Tilfeldig splitt → varians i testresultatet. Kryssvalidering reduserer dette.'
+
+- id: "N31"
+  del: "3.4"
+  kilde: "1.4.4 Kryssvalidering"
+  niva: middels
+  type: tekst
+  sporsmal: |
+    I leave-one-out cross validation (LOOCV) trenes modellen $n$ ganger på $n - 1$ punkter og testes på det siste. I $k$-fold cross validation deles dataene i $k$ deler, og hver del brukes én gang som testsett. Hva er fordeler og ulemper med $k$-fold sammenlignet med LOOCV?
+  eksempelsvar: |
+    Fordel med k-fold: modellen trenes bare k ganger i stedet for n ganger, så den er mye billigere å beregne. Ulempe: hver trening bruker færre datapunkter, (k − 1)/k av dataene mot n − 1 for LOOCV, og estimatet bruker dermed dataene litt mindre effektivt. LOOCV gir det beste estimatet vi kan lage, siden alle punktene brukes maksimalt, men det er svært ressurskrevende for store datasett. Resultatet med k-fold avhenger også av hvordan foldene trekkes.
+  punkter:
+    - tekst: 'k-fold er billigere: k treninger mot n.'
+      stikkord: ['billig', 'rask', 'ressurs', 'beregning', 'færre ganger', 'k ganger']
+    - tekst: 'k-fold trener på færre punkter per runde / LOOCV gir det beste estimatet.'
+      stikkord: ['færre datapunkter', 'mindre data', 'beste estimat', 'n − 1', 'n-1', 'presis']
+  husk: 'LOOCV: best estimat, men n treninger. k-fold: k treninger, litt mindre treningsdata per runde.'
+
+- id: "N32"
+  del: "3.5"
+  kilde: "1.4.5 Bias variance tradeoff"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Vi antar $y = F(x) + \varepsilon$, og biasen til en læringsalgoritme over ulike treningsdatasett $D$ er
+    $$\text{Bias}_D[f(x; D)] = E_D[f(x; D) - F(x)] = E_D[f(x; D)] - F(x).$$
+    Hvorfor kan vi flytte $F(x)$ ut av forventningsverdien i den andre likheten?
+  alternativer:
+    - tekst: '$F(x)$ avhenger ikke av $D$, så den er konstant for gitt $x$'
+      riktig: true
+      forklaring: 'Forventningen tas over trekninger av datasett, og den sanne funksjonen endres ikke med dem.'
+    - tekst: 'Støyen $\varepsilon$ har forventningsverdi 0'
+      forklaring: 'Det brukes i dekomposisjonen av MSE, men er ikke grunnen her. ε inngår ikke i uttrykket.'
+    - tekst: '$F(x)$ er lik $E_D[f(x; D)]$ når modellen er god nok'
+      forklaring: 'Da ville biasen vært 0. Likheten gjelder for alle modeller.'
+    - tekst: 'Forventningsverdien er lineær, så alle ledd kan flyttes ut'
+      forklaring: 'Linearitet lar oss splitte summen, men bare konstanter kan flyttes ut av E.'
+  forklaring: |
+    $E_D$ midler over tilfeldige trekninger av treningsdata. Den sanne sammenhengen $F(x)$ er ikke avhengig av hvilket datasett vi trakk, så for gitt $x$ er den en konstant, og $E[c] = c$.
+  husk: 'E_D tas over datasett. F(x) er konstant med hensyn på D.'
+
+- id: "N33"
+  del: "3.5"
+  kilde: "1.4.5 Bias variance tradeoff"
+  niva: grunnleggende
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Den faktiske gjennomsnittshøyden til norske kvinner er 167 cm. Vi trekker mange tilfeldige utvalg av norske kvinner og trener en regresjonsmodell på hvert utvalg for å predikere høyde fra andre egenskaper. I gjennomsnitt predikerer modellene 165 cm. Hvor stor er biasen til læringsalgoritmen (med fortegn, i cm)?
+  deler:
+    - sporsmal: 'Bias'
+      svar: -2
+      toleranse: 0.01
+      enhet: 'cm'
+  losning: |
+    $\text{Bias} = E_D[f(x; D)] - F(x) = 165 - 167 = -2$ cm.
+
+    Algoritmen bommer systematisk 2 cm for lavt. Bias er tendensen til å alltid bomme i samme retning, og den følger av forenklingene som er bygget inn i modellen.
+  husk: 'Bias = gjennomsnittlig prediksjon over datasett minus sann verdi.'
+
+- id: "N34"
+  del: "3.6"
+  kilde: "1.4.6 Regresjonstrær"
+  niva: middels
+  type: enkeltvalg
+  sporsmal: |
+    Dataene er generert med $y = \lfloor x \rfloor$ (funksjonen `np.floor`) for $x \in [0, 4)$, pluss litt støy. De ser altså ut som en trapp. Hvorfor er polynomisk regresjon et dårlig valg her?
+  alternativer:
+    - tekst: 'Et polynom er glatt og kan ikke gjenskape de bratte hoppene'
+      riktig: true
+      forklaring: 'Polynomer er kontinuerlige og glatte. Et trappetrinn krever et hopp.'
+    - tekst: 'Dataene har for få features til polynomisk regresjon'
+      forklaring: 'Polynomisk regresjon fungerer fint med én feature. Problemet er funksjonsformen.'
+    - tekst: 'Polynomisk regresjon krever at $y$ er binær'
+      forklaring: 'Polynomisk regresjon er regresjon og forutsetter kontinuerlig target.'
+    - tekst: 'Støyen gjør at ingen modell kan lære noe'
+      forklaring: 'Støyen er liten. Et beslutningstre lærer trappen fint.'
+  forklaring: |
+    Ved å studere dataene ser vi at de ligger i flere regioner med konstant verdi. Beslutningstrær er godt egnet til å dele datarommet i regioner og predikere én verdi per region, og de kan derfor brukes til regresjon.
+  husk: 'Stegvise data → regresjonstre (én verdi per region), ikke polynom.'
+
+- id: "N35"
+  del: "3.6"
+  kilde: "1.4.6 Regresjonstrær"
+  niva: middels
+  type: tall
+  tags: [regning]
+  sporsmal: |
+    Vi tilpasser et regresjonstre (binære splitter) til trappedataene $y = \lfloor x \rfloor$ for $x \in [0, 4)$, med litt støy. Hva er den **minste** dybden treet må ha for å kunne gjenskape trappen?
+  deler:
+    - sporsmal: 'Minste dybde'
+      svar: 2
+      toleranse: 0.01
+  losning: |
+    Trappen har fire nivåer (0, 1, 2, 3), så vi trenger fire løvnoder. Et binært tre med dybde $d$ har opptil $2^d$ løvnoder, og $2^2 = 4$. Med dybde 2 kan rotnoden splitte ved $x = 2$ og hver av barna ved $x = 1$ og $x = 3$.
+
+    I notatene gir dybde 2 også lavest MSE på testdata. Et dypere tre begynner å tilpasse seg støyen. Uten begrensning på dybden kan `DecisionTreeRegressor` bli mye dypere og overtilpasse.
+  husk: 'k regioner krever minst ⌈log₂ k⌉ nivåer i et binært tre. Begrens dybden for å unngå overtilpasning.'
+
+- id: "N36"
+  del: "3.6"
+  kilde: "1.4.6 Regresjonstrær"
+  niva: avansert
+  type: flervalg
+  sporsmal: |
+    Hvilke påstander om forskjellene mellom beslutningstrær og lineær/logistisk regresjon (med polynomiske features) stemmer?
+  alternativer:
+    - tekst: 'Trær trenger ikke feature scaling, fordi de bare deler dataene i regioner'
+      riktig: true
+      forklaring: 'En splitt på x > 3 fungerer likt uansett skala. Regresjonsmodeller bør derimot ha features av størrelsesorden 1.'
+    - tekst: 'Treets struktur bestemmes under trening, mens regresjonen har gitt likningsform'
+      riktig: true
+      forklaring: 'Treet legger til splitter etter behov. Regresjonen kan bare tilpasse koeffisientene i en fast likning.'
+    - tekst: 'Trær uten dybdebegrensning kan bli for dype og overtilpasse'
+      riktig: true
+      forklaring: 'Derfor er maks dybde en viktig hyperparameter.'
+    - tekst: 'Bare regresjonsmodellene er tolkbare'
+      forklaring: 'Begge er tolkbare: regresjon gjennom koeffisientene, trær gjennom splittkriteriene.'
+    - tekst: 'Trær krever at featurene er uavhengige'
+      forklaring: 'Det er antakelsen i Naiv Bayes, ikke i beslutningstrær.'
+  forklaring: |
+    Notatenes tabell 8 oppsummerer: trær trenger ikke skalering, kan bli for dype og bestemmer arkitekturen under trening, mens regresjon har fast funksjonsform og trenger skalerte features for å unngå store gradienter. Begge modelltypene er tolkbare. For regresjon angir størrelsen på koeffisientene viktigheten til hver variabel, og for trær er features som splittes tidlig viktigere.
+  husk: 'Trær: ingen skalering, fleksibel struktur, fare for overtilpasning. Regresjon: fast form, trenger skalering. Begge er tolkbare.'
+
+- id: "N37"
+  del: "4.6"
+  kilde: "1.5 Ensemble-modeller"
+  niva: grunnleggende
+  type: enkeltvalg
+  sporsmal: |
+    Notatene nevner fire trebaserte ensemblemodeller du bør ha hørt om, og anbefaler å alltid bruke en ensemblemodell som referanse når du jobber med tabulære data. Hvilken av disse er **ikke** en av de fire?
+  alternativer:
+    - tekst: 'DBSCAN'
+      riktig: true
+      forklaring: 'DBSCAN er en tetthetsbasert klyngealgoritme, ikke en ensemblemodell.'
+    - tekst: 'XGBoost'
+      forklaring: 'XGBoost er gradient boosting med trær.'
+    - tekst: 'AdaBoost'
+      forklaring: 'AdaBoost er boosting, typisk med små trær (stumps).'
+    - tekst: 'LightGBM'
+      forklaring: 'LightGBM er en rask variant av gradient boosting med trær.'
+  forklaring: |
+    De fire er CatBoost, LightGBM, AdaBoost og XGBoost, alle boosting med trær. For tabulære data er slike ensembler ofte svært sterke og gir en god referanseverdi for hvor godt en modell kan gjøre det.
+  husk: 'Tabulære data: bruk et trebasert ensemble (XGBoost, LightGBM, CatBoost, AdaBoost) som referanse.'
