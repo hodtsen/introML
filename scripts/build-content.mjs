@@ -2,7 +2,7 @@
 //
 //   content/pensum/NN-*.md      -> src/generated/pensum/kapN.json (+ indeks, begreper, søk)
 //   content/oppgaver/kapN.yaml  -> src/generated/oppgaver/kapN.json (+ indeks)
-//   content/notatquiz/*.yaml    -> src/generated/notatquiz/{notater,eksempler}.json
+//   content/notatquiz/*.yaml    -> src/generated/notatquiz/{notater,eksempler,prosjekter}.json
 //
 // Skriptet stopper med feilkode hvis innholdet ikke er gyldig: manglende
 // seksjoner, formler som ikke lar seg sette, oppgaver som peker til ukjente
@@ -422,15 +422,15 @@ for (const fil of oppgFiler) {
 }
 
 // ---------------------------------------------------------------- notatquiz
-// content/notatquiz/notater-*.yaml og eksempler.yaml -> src/generated/notatquiz/{notater,eksempler}.json
+// content/notatquiz/notater-*.yaml, eksempler.yaml og prosjekter.yaml -> src/generated/notatquiz/<sett>.json
 // Notatquizen holdes utenfor oppgavebanken: den får ikke plass i indeksen, eksamenspoolen eller statistikken.
 const notatquizDir = path.join(root, "content", "notatquiz");
-const notatquiz = { notater: [], eksempler: [] };
+const notatquiz = { notater: [], eksempler: [], prosjekter: [] };
 if (fs.existsSync(notatquizDir)) {
   for (const fil of fs.readdirSync(notatquizDir).filter((f) => /\.ya?ml$/.test(f)).sort()) {
-    const sett = fil.startsWith("notater") ? "notater" : fil.startsWith("eksempler") ? "eksempler" : null;
+    const sett = Object.keys(notatquiz).find((s) => fil.startsWith(s)) ?? null;
     if (!sett) {
-      feil(`notatquiz/${fil}`, "filnavnet må starte med «notater» eller «eksempler»");
+      feil(`notatquiz/${fil}`, "filnavnet må starte med «notater», «eksempler» eller «prosjekter»");
       continue;
     }
     let liste;
@@ -451,8 +451,7 @@ if (fs.existsSync(notatquizDir)) {
     }
   }
   const sorter = (a, b) => a.id.localeCompare(b.id, "nb", { numeric: true });
-  notatquiz.notater.sort(sorter);
-  notatquiz.eksempler.sort(sorter);
+  for (const liste of Object.values(notatquiz)) liste.sort(sorter);
 }
 
 // ---------------------------------------------------------------- skriv ut
@@ -480,6 +479,7 @@ skriv(path.join(outDir, "figurer-i-bruk.json"), [...figurerIBruk].sort());
 fs.mkdirSync(path.join(outDir, "notatquiz"), { recursive: true });
 skriv(path.join(outDir, "notatquiz", "notater.json"), notatquiz.notater);
 skriv(path.join(outDir, "notatquiz", "eksempler.json"), notatquiz.eksempler);
+skriv(path.join(outDir, "notatquiz", "prosjekter.json"), notatquiz.prosjekter);
 
 const perType = {};
 for (const o of indeks) perType[o.type] = (perType[o.type] ?? 0) + 1;
@@ -488,7 +488,7 @@ for (const o of indeks) perNiva[o.niva] = (perNiva[o.niva] ?? 0) + 1;
 console.log(
   `Pensum: ${kapitler.length} kapitler, ${delkapIds.size} delkapitler, ${begreper.length} begreper. ` +
     `Oppgaver: ${indeks.length} (${Object.entries(perType).map(([t, n]) => `${t} ${n}`).join(", ")}; ` +
-    `${Object.entries(perNiva).map(([t, n]) => `${t} ${n}`).join(", ")}). Notatquiz: ${notatquiz.notater.length} + ${notatquiz.eksempler.length}. Formler: ${mathCount}.`
+    `${Object.entries(perNiva).map(([t, n]) => `${t} ${n}`).join(", ")}). Notatquiz: ${notatquiz.notater.length} + ${notatquiz.eksempler.length} + ${notatquiz.prosjekter.length}. Formler: ${mathCount}.`
 );
 if (errors.length) {
   console.error(`\n${errors.length} feil i innholdet:`);
