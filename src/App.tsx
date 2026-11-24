@@ -16,6 +16,7 @@ const EksamenPagar = lazy(() => import("./pages/EksamenPagar"));
 const EksamenResultatSide = lazy(() => import("./pages/EksamenResultat"));
 const Fremgang = lazy(() => import("./pages/Fremgang"));
 const Notatquiz = lazy(() => import("./pages/Notatquiz"));
+const Kode = lazy(() => import("./pages/Kode"));
 
 function TilToppen() {
   const { pathname } = useLocation();
@@ -44,6 +45,8 @@ export default function App() {
             <Route path="eksamen/resultat/:id" element={<EksamenResultatSide />} />
             <Route path="notatquiz" element={<Notatquiz />} />
             <Route path="notatquiz/:sett" element={<Notatquiz />} />
+            <Route path="kode" element={<Kode />} />
+            <Route path="kode/quiz" element={<Okt kodequiz />} />
             <Route path="fremgang" element={<Fremgang />} />
             <Route path="*" element={<IkkeFunnet />} />
           </Route>

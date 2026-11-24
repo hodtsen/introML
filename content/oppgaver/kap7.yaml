@@ -943,3 +943,149 @@
   forklaring: |
     I DQN deler alle tilstander vektene i nettet. En oppdatering for én tilstand endrer derfor Q-verdiene for mange andre. Trener vi bare på de siste, korrelerte overgangene, kan nettet overskrive det det har lært. Replay buffer bryter korrelasjonen ved å trekke tilfeldige batcher av gamle og nye overganger, og target-nettet holder målene stabile.
   husk: 'Plutselig kollaps i belønning: catastrophic forgetting. Motvirkes med replay buffer og target-nett.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "7.3-K1"
+  del: "7.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, regning, prosjekt-4]
+  sporsmal: |
+    Miljøet i prosjekt 4 er et rutenett med 12 rader og 12 kolonner og fire handlinger. Tilstands-id-en regnes ut slik:
+
+    ```python
+    grid_index = (agent_row * cols) + agent_col
+    ```
+
+    Agenten står i rad 3, kolonne 5 (nullindeksert). Hva er tilstands-id-en, og hvilken form har Q-tabellen?
+  alternativer:
+    - tekst: '41, og Q-tabellen har form `(144, 4)`'
+      riktig: true
+      forklaring: '$3 \cdot 12 + 5 = 41$. Én rad per tilstand ($12 \cdot 12 = 144$) og én kolonne per handling.'
+    - tekst: '63, og Q-tabellen har form `(144, 4)`'
+      forklaring: '$5 \cdot 12 + 3 = 63$ bytter om rad og kolonne.'
+    - tekst: '41, og Q-tabellen har form `(4, 144)`'
+      forklaring: 'Tabellen indekseres som `q_table[state, action]`, så tilstandene er radene.'
+    - tekst: '8, og Q-tabellen har form `(12, 12)`'
+      forklaring: '$3 + 5$ er ikke en entydig id, og en $12 \times 12$-tabell har ingen plass til handlingene.'
+  forklaring: |
+    Tilstanden er bare posisjonen til agenten, og `get_state_id` gjør (rad, kolonne) om til et radnummer i tabellen. Derfor har Q-tabellen 144 tilstander, som var et av ❓-spørsmålene i prosjektet.
+  husk: 'Q-tabell: (antall tilstander, antall handlinger). Id = rad · kolonner + kolonne.'
+
+- id: "7.3-K2"
+  del: "7.3"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    En student skriver Q-oppdateringen slik:
+
+    ```python
+    td_target = reward + gamma * np.max(q_table[state])          # skulle vært next_state
+    q_table[state, action] += alpha * (td_target - q_table[state, action])
+    ```
+
+    Hva blir konsekvensen?
+  alternativer:
+    - tekst: 'Verdien fra målet sprer seg ikke bakover forbi tilstanden rett før målet.'
+      riktig: true
+      forklaring: 'Hver tilstand bootstrapper fra seg selv i stedet for fra etterfølgeren, så verdien til neste tilstand påvirker aldri denne.'
+    - tekst: 'Ingenting, fordi maks over $s$ og $s''$ er lik i et deterministisk miljø.'
+      forklaring: 'To ulike tilstander har generelt ulike Q-verdier, også når miljøet er deterministisk.'
+    - tekst: 'Agenten utforsker mer, fordi Q-verdiene blir mer like.'
+      forklaring: 'Hvor mye agenten utforsker, styres av $\epsilon$ i valget av handling, ikke av oppdateringen.'
+    - tekst: 'Det tilsvarer å sette $\gamma = 0$.'
+      forklaring: 'Med $\gamma = 0$ forsvinner fremtidsleddet helt. Her er det med, men tas fra feil tilstand.'
+  forklaring: |
+    Q-læring bruker $r + \gamma \max_{a'} Q(s', a')$: belønningen pluss beste verdi i *neste* tilstand. Det er dette som lar en belønning ved målet spre seg bakover gjennom tilstandene, ett steg av gangen, og som gjør at agenten lærer korteste vei selv om alle andre steg gir reward 0.
+  husk: 'max tas over handlingene i neste tilstand s′.'
+
+- id: "7.5-K1"
+  del: "7.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    ```python
+    epsilon = 1.0
+    for episode in range(100):
+        ...                                                   # spill én episode
+        epsilon = max(0.05, epsilon * 0.99)
+    ```
+
+    Omtrent hva er `epsilon` etter løkka?
+  alternativer:
+    - tekst: '0,37'
+      riktig: true
+      forklaring: '$0{,}99^{100} \approx e^{-1} \approx 0{,}37$, som fortsatt er over minimumsverdien 0,05.'
+    - tekst: '0,05'
+      forklaring: 'Minimum nås først når $0{,}99^n < 0{,}05$, etter rundt 300 episoder.'
+    - tekst: '0,63'
+      forklaring: '$0{,}63 \approx 1 - 0{,}99^{100}$, ikke selve verdien.'
+    - tekst: '0,13'
+      forklaring: '$0{,}99^{200} \approx 0{,}13$ ville vært svaret etter 200 episoder.'
+  forklaring: |
+    Med eksponentiell decay er $\epsilon_n = \max(\epsilon_{\min}, \epsilon_0 \cdot d^{\,n})$. Notatene: har agenten ikke lært noe før $\epsilon$ når minimum, hjelper det sjelden å trene videre.
+  husk: 'ε etter n episoder: max(ε_min, ε₀ · dⁿ).'
+
+- id: "7.5-K2"
+  del: "7.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    ```python
+    def update_action(env, state, explore_rate, q_table):
+        if np.random.uniform(0, 1) > explore_rate:
+            return env.action_space.sample()
+        return int(np.argmax(q_table[state]))
+    ```
+
+    `explore_rate` synker fra 1 til 0,05 i løpet av treningen. Hvordan oppfører agenten seg sent i treningen?
+  alternativer:
+    - tekst: 'Den tar en tilfeldig handling i omtrent 95 % av stegene.'
+      riktig: true
+      forklaring: 'Sammenligningen er snudd. Med `>` utforsker agenten med sannsynlighet $1 - \epsilon$.'
+    - tekst: 'Den velger nesten alltid beste kjente handling, som tenkt.'
+      forklaring: 'Det ville krevd `< explore_rate`, som i notatenes `choose_action`.'
+    - tekst: 'Den slutter å lære, fordi tilfeldige handlinger ikke oppdaterer Q-tabellen.'
+      forklaring: 'Q-oppdateringen skjer uansett hvordan handlingen ble valgt.'
+    - tekst: 'Den velger alltid den samme handlingen i alle tilstander.'
+      forklaring: 'Med mest tilfeldige handlinger blir oppførselen tvert imot svært variert.'
+  forklaring: |
+    Epsilon-greedy: med sannsynlighet $\epsilon$ en tilfeldig handling, ellers `argmax` av Q-verdiene. Testen skal derfor være `np.random.uniform(0, 1) < explore_rate`. Feilen gir mest utnytting tidlig og mest utforsking sent, altså det motsatte av epsilon decay.
+  husk: 'Utforsk når tilfeldig tall < ε.'
+
+- id: "7.6-K1"
+  del: "7.6"
+  niva: avansert
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    Fra `learn`-metoden til DQN-agenten i notatene:
+
+    ```python
+    states, actions, rewards, next_states, dones = self.replay_buffer.sample(self.batch_size)
+    with torch.no_grad():
+        next_q = self.target_network(next_states).max(dim=1, keepdim=True).values
+        next_q = torch.where(dones, torch.zeros_like(next_q), next_q)
+    y_train = rewards + self.discount * next_q
+    y_pred = torch.gather(self.q_network(states), 1, actions)
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: '`torch.no_grad()` gjør at target network ikke får gradienter og ikke trenes her.'
+      riktig: true
+      forklaring: 'Målene skal holdes i ro. Target network oppdateres bare ved å kopiere vektene fra Q-nettet med jevne mellomrom.'
+    - tekst: '`torch.gather` plukker ut Q-verdien for handlingen som faktisk ble tatt.'
+      riktig: true
+      forklaring: 'Vi har bare et Bellman-mål for den valgte handlingen, så tapet regnes bare for den.'
+    - tekst: 'Target network oppdateres med `optimizer.step()` i hver iterasjon.'
+      forklaring: 'Da ville det ikke vært mer stabilt enn Q-nettet. Det oppdateres sjelden, ved kopiering.'
+    - tekst: 'Overgangene i bufferen brukes i den rekkefølgen de skjedde, for å bevare tidsavhengigheten.'
+      forklaring: 'Poenget med replay buffer er å trekke tilfeldig, slik at treningseksemplene blir mindre korrelerte.'
+  forklaring: |
+    DQN bruker to grep for å stabilisere treningen: et target network som gir stabile mål, og en replay buffer som gir tilfeldige, mindre korrelerte minibatcher. Notatene sier at bare konseptuelle spørsmål om DRL er relevante, så det viktige er å vite hva hvert grep løser.
+  husk: 'Target network: stabile mål. Replay buffer: mindre korrelerte data. gather: valgt handling.'

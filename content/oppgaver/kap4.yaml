@@ -765,3 +765,91 @@
   forklaring: |
     I gradient boosting retter hvert nytt tre opp det ensemblet ennå ikke forklarer. Til slutt begynner trærne å tilpasse seg støyen i treningsdataene. Antall trær (sammen med læringsraten) er derfor en hyperparameter som velges med valideringsdata, på samme måte som early stopping for nevrale nett.
   husk: 'Antall trær i boosting velges med validering. For mange trær = overtilpasning.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "4.2-K1"
+  del: "4.2"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    En student lager «bootstrap-utvalg» til bagging slik:
+
+    ```python
+    idx = rng.choice(n, size=n, replace=False)
+    X_boot, y_boot = X_train[idx], y_train[idx]
+    ```
+
+    Hva er feil?
+  alternativer:
+    - tekst: 'Uten tilbakelegging blir hvert utvalg alle $n$ punktene i ny rekkefølge.'
+      riktig: true
+      forklaring: 'Da trenes alle modellene på de samme dataene og blir (nesten) like. Bagging trenger `replace=True`.'
+    - tekst: 'Et bootstrap-utvalg skal bare ha halvparten så mange punkter, `size=n // 2`.'
+      forklaring: 'Et bootstrap-utvalg er like stort som datasettet. Variasjonen kommer fra tilbakeleggingen.'
+    - tekst: '`rng.choice` kan bare trekke verdier, ikke indekser.'
+      forklaring: 'Med et heltall som første argument trekker `rng.choice` fra `range(n)`, altså indekser.'
+    - tekst: 'Ingenting, et bootstrap-utvalg trekkes uten tilbakelegging.'
+      forklaring: 'Bootstrapping er nettopp trekning *med* tilbakelegging.'
+  forklaring: |
+    Med tilbakelegging inneholder hvert utvalg i snitt omtrent 63 % av de unike punktene, noen flere ganger. Det gjør modellene ulike, og snittet av dem får lavere varians. Isolation forest trekker derimot sine utvalg uten tilbakelegging, men da med et mindre antall punkter enn $n$.
+  husk: 'Bootstrap: n trekninger med tilbakelegging.'
+
+- id: "4.3-K1"
+  del: "4.3"
+  niva: middels
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    rf = RandomForestClassifier(n_estimators=200, max_features="sqrt", bootstrap=True)
+    rf.fit(X_train, y_train)
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: '`bootstrap=True` gir hvert tre sitt eget utvalg av treningsdataene.'
+      riktig: true
+      forklaring: 'Hvert tre trenes på et bootstrap-utvalg.'
+    - tekst: '`max_features="sqrt"` lar hver splitt vurdere bare et tilfeldig utvalg av featurene.'
+      riktig: true
+      forklaring: 'Med $d$ features vurderes omtrent $\sqrt{d}$ i hver splitt.'
+    - tekst: 'Med `n_estimators=2000` i stedet for 200 blir skogen mye mer overtilpasset.'
+      forklaring: 'Flere uavhengige trær i et snitt gir ikke mer overtilpasning, bare lengre kjøretid.'
+    - tekst: 'Trærne trenes etter hverandre, og hvert tre retter feilene til det forrige.'
+      forklaring: 'Det er boosting. I en random forest trenes trærne uavhengig.'
+  forklaring: |
+    Random forest er bagging med beslutningstrær pluss et tilfeldig utvalg features i hver splitt. Begge deler gjør trærne mer ulike, slik at feilene deres i større grad jevner seg ut (H25 del 3 spørsmål 2).
+  husk: 'Random forest: bootstrap + tilfeldige features per splitt = mindre korrelerte trær.'
+
+- id: "4.5-K1"
+  del: "4.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    En student implementerer gradient boosting for regresjon, men skriver `y` der det skulle stått residualene:
+
+    ```python
+    F = np.full(len(y), y.mean())
+    for m in range(M):
+        r = y - F
+        tre = DecisionTreeRegressor(max_depth=2).fit(X, y)     # skulle vært r
+        F = F + eta * tre.predict(X)
+    ```
+
+    Hva blir konsekvensen?
+  alternativer:
+    - tekst: 'Hvert tre lærer `y` på nytt, så prediksjonen vokser forbi målet når $M$ øker.'
+      riktig: true
+      forklaring: 'Alle trærne blir like, og hvert legger til omtrent $\eta \cdot y$. Etter mange runder er $F$ langt større enn $y$.'
+    - tekst: 'Ingenting endres, fordi `r` og `y` gir samme gradient.'
+      forklaring: '`r` er det som gjenstår å forklare, `y` er hele målet. De er ulike etter første runde.'
+    - tekst: 'Modellen blir en random forest, fordi trærne trenes uavhengig av hverandre.'
+      forklaring: 'Trærne blir uavhengige av hverandre, men på de samme dataene uten tilfeldighet, så de blir like. Det er ikke en random forest.'
+    - tekst: 'Treningen stopper etter første tre, fordi residualene blir null.'
+      forklaring: 'Ingenting i løkka stopper den, og residualene brukes ikke engang.'
+  forklaring: |
+    Poenget med gradient boosting er at hvert nytt tre lærer det ensemblet så langt ikke har klart, pseudo-residualene $y - F$. Notatene skriver regelen som $\text{nytt ensemble} = \text{forrige} - \eta \cdot \text{nytt tre}$, der treet tilpasses gradienten $-(y - \hat{y})$, som er det samme.
+  husk: 'Hvert boosting-tre trenes på residualene, ikke på y.'

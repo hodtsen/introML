@@ -1015,3 +1015,195 @@
   forklaring: |
     PCA er parametrisk: PC-ene finnes med `fit` på treningsdataene og kan deretter brukes på nye data med `transform`. Hver prinsipalkomponent er en retning i det opprinnelige featurerommet, og hvert punkt får én koordinat per komponent.
   husk: 'PCA: fit på trening, transform på test. Form ut: (antall punkter, n_components).'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "6.1-K1"
+  del: "6.1"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    En egen implementasjon av k-means har `X` med form `(n, d)` og sentroidene `C` med form `(k, d)`:
+
+    ```python
+    d = np.linalg.norm(X[:, None, :] - C[None, :, :], axis=2)     # form (n, k)
+    labels = d.argmin(axis=0)
+    ```
+
+    Hva inneholder `labels`?
+  alternativer:
+    - tekst: 'For hver sentroide, indeksen til punktet som ligger nærmest den. Form `(k,)`.'
+      riktig: true
+      forklaring: '`axis=0` går langs punktene. Riktig tildeling av punkter til klynger krever `argmin(axis=1)`.'
+    - tekst: 'For hvert punkt, indeksen til nærmeste sentroide. Form `(n,)`.'
+      forklaring: 'Det er `d.argmin(axis=1)`, som er det k-means trenger.'
+    - tekst: 'For hvert punkt, avstanden til nærmeste sentroide. Form `(n,)`.'
+      forklaring: 'Det er `d.min(axis=1)`, som brukes til anomalideteksjon med k-means.'
+    - tekst: 'Indeksen til punktet som ligger lengst fra alle sentroidene.'
+      forklaring: '`argmin` finner minimum, og resultatet er ett tall per sentroide.'
+  forklaring: |
+    `axis` angir dimensjonen det reduseres *over*. I en avstandsmatrise med form `(n, k)` gir `axis=1` ett svar per punkt (over sentroidene), og `axis=0` ett svar per sentroide (over punktene).
+  husk: 'Avstander (n, k): argmin(axis=1) = nærmeste sentroide per punkt.'
+
+- id: "6.2-K1"
+  del: "6.2"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    inertia = [KMeans(n_clusters=k, random_state=0).fit(X).inertia_ for k in range(1, 11)]
+    k_best = np.argmin(inertia) + 1
+    ```
+
+    Hva er hovedproblemet med å velge $k$ slik?
+  alternativer:
+    - tekst: 'Inertia synker når $k$ øker, så dette gir nesten alltid $k = 10$.'
+      riktig: true
+      forklaring: 'Flere sentroider gir kortere avstander. Med en sentroide per punkt er inertia 0.'
+    - tekst: 'Inertia skal maksimeres, så det skulle vært `argmax`.'
+      forklaring: 'Lav inertia er kompakte klynger. Problemet er at den belønner stor $k$.'
+    - tekst: '`np.argmin` gir en indeks og ikke en $k$-verdi, og det er hele feilen.'
+      forklaring: 'Det er riktig at indeksen må justeres, og det gjør `+ 1`. Hovedproblemet er metrikken.'
+    - tekst: '`KMeans` har ingen `inertia_` for $k = 1$, så løkka feiler.'
+      forklaring: 'Inertia finnes for alle $k \ge 1$. For $k = 1$ er den summen av kvadrerte avstander til snittet.'
+  forklaring: |
+    Inertia, summen av kvadrerte avstander fra punktene til sentroidene, kan ikke brukes alene til å velge $k$. Man ser etter en knekk i kurven («albuen») eller bruker en metrikk som silhouette, som ikke blir bedre bare fordi $k$ øker. Ulike metrikker kan foreslå ulike $k$ (H25 del 6).
+  husk: 'Inertia synker alltid med k. Se etter albuen eller bruk silhouette.'
+
+- id: "6.3-K1"
+  del: "6.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    dbscan = DBSCAN(eps=0.3, min_samples=5).fit(X_train)
+    labels_test = dbscan.predict(X_test)
+    ```
+
+    Siste linje gir en feil. Hvorfor?
+  alternativer:
+    - tekst: 'DBSCAN er ikke-parametrisk og lærer ingen regel for nye punkter.'
+      riktig: true
+      forklaring: 'Klyngene finnes bare for punktene den ble kjørt på. Nye punkter krever en ny kjøring på alle dataene.'
+    - tekst: 'Metoden heter `fit_predict`, og den gjør det samme på nye data.'
+      forklaring: '`fit_predict(X_test)` ville kjørt DBSCAN på nytt på testdataene alene, ikke brukt klyngene fra trening.'
+    - tekst: 'DBSCAN må få oppgitt antall klynger før den kan predikere.'
+      forklaring: 'DBSCAN tar ikke antall klynger som parameter. Det bestemmes av dataene, `eps` og `min_samples`.'
+    - tekst: 'Testdataene må skaleres med samme scaler før `predict` virker.'
+      forklaring: 'Skalering er lurt, men løser ikke at metoden ikke finnes.'
+  forklaring: |
+    Notatene (3.3.2) sier at vi ikke kan lage separate trenings- og testdata for DBSCAN, fordi den er ikke-parametrisk og trenger alle dataene samtidig. Klyngelabelene ligger i `dbscan.labels_`, med `-1` for outliers.
+  husk: 'DBSCAN og t-SNE har ingen predict/transform for nye punkter.'
+
+- id: "6.5-K1"
+  del: "6.5"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    ```python
+    pca = PCA().fit(X_train)
+    print(np.cumsum(pca.explained_variance_ratio_))
+    # [0.62 0.84 0.93 0.97 0.99 1.  ]
+    ```
+
+    Hvor mange komponenter trenger du minst for å beholde minst 90 % av variansen?
+  alternativer:
+    - tekst: '3'
+      riktig: true
+      forklaring: 'Tre komponenter forklarer 93 %, to bare 84 %.'
+    - tekst: '2'
+      forklaring: 'To komponenter forklarer 84 %, under kravet.'
+    - tekst: '4'
+      forklaring: 'Fire holder også, men er ikke det minste antallet.'
+    - tekst: '1'
+      forklaring: 'Første komponent alene forklarer 62 %.'
+  forklaring: |
+    `explained_variance_ratio_` gir andelen varians hver komponent forklarer, sortert synkende. Den kumulative summen viser hvor mye du beholder med de første $d'$ komponentene. Attributtet er standard i sklearn, men står ikke i notatene.
+  husk: 'Kumulativ forklart varians: velg første d som passerer kravet.'
+
+- id: "6.6-K1"
+  del: "6.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    ```python
+    tsne = TSNE(n_components=2, perplexity=30).fit(X_train)
+    X_test_2d = tsne.transform(X_test)
+    ```
+
+    Hva skjer?
+  alternativer:
+    - tekst: 'Det gir en feil, fordi t-SNE optimaliserer posisjonene til punktene direkte.'
+      riktig: true
+      forklaring: '`TSNE` har ingen `transform`. Det finnes ingen lært funksjon å bruke på nye punkter.'
+    - tekst: 'Det fungerer og er god praksis: `fit` på trening, `transform` på test.'
+      forklaring: 'Det er god praksis for PCA, men t-SNE er ikke-parametrisk og kan ikke brukes slik.'
+    - tekst: 'Det fungerer, men testpunktene havner tilfeldig fordi t-fordelingen er stokastisk.'
+      forklaring: 'Metoden finnes ikke. t-fordelingen er heller ikke tilfeldig, den beskriver naboskap i det lave rommet.'
+    - tekst: 'Det gir en feil, fordi `n_components` må være 3 for t-SNE.'
+      forklaring: 't-SNE brukes nettopp mest med to dimensjoner, til visualisering.'
+  forklaring: |
+    t-SNE plasserer punktene i det lave rommet ved å minimere KL-divergensen mellom nabolagsfordelingene $P$ og $Q$. Plasseringen avhenger av alle de andre punktene, så nye punkter krever at hele innbyggingen regnes ut på nytt. Derfor bruker man `fit_transform` på alle dataene samtidig, og t-SNE kan ikke lage features til en modell (notatene 3.2.2, H25 del 7).
+  husk: 't-SNE: bare fit_transform, aldri transform på nye data.'
+
+- id: "6.7-K1"
+  del: "6.7"
+  niva: middels
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    Anomalideteksjon med k-means fra notatene:
+
+    ```python
+    kmeans = KMeans(n_clusters=5, random_state=0).fit(X_train)
+    distances = kmeans.transform(X_test).min(axis=1)
+    threshold = np.percentile(distances, 95)
+    outliers = distances > threshold
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: '`distances` er avstanden fra hvert testpunkt til nærmeste sentroide.'
+      riktig: true
+      forklaring: '`transform` gir avstanden til alle fem sentroidene, `.min(axis=1)` den minste per punkt.'
+    - tekst: 'Omtrent 5 % av testpunktene flagges, også om ingen av dem er reelle anomalier.'
+      riktig: true
+      forklaring: 'Terskelen er den 95. prosentilen av testpunktenes egne avstander, så andelen er fast.'
+    - tekst: '`outliers` inneholder indeksene til de anomale punktene.'
+      forklaring: 'Det er en boolsk array med `True` eller `False` for hvert punkt.'
+    - tekst: '`kmeans.transform` gir klyngelabelen til hvert punkt.'
+      forklaring: 'Labelene får du med `predict` eller `labels_`. `transform` gir avstander.'
+  forklaring: |
+    Notatene understreker at prosentilterskelen er et valg: den 95. prosentilen kan gi for mange eller for få anomalier, og det finnes ingen terskel som fungerer generelt. DBSCAN og isolation forest gir outliers direkte som `-1`.
+  husk: 'transform = avstander til sentroidene. Prosentilterskel gir alltid en fast andel.'
+
+- id: "6.7-K2"
+  del: "6.7"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    iso = IsolationForest(n_estimators=100, contamination=0.05).fit(X_train)
+    pred = iso.predict(X_test)
+    ```
+
+    Hva inneholder `pred`?
+  alternativer:
+    - tekst: '`1` for normale punkter og `-1` for anomalier'
+      riktig: true
+      forklaring: 'Notatene filtrerer anomaliene med `iso_forest.predict(X_test) == -1`.'
+    - tekst: '`0` for normale punkter og `1` for anomalier'
+      forklaring: 'sklearn bruker `-1` for anomalier, som DBSCAN bruker `-1` for støy.'
+    - tekst: 'En anomaliskår mellom 0 og 1 for hvert punkt'
+      forklaring: 'Skårer får du med `score_samples` eller `decision_function`. `predict` gir en label.'
+    - tekst: 'Klyngenummeret til hvert punkt, med `-1` for støy'
+      forklaring: 'Isolation forest lager ingen klynger. Den isolerer punkter med tilfeldige splitter.'
+  forklaring: |
+    `contamination=0.05` er den antatte andelen anomalier og bestemmer terskelen for når et punkt får `-1`. Anomalier isoleres etter få splitter og har kort sti fra roten i trærne.
+  husk: 'IsolationForest.predict: 1 = normal, −1 = anomali.'

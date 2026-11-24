@@ -13,7 +13,25 @@ const NIVA_REKKE = { grunnleggende: 0, middels: 1, avansert: 2 };
 const sorterTema = (a: OppgaveMeta, b: OppgaveMeta) =>
   a.del.localeCompare(b.del, "nb", { numeric: true }) || NIVA_REKKE[a.niva] - NIVA_REKKE[b.niva] || a.id.localeCompare(b.id, "nb", { numeric: true });
 
-function velgOppgaver(p: URLSearchParams): { ider: string[]; tittel: string; tilbake: { til: string; tekst: string } } {
+type Valg = { ider: string[]; tittel: string; tilbake: { til: string; tekst: string }; brodsmule: { til: string; tekst: string } };
+const TRENING = { til: "/trening", tekst: "Eksamenstrening" };
+
+// Kodequizen i Kode-fanen: alle oppgaver merket «kode», eventuelt bare fra ett kapittel.
+function velgKodeoppgaver(p: URLSearchParams): Valg {
+  const kap = Number(p.get("kap") ?? 0);
+  const k = KAPITLER.find((x) => x.nr === kap);
+  const utvalg = OPPGAVER.filter((o) => o.tags.includes("kode") && (!k || o.kap === kap)).sort(sorterTema);
+  const ider = (p.get("rekkefolge") === "tilfeldig" ? stokk(utvalg) : utvalg).map((o) => o.id);
+  const kode = { til: k ? `/kode?tema=${k.nr}` : "/kode", tekst: "Kode" };
+  return { ider, tittel: k ? `Kodequiz, kapittel ${k.nr}: ${k.tittel}` : "Kodequiz", tilbake: kode, brodsmule: kode };
+}
+
+function velgOppgaver(p: URLSearchParams): Valg {
+  const valg = velgTrening(p);
+  return { ...valg, brodsmule: TRENING };
+}
+
+function velgTrening(p: URLSearchParams): Omit<Valg, "brodsmule"> {
   const t = hentTilstand();
   const del = p.get("del");
   const kap = p.get("kap");
@@ -61,14 +79,14 @@ function velgOppgaver(p: URLSearchParams): { ider: string[]; tittel: string; til
   return { ider: [], tittel: "Øving", tilbake: { til: "/trening", tekst: "Eksamenstrening" } };
 }
 
-export default function Okt() {
+export default function Okt({ kodequiz = false }: { kodequiz?: boolean }) {
   const { search } = useLocation();
-  return <OktInnhold key={search} />;
+  return <OktInnhold key={search} kodequiz={kodequiz} />;
 }
 
-function OktInnhold() {
+function OktInnhold({ kodequiz }: { kodequiz: boolean }) {
   const [params] = useSearchParams();
-  const [valg] = useState(() => velgOppgaver(params));
+  const [valg] = useState(() => (kodequiz ? velgKodeoppgaver(params) : velgOppgaver(params)));
   const { data } = useAsync(() => lastOppgaver(valg.ider), [valg]);
   const [indeks, setIndeks] = useState(0);
   const [resultater, setResultater] = useState<Record<string, number>>({});
@@ -81,8 +99,8 @@ function OktInnhold() {
       <div className="side smal">
         <h1>{valg.tittel}</h1>
         <p>Ingen oppgaver passer valget ditt.</p>
-        <Link to="/trening" className="knapp">
-          Tilbake til eksamenstrening
+        <Link to={valg.brodsmule.til} className="knapp">
+          Tilbake til {valg.brodsmule.tekst.toLowerCase()}
         </Link>
       </div>
     );
@@ -145,8 +163,8 @@ function OktInnhold() {
           <Link to="/trening/okt?modus=feilede" className="knapp knapp-sekundaer">
             Repeter feilede
           </Link>
-          <Link to="/trening" className="knapp knapp-sekundaer">
-            Ny øving
+          <Link to={valg.brodsmule.til} className="knapp knapp-sekundaer">
+            {kodequiz ? "Tilbake til kodekortene" : "Ny øving"}
           </Link>
         </div>
       </div>
@@ -157,7 +175,7 @@ function OktInnhold() {
     <div className="side okt">
       <header className="okt-hode">
         <nav className="brodsmuler" aria-label="Brødsmulesti">
-          <Link to="/trening">Eksamenstrening</Link>
+          <Link to={valg.brodsmule.til}>{valg.brodsmule.tekst}</Link>
           <span aria-hidden="true">/</span>
           <span>{valg.tittel}</span>
         </nav>

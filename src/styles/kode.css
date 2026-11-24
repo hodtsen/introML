@@ -1,0 +1,178 @@
+/* ---------------------------------------------------------------- syntaksutheving
+   Kodeblokkene har mørk bakgrunn i begge temaer (se .prosa pre), så fargene er valgt
+   for mørk bakgrunn. Klassene settes av highlight.js i byggskriptet. */
+pre code .hljs-keyword,
+pre code .hljs-built_in,
+pre code .hljs-literal {
+  color: #9fb8ff;
+}
+pre code .hljs-string {
+  color: #a6dba0;
+}
+pre code .hljs-number {
+  color: #f5c37a;
+}
+pre code .hljs-comment {
+  color: #8d9ab3;
+  font-style: italic;
+}
+pre code .hljs-title,
+pre code .hljs-title.function_,
+pre code .hljs-title.class_ {
+  color: #f0a8c8;
+}
+pre code .hljs-params {
+  color: inherit;
+}
+pre code .hljs-meta,
+pre code .hljs-operator {
+  color: #c9d3e6;
+}
+
+/* ---------------------------------------------------------------- Kode-fanen */
+.kode .kodequiz {
+  margin-top: 0.25rem;
+}
+.kodequiz-kapitler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+button.brikke-lenke {
+  background: none;
+  color: var(--link);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.kode-oversikt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 1.75rem;
+  align-items: start;
+}
+.kode-intro {
+  max-width: 78ch;
+}
+.kode-intro table {
+  font-size: 0.9rem;
+}
+.kode-register {
+  position: sticky;
+  top: calc(var(--topp) + 1rem);
+  max-height: calc(100vh - var(--topp) - 2rem);
+  overflow-y: auto;
+  font-size: 0.875rem;
+}
+.kode-register h2 {
+  margin-top: 0;
+}
+.kode-register h3 {
+  font-size: 0.9375rem;
+  margin: 0.9rem 0 0.3rem;
+}
+.kode-register ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.kode-register li {
+  margin: 0.15rem 0;
+}
+.kode-register .knapp-tekst {
+  text-align: left;
+}
+
+.kode-tema-hode {
+  margin-bottom: 1.25rem;
+}
+.kode-tema-hode h2 {
+  margin-top: 0.25rem;
+}
+.kode-innhold {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.kodekort {
+  scroll-margin-top: calc(var(--topp) + 1rem);
+  max-width: 920px;
+}
+.kodekort-hode h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+}
+.kodekort-meta {
+  font-size: 0.875rem;
+  margin: 0 0 0.9rem;
+  color: var(--ink-2);
+}
+.kodekort-kode pre {
+  margin: 0;
+}
+.kodekort-kode p {
+  margin-top: 0.75rem;
+}
+.kodekort-del {
+  margin-top: 1rem;
+}
+.kodekort-del h4 {
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  margin: 0 0 0.4rem;
+}
+.kodekort-del .prosa > :last-child {
+  margin-bottom: 0;
+}
+.kodekort-fallgruver {
+  background: var(--warn-soft);
+  border: 1px solid var(--warn-line);
+  border-radius: var(--r-md);
+  padding: 0.8rem 1rem 0.8rem 1rem;
+}
+.kodekort-fallgruver h4 {
+  color: var(--part);
+}
+.kodekort-fallgruver ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.kodekort-fallgruver li + li {
+  margin-top: 0.35rem;
+}
+
+.kode-bla {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+  max-width: 920px;
+}
+
+@media (max-width: 980px) {
+  .kode-oversikt {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .kode-register {
+    position: static;
+    max-height: none;
+  }
+}
+@media (max-width: 600px) {
+  .kodekort {
+    padding: 1rem;
+  }
+  .kodekort-kode pre {
+    font-size: 0.8125rem;
+    padding: 0.75rem 0.85rem;
+  }
+}
