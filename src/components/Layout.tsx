@@ -52,6 +52,7 @@ export default function Layout() {
               Eksamenstrening
             </NavLink>
             <NavLink to="/notatquiz">Notatquiz</NavLink>
+            <NavLink to="/kode">Kode</NavLink>
             <NavLink to="/formelark">Formelark</NavLink>
             <NavLink to="/begreper">Begreper</NavLink>
             <NavLink to="/fremgang">Fremgang</NavLink>

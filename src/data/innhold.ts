@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import pensumIndeks from "../generated/pensum-indeks.json";
 import oppgaveIndeks from "../generated/oppgave-indeks.json";
-import type { Begrep, Kapittel, KapittelMeta, Oppgave, OppgaveMeta, SokPost } from "../types";
+import type { Begrep, Kapittel, KapittelMeta, KodeData, Oppgave, OppgaveMeta, SokPost } from "../types";
 
 // Små indekser lastes med en gang; selve innholdet lastes per kapittel ved behov.
 export const KAPITLER = pensumIndeks as KapittelMeta[];
@@ -93,4 +93,11 @@ const notatquizCache = new Map<NotatquizSett, Promise<Oppgave[]>>();
 export function lastNotatquiz(sett: NotatquizSett): Promise<Oppgave[]> {
   if (!notatquizCache.has(sett)) notatquizCache.set(sett, notatquizLastere[sett]().then((m) => m.default as Oppgave[]));
   return notatquizCache.get(sett)!;
+}
+
+// Kodekortene i Kode-fanen lastes først når fanen åpnes.
+let kodePromise: Promise<KodeData> | null = null;
+export function lastKode() {
+  kodePromise ??= import("../generated/kode.json").then((m) => m.default as KodeData);
+  return kodePromise;
 }

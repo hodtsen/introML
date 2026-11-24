@@ -815,3 +815,227 @@
   forklaring: |
     Antall noder i output-laget og aktiveringen der bestemmes av oppgaven. Flerklasseklassifisering: én node per klasse og softmax. Binær klassifisering: én node og sigmoid. Regresjon: lineær output. `sparse_categorical_crossentropy` er cross-entropy for heltallslabels.
   husk: 'Flere klasser: softmax + (sparse) categorical cross-entropy. Regresjon: lineær output + MSE.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "5.1-K1"
+  del: "5.1"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    Perceptronet bruker Rosenblatts regel, med 1 først i `x` for biasen:
+
+    ```python
+    activation = np.dot(w, x)
+    predicted = 1.0 if activation >= 0.0 else 0.0
+    w = w + learning_rate * (expected - predicted) * x
+    ```
+
+    Med `w = [0.0, 0.5, 1.0]`, `x = [1, 2, -1]`, `expected = 0` og `learning_rate = 0.1`, hva er `w` etter oppdateringen?
+  alternativer:
+    - tekst: '`[-0.1, 0.3, 1.1]`'
+      riktig: true
+      forklaring: 'Aktiveringen er $0 + 1 - 1 = 0$, så prediksjonen er 1. Da er $0{,}1 \cdot (0 - 1) \cdot \mathbf{x} = [-0{,}1;\ -0{,}2;\ 0{,}1]$.'
+    - tekst: '`[0.1, 0.7, 0.9]`'
+      forklaring: 'Feil fortegn: dette legger til $0{,}1 \cdot \mathbf{x}$, som om prediksjonen var 0 og svaret 1.'
+    - tekst: '`[0.0, 0.5, 1.0]`'
+      forklaring: 'Ingen endring hadde vært riktig om prediksjonen var 0. Men $0 \ge 0$ gir prediksjon 1.'
+    - tekst: '`[-0.1, 0.3, 0.9]`'
+      forklaring: 'Fortegnet på siste komponent er feil: $-0{,}1 \cdot (-1) = +0{,}1$.'
+  forklaring: |
+    $w_i \leftarrow w_i + \eta\,(y - \hat{y})\,x_i$. Her er $y - \hat{y} = -1$, så vektene flyttes *bort fra* $\mathbf{x}$, og aktiveringen for dette punktet blir lavere neste gang. Legg merke til at `>=` gjør at aktivering 0 gir klasse 1.
+  husk: 'Riktig prediksjon: ingen endring. Feil: flytt w med ±η·x.'
+
+- id: "5.1-K2"
+  del: "5.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    `X_train` har to features og `y_train` tre klasser.
+
+    ```python
+    perceptron = Perceptron().fit(X_train, y_train)
+    print(perceptron.coef_.shape, perceptron.intercept_.shape)
+    ```
+
+    Hva skrives ut?
+  alternativer:
+    - tekst: '`(3, 2) (3,)`'
+      riktig: true
+      forklaring: 'Én output-node per klasse, hver med to vekter og én bias. Seks vekter og tre biaser.'
+    - tekst: '`(2, 3) (2,)`'
+      forklaring: 'Byttet om: radene er klasser, kolonnene er features, og det er én bias per klasse.'
+    - tekst: '`(2,) (1,)`'
+      forklaring: 'Det ville vært formen for binær klassifisering med ett perceptron, og da er `coef_` `(1, 2)`.'
+    - tekst: '`(6,) (3,)`'
+      forklaring: 'Antallet vekter stemmer, men sklearn lagrer dem som en matrise med én rad per klasse.'
+  forklaring: |
+    Med to features og tre klasser har nettet to input-noder koblet til tre output-noder, altså $2 \cdot 3 = 6$ vekter og tre biaser (notatene 2.1). Oppdateringen blir $w_{i,j} \leftarrow w_{i,j} + \eta\,(y_j - \hat{y}_j)\,x_i$.
+  husk: 'coef_ har form (antall klasser, antall features).'
+
+- id: "5.3-K1"
+  del: "5.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    ```python
+    model = keras.Sequential([
+        keras.Input(shape=(4,)),
+        Dense(8, activation="relu"),
+        Dense(3, activation="softmax"),
+    ])
+    out = model(ops.ones((32, 4)))
+    ```
+
+    Hva er `out.shape`, og hvor mange parametre har modellen?
+  alternativer:
+    - tekst: '`(32, 3)` og 67 parametre'
+      riktig: true
+      forklaring: '$(4 + 1) \cdot 8 + (8 + 1) \cdot 3 = 40 + 27 = 67$. Output har én rad per datapunkt og én kolonne per node i siste lag.'
+    - tekst: '`(32, 8)` og 67 parametre'
+      forklaring: 'Output-shapen bestemmes av *siste* lag, som har 3 noder.'
+    - tekst: '`(32, 3)` og 56 parametre'
+      forklaring: '56 er bare vektene, $4 \cdot 8 + 8 \cdot 3$. Hver node har også en bias.'
+    - tekst: '`(4, 3)` og 67 parametre'
+      forklaring: 'Første dimensjon er antall datapunkter i batchen, 32, ikke antall features.'
+  forklaring: |
+    Et `Dense`-lag har $(n_{\text{inn}} + 1) \cdot n_{\text{ut}}$ parametre, og input-laget har ingen. Output-shapen er alltid (batch, noder i siste lag).
+  husk: 'Dense: (inn + 1) · ut parametre. Output: (batch, noder i siste lag).'
+
+- id: "5.6-K1"
+  del: "5.6"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    model = Sequential()
+    model.add(Dense(6, activation="relu"))
+    model.add(Dense(2, activation="softmax"))
+    print(model.weights)       # []
+    ```
+
+    Hvorfor er listen med vekter tom?
+  alternativer:
+    - tekst: 'Modellen vet ikke input-dimensjonen ennå, så vektene er ikke laget.'
+      riktig: true
+      forklaring: 'Antall vekter i første lag avhenger av antall input-features. De lages når modellen får en `Input` eller kalles på data.'
+    - tekst: 'Vektene initialiseres til null, og nullvekter vises ikke.'
+      forklaring: 'Vektene initialiseres tilfeldig, og de vises uansett verdi.'
+    - tekst: '`model.weights` viser bare vekter etter at modellen er kompilert.'
+      forklaring: '`compile` velger optimizer og tap, men lager ikke vektene.'
+    - tekst: 'Vektene finnes først når `fit` har kjørt minst én epoke.'
+      forklaring: 'Det holder å kalle modellen på en tensor, for eksempel `model(x)`, eller å oppgi `keras.Input`.'
+  forklaring: |
+    Notatene viser dette: en modell som er bygget, men aldri evaluert, gir `[]` for vektene og `Output shape=?` i `summary()`. Løsningen er `model.add(keras.Input(shape=(3,)))` først, eller å kjøre modellen på en input.
+  husk: 'Uten Input eller et første kall finnes ingen vekter.'
+
+- id: "5.5-K1"
+  del: "5.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    `x_train` har 6400 punkter.
+
+    ```python
+    model.fit(x_train, y_train, batch_size=64, epochs=10)
+    ```
+
+    Hvor mange ganger oppdateres vektene totalt?
+  alternativer:
+    - tekst: '1000'
+      riktig: true
+      forklaring: '$6400 / 64 = 100$ oppdateringer per epoke, ganger 10 epoker.'
+    - tekst: '100'
+      forklaring: 'Det er antall oppdateringer i *én* epoke.'
+    - tekst: '10'
+      forklaring: 'Det ville vært full-batch gradient descent, med én oppdatering per epoke.'
+    - tekst: '64 000'
+      forklaring: '$6400 \cdot 10$ er antall ganger et punkt bidrar til en gradient, ikke antall oppdateringer.'
+  forklaring: |
+    Mini-batch SGD gjør $N/B$ oppdateringer per epoke. En epoke er alltid én runde gjennom alle treningsdataene, uansett batch size.
+  husk: 'Oppdateringer = (N / B) · epoker.'
+
+- id: "5.6-K2"
+  del: "5.6"
+  niva: middels
+  type: flervalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    ```python
+    stopp = keras.callbacks.EarlyStopping(monitor="val_loss", patience=5, restore_best_weights=True)
+    history = model.fit(x_train, y_train, epochs=100, validation_data=(x_val, y_val), callbacks=[stopp])
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: 'Treningen stopper når `val_loss` ikke har blitt bedre på 5 epoker på rad.'
+      riktig: true
+      forklaring: '`patience=5` er antall epoker uten forbedring før treningen avbrytes.'
+    - tekst: 'Etter stopp har modellen vektene fra epoken med lavest `val_loss`.'
+      riktig: true
+      forklaring: 'Det er det `restore_best_weights=True` gjør. Uten den beholdes vektene fra siste epoke.'
+    - tekst: 'Treningen går alltid alle 100 epokene, men den beste epoken markeres.'
+      forklaring: 'Early stopping avbryter treningen. 100 er et tak.'
+    - tekst: 'Treningen stopper når treningstapet slutter å synke.'
+      forklaring: 'Det er valideringstapet som følges, `monitor="val_loss"`.'
+  forklaring: |
+    Notatene anbefaler å stoppe når både trenings- og valideringstapet flater ut, før treningstapet blir mye lavere enn valideringstapet. Keras' early stopping gjør det automatisk med `monitor="val_loss"` og en tålmodighet.
+  husk: 'Early stopping følger val_loss; restore_best_weights gir den beste epoken.'
+
+- id: "5.4-K1"
+  del: "5.4"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    En student skriver treningsløkka for MNIST-nettet i prosjekt 4 slik:
+
+    ```python
+    for X_batch, y_batch in train_loader:
+        output = model(X_batch)
+        loss = loss_fn(output, y_batch)
+        loss.backward()
+        optimizer.step()
+    ```
+
+    Hva er konsekvensen av at `optimizer.zero_grad()` mangler?
+  alternativer:
+    - tekst: 'Gradientene fra tidligere batcher summeres opp, så hvert steg blir feil.'
+      riktig: true
+      forklaring: 'PyTorch *legger til* nye gradienter i `.grad`. Uten nullstilling inneholder den summen av alle batchene så langt.'
+    - tekst: 'Ingenting, fordi `backward()` nullstiller gradientene før den regner ut nye.'
+      forklaring: '`backward()` akkumulerer. Det er derfor `zero_grad()` står først i alle løkkene i kurset.'
+    - tekst: 'Vektene oppdateres ikke, fordi `step()` krever at gradientene er nullstilt.'
+      forklaring: '`step()` bruker det som ligger i `.grad`, uansett. Vektene oppdateres, men med feil gradient.'
+    - tekst: 'Tapet regnes ut på nytt for alle tidligere batcher i hver iterasjon.'
+      forklaring: 'Tapet regnes bare for nåværende batch. Det er gradientene som hoper seg opp.'
+  forklaring: |
+    De fire stegene i PyTorch er `zero_grad`, forward og tap, `backward` og `step`. De går igjen både i MNIST-nettet i prosjekt 4 og i DQN-koden i notatene.
+  husk: 'zero_grad → loss → backward → step.'
+
+- id: "5.6-K3"
+  del: "5.6"
+  niva: middels
+  type: flervalg
+  tags: [kode, oving-3]
+  sporsmal: |
+    Øving 3 krever at resultatene blir de samme når notebooken kjøres på nytt. Hvilke tiltak hjelper?
+  alternativer:
+    - tekst: 'Kalle `keras.utils.set_random_seed(42)` før modellen bygges.'
+      riktig: true
+      forklaring: 'Setter seed for Python, NumPy og backend, så startvektene og stokkingen blir like.'
+    - tekst: 'Gi `train_test_split` et fast `random_state`.'
+      riktig: true
+      forklaring: 'Da blir oppdelingen i trening og test lik hver gang.'
+    - tekst: 'Sette seed etter at modellen er bygget, rett før `fit`.'
+      forklaring: 'Startvektene er allerede trukket når modellen bygges. Seeden må settes før.'
+    - tekst: 'Trene i flere epoker, slik at modellen konvergerer til samme løsning.'
+      forklaring: 'Et nevralt nett har et ikke-konvekst tap, og ulike starter kan gi ulike løsninger uansett hvor lenge du trener.'
+  forklaring: |
+    Mye er tilfeldig i maskinlæring: datasplitt, startvekter, stokking av batcher, startsentroider. Faste seeds som settes før de tilfeldige operasjonene, gjør resultatene reproduserbare.
+  husk: 'Seed tidlig, og random_state i sklearn-kall.'

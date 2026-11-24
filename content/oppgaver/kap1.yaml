@@ -998,3 +998,206 @@
   forklaring: |
     Læringsraten styrer hvor langt vi går i hvert steg. For liten: stabil, men treg nedgang. For stor: stegene skyter over minimum, og tapet oscillerer eller øker. Passe: rask nedgang som flater ut nær minimum. Læringsraten er en hyperparameter som velges med validering.
   husk: 'Hopper tapet: for høy læringsrate. Synker det knapt: for lav.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "1.1-K1"
+  del: "1.1"
+  niva: middels
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    `scaler` er en `MinMaxScaler` som er tilpasset med `scaler.fit(X_train)`. Hvilke linjer gir `X_test` skalert med *samme* skalering som treningsdataene?
+  alternativer:
+    - tekst: '`X_test_s = scaler.fit_transform(X_test)`'
+      forklaring: 'Lærer ny min og maks fra testdataene og overskriver det som var lært fra treningsdataene.'
+    - tekst: '`X_test_s = MinMaxScaler().fit(X_train).transform(X_test)`'
+      riktig: true
+      forklaring: 'En ny scaler, men den tilpasses på `X_train`, så den får de samme parametrene. `fit` returnerer scaleren, så kallene kan kjedes.'
+    - tekst: '`X_test_s = (X_test - X_train.min(axis=0)) / (X_train.max(axis=0) - X_train.min(axis=0))`'
+      riktig: true
+      forklaring: 'Dette er MinMaxScaler skrevet ut for hånd, med min og maks per feature fra treningsdataene.'
+    - tekst: '`X_test_s = (X_test - X_test.min(axis=0)) / (X_test.max(axis=0) - X_test.min(axis=0))`'
+      forklaring: 'Riktig formel, men med min og maks fra testdataene. Samme feil som `fit_transform(X_test)`.'
+  forklaring: |
+    Skaleringen skal læres fra treningsdataene og brukes uendret på testdataene. Det spiller ingen rolle om du gjenbruker objektet med `scaler.transform(X_test)`, lager et nytt som tilpasses på `X_train` eller skriver formelen selv. Det avgjørende er *hvilke data* min og maks kommer fra.
+  husk: 'Se etter hvilke data parametrene kommer fra, ikke hvilken funksjon som kalles.'
+
+- id: "1.1-K2"
+  del: "1.1"
+  niva: grunnleggende
+  type: flervalg
+  tags: [kode]
+  sporsmal: |
+    Du skal trene en logistisk regresjon på Titanic-dataene:
+
+    ```python
+    X = df[["Pclass", "Sex", "Age"]].values
+    y = df["Survived"].values
+    ```
+
+    `Sex` inneholder strengene `"male"` og `"female"`, og noen rader mangler `Age`. Hvilke steg må gjøres før modellen kan trenes?
+  alternativer:
+    - tekst: 'Gjøre `Sex` om til tall, for eksempel med `LabelEncoder`.'
+      riktig: true
+      forklaring: 'En modell som regner med $\mathbf{w}\mathbf{x} + b$, kan ikke bruke strenger.'
+    - tekst: 'Fjerne radene der `Age` mangler, for eksempel med `dropna()`.'
+      riktig: true
+      forklaring: 'Manglende verdier gir feil eller `nan` i beregningen. Notatene fjerner slike rader med `dropna`.'
+    - tekst: 'Skalere `Survived` slik at snittet blir 0.'
+      forklaring: 'Target skal være 0 eller 1 i binær klassifisering. Å skalere den ødelegger cross-entropy.'
+    - tekst: 'Fjerne `Pclass`, siden kategoriske features ikke kan brukes.'
+      forklaring: '`Pclass` er allerede et tall og kan brukes. Kategoriske features kodes, de fjernes ikke.'
+  forklaring: |
+    Notatene peker på nettopp disse problemene før Titanic-dataene plottes: en rad mangler alder, og `Sex` er strenger. Løsningen er `dropna()` og en `LabelEncoder`. I tillegg kan `Age` skaleres, men det er ikke strengt nødvendig for at koden skal kjøre.
+  husk: 'Før trening: ingen hull og bare tall i X. Target røres ikke.'
+
+- id: "1.2-K1"
+  del: "1.2"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    z = X @ w + b
+    y_pred = 1 / (1 + np.exp(-z))
+    klasser = (y_pred > 0.5).astype(int)
+    ```
+
+    Hvilken linje gir nøyaktig de samme klassene uten å regne ut sigmoid?
+  alternativer:
+    - tekst: '`klasser = (z > 0).astype(int)`'
+      riktig: true
+      forklaring: '$\sigma(0) = 0{,}5$ og sigmoid er voksende, så $\sigma(z) > 0{,}5$ nøyaktig når $z > 0$.'
+    - tekst: '`klasser = (z > 0.5).astype(int)`'
+      forklaring: 'Terskelen 0,5 gjelder sannsynligheten, ikke $z$. Punkter med $0 < z \le 0{,}5$ blir feil.'
+    - tekst: '`klasser = (np.exp(-z) > 1).astype(int)`'
+      forklaring: '$e^{-z} > 1$ betyr $z < 0$. Det gir de motsatte klassene.'
+    - tekst: '`klasser = (np.abs(z) < 0.5).astype(int)`'
+      forklaring: 'Ser bare på hvor nær beslutningsgrensen punktet er, ikke på hvilken side det ligger.'
+  forklaring: |
+    Beslutningsgrensen til logistisk regresjon er der $\sigma(z) = 0{,}5$, altså $z = \mathbf{w}\mathbf{x} + b = 0$. Det er et hyperplan, og derfor er logistisk regresjon en lineær klassifikator.
+  husk: 'Terskel 0,5 på sigmoid er det samme som terskel 0 på z.'
+
+- id: "1.3-K1"
+  del: "1.3"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Et datasett har 950 negative ($y = 0$) og 50 positive ($y = 1$) punkter. Du vil gi minoritetsklassen vekt 19 og majoritetsklassen vekt 1 i cross-entropy. Hvilken linje gjør det?
+  alternativer:
+    - tekst: '`-np.mean(19 * y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))`'
+      riktig: true
+      forklaring: 'Vekten 19 står på leddet som bare er aktivt når $y = 1$, altså de positive punktene.'
+    - tekst: '`-np.mean(y * np.log(y_pred) + 19 * (1 - y) * np.log(1 - y_pred))`'
+      forklaring: 'Vekten står på leddet for $y = 0$. Da får majoritetsklassen enda mer vekt.'
+    - tekst: '`-np.mean(19 * y * np.log(1 - y_pred) + (1 - y) * np.log(y_pred))`'
+      forklaring: 'Logaritmene står på feil ledd. Modellen belønnes for å gi positive punkter lav sannsynlighet.'
+    - tekst: '`-19 * np.mean(y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred))`'
+      forklaring: 'Skalerer hele tapet. Det tilsvarer en større læringsrate og endrer ikke balansen mellom klassene.'
+  forklaring: |
+    I vektet cross-entropy får hvert ledd vekten til sin klasse: $-w_1 y \ln y_{\text{pred}} - w_0 (1 - y)\ln(1 - y_{\text{pred}})$. Vektene velges omvendt proporsjonalt med klassestørrelsen, her $950/50 = 19$. Det samme mønsteret var H24 oppgave 10 og 11.
+  husk: 'Vekten til en klasse står på leddet som er aktivt for den klassen.'
+
+- id: "1.4-K1"
+  del: "1.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-1]
+  sporsmal: |
+    I `LogisticRegression.fit` fra øving 1 har `X` form `(n, d)`, og `y` og `y_pred` har form `(n,)`. Tapet er snittet av binær cross-entropy. Hvilken linje regner ut gradienten med hensyn på vektene `w`?
+  alternativer:
+    - tekst: '`grad_w = X.T @ (y_pred - y) / len(y)`'
+      riktig: true
+      forklaring: 'Gir $\frac{1}{n}\sum_i (y_{\text{pred}}^{(i)} - y^{(i)})\,x_j^{(i)}$ for hver $j$, med form `(d,)`.'
+    - tekst: '`grad_w = X @ (y_pred - y) / len(y)`'
+      forklaring: 'Feil form: `X` har form `(n, d)` og kan ikke ganges med en vektor av lengde $n$ fra høyre (med mindre $n = d$).'
+    - tekst: '`grad_w = np.mean(y_pred - y)`'
+      forklaring: 'Dette er gradienten med hensyn på biasen $b$, ikke vektene.'
+    - tekst: '`grad_w = X.T @ ((y_pred - y) * y_pred * (1 - y_pred)) / len(y)`'
+      forklaring: 'Den ekstra faktoren $\sigma(1-\sigma)$ hører til MSE gjennom sigmoid. Med cross-entropy forkortes den bort.'
+  forklaring: |
+    Notatene utleder $\partial L / \partial w_j = (y_{\text{pred}} - y)\,x_j$ for ett punkt. Faktoren $\sigma(1 - \sigma)$ fra den deriverte av sigmoid kanselleres mot nevneren fra den deriverte av logaritmen. Over alle punktene blir det $\frac{1}{n} X^\top (y_{\text{pred}} - y)$.
+  husk: 'Cross-entropy + sigmoid gir gradienten (y_pred − y)·x. Ingen ekstra σ(1−σ).'
+
+- id: "1.4-K2"
+  del: "1.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    Notatenes `fit` gjør gradient descent på alle treningsdataene én gang per epoke og legger til tapet i `self.losses` etter hver oppdatering:
+
+    ```python
+    log_reg = LogisticRegression(learning_rate=0.01, epochs=30)
+    log_reg.fit(X_train, y_train)      # X_train har 800 rader
+    ```
+
+    Hvor mange elementer har `log_reg.losses`, og hvor mange ganger er vektene oppdatert?
+  alternativer:
+    - tekst: '30 elementer og 30 oppdateringer'
+      riktig: true
+      forklaring: 'Full batch gir én oppdatering per epoke, og tapet lagres én gang per epoke.'
+    - tekst: '800 elementer og 30 oppdateringer'
+      forklaring: 'Tapet er snittet over alle 800 punktene og lagres én gang per epoke.'
+    - tekst: '30 elementer og 24 000 oppdateringer'
+      forklaring: '24 000 = 30 · 800 ville vært SGD med ett punkt per oppdatering.'
+    - tekst: '24 000 elementer og 24 000 oppdateringer'
+      forklaring: 'Også dette forutsetter én oppdatering per datapunkt, som ikke er tilfellet her.'
+  forklaring: |
+    I notatenes kode regnes `y_pred` for hele `x` på én gang, gradientene er snitt over alle punktene, og parametrene oppdateres én gang per gjennomløp av løkka. Med 30 epoker blir det 30 oppdateringer og 30 lagrede tap.
+  husk: 'Full-batch gradient descent: én oppdatering per epoke.'
+
+- id: "1.5-K1"
+  del: "1.5"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-2]
+  sporsmal: |
+    ```python
+    tp = np.sum((y_pred == 1) & (y_true == 1))
+    fp = np.sum((y_pred == 1) & (y_true == 0))
+    tn = np.sum((y_pred == 0) & (y_true == 0))
+    fn = np.sum((y_pred == 0) & (y_true == 1))
+    ```
+
+    Hvilket uttrykk er false positive rate (FPR)?
+  alternativer:
+    - tekst: '`fp / (fp + tn)`'
+      riktig: true
+      forklaring: 'Andelen av de faktisk negative som feilaktig ble predikert positive.'
+    - tekst: '`fp / (fp + tp)`'
+      forklaring: 'Andelen feil blant de *predikert* positive, altså $1 - \text{presisjon}$.'
+    - tekst: '`fn / (fn + tp)`'
+      forklaring: 'Andelen av de faktisk positive som ble oversett, altså false negative rate ($1 - \text{recall}$).'
+    - tekst: '`1 - tn / (tn + fn)`'
+      forklaring: 'Nevneren er de predikert negative, ikke de faktisk negative. Uttrykket er $fn / (tn + fn)$.'
+  forklaring: |
+    $\text{FPR} = \dfrac{FP}{FP + TN} = 1 - \text{spesifisitet}$. Nevneren er alle faktisk negative. FPR er x-aksen i ROC-kurven.
+  husk: 'FPR og recall deler på det som faktisk er negativt eller positivt. Presisjon deler på det som er predikert positivt.'
+
+- id: "1.6-K1"
+  del: "1.6"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    auc = roc_auc_score(y_test, model.predict(X_test))
+    ```
+
+    Hva er problemet med denne linjen for en klassifiseringsmodell?
+  alternativer:
+    - tekst: '`predict` gir bare 0 og 1, så kurven får ett terskelpunkt og AUC blir misvisende.'
+      riktig: true
+      forklaring: 'ROC krever en score som kan rangeres. Bruk `model.predict_proba(X_test)[:, 1]`.'
+    - tekst: '`roc_auc_score` krever at `y_test` er sannsynligheter og ikke klasser.'
+      forklaring: '`y_test` skal være de sanne klassene. Det er det andre argumentet som skal være en score.'
+    - tekst: 'AUC skal regnes på treningsdata, fordi testdata ikke gir noen ROC-kurve.'
+      forklaring: 'AUC regnes som andre metrikker på data modellen ikke er trent på.'
+    - tekst: 'Det er ikke noe problem, siden `predict` og `predict_proba` rangerer punktene likt.'
+      forklaring: 'Med bare to verdier er de fleste punktene «uavgjort», så rangeringen går tapt.'
+  forklaring: |
+    ROC-kurven lages ved å variere terskelen fra 1 til 0 og regne ut FPR og TPR for hver. Det krever kontinuerlige skårer. Med harde klasser finnes det bare én meningsfull terskel, og «kurven» blir to rette linjer gjennom ett punkt. `roc_auc_score` er fra `sklearn.metrics` og står ikke i notatene, men prinsippet gjør det.
+  husk: 'ROC og AUC regnes på sannsynligheter (predict_proba), ikke på klasser.'

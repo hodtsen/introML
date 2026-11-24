@@ -755,3 +755,161 @@
   forklaring: |
     `criterion` bestemmer hvordan urenhet måles når treet velger splitt, og `max_depth` er en stoppregel. Begge er hyperparametre. Et tre uten dybdegrense vokser til løvnodene er rene, og overtilpasser lett.
   husk: 'max_depth = hyperparameter mot overtilpasning. Gini ≈ entropi. Trær trenger ikke skalering.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "2.1-K1"
+  del: "2.1"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode, oving-2]
+  sporsmal: |
+    I øving 2 skal du bruke naiv Bayes uten biblioteker. Du har regnet ut:
+
+    ```python
+    p_c = df["survived"].value_counts(normalize=True)
+    p_x_1 = df[df["survived"] == 1]["sex"].value_counts(normalize=True)
+    p_x_0 = df[df["survived"] == 0]["sex"].value_counts(normalize=True)
+    ```
+
+    Hvilket uttrykk er proporsjonalt med $p(\text{survived} = 1 \mid \text{sex} = \text{Male})$?
+  alternativer:
+    - tekst: '`p_x_1["Male"] * p_c[1]`'
+      riktig: true
+      forklaring: 'Likelihood ganger prior, $p(x \mid C)\,p(C)$. Nevneren $p(x)$ er lik for begge klassene.'
+    - tekst: '`p_x_1["Male"]`'
+      forklaring: 'Bare likelihooden $p(x \mid C = 1)$. Uten prioren tas det ikke hensyn til hvor vanlig klassen er.'
+    - tekst: '`p_c[1] / p_x_1["Male"]`'
+      forklaring: 'Bayes multipliserer likelihood og prior, den deler ikke.'
+    - tekst: '`df["sex"].value_counts(normalize=True)["Male"] * p_c[1]`'
+      forklaring: 'Bruker $p(x)$ over hele datasettet, ikke $p(x \mid C = 1)$. Da blir svaret likt for begge klassene.'
+  forklaring: |
+    $p(C \mid x) = p(x \mid C)\,p(C)/p(x)$. For å avgjøre klassen sammenligner du `p_x_1["Male"] * p_c[1]` med `p_x_0["Male"] * p_c[0]`. Vil du ha selve sannsynligheten, deler du på summen av de to, som er $p(x)$. Med flere features ganger naiv Bayes inn én betinget sannsynlighet per feature.
+  husk: 'Posterior ∝ likelihood (filtrert på klassen) × prior.'
+
+- id: "2.2-K1"
+  del: "2.2"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Notatene bruker denne koden for å se om `Pclass` og `Sex` er uavhengige i Titanic-dataene:
+
+    ```python
+    p_cond = pd.crosstab(df.Pclass, df.Sex, normalize="index")
+    ```
+
+    Hva inneholder `p_cond`?
+  alternativer:
+    - tekst: 'Fordelingen av kjønn innen hver passasjerklasse. Hver rad summerer til 1.'
+      riktig: true
+      forklaring: '`normalize="index"` deler hver rad på radsummen. Raden for `Pclass = 1` er $p(\text{Sex} \mid \text{Pclass} = 1)$.'
+    - tekst: 'Fordelingen av klasse innen hvert kjønn. Hver kolonne summerer til 1.'
+      forklaring: 'Det er `normalize="columns"`, som gir $p(\text{Pclass} \mid \text{Sex})$.'
+    - tekst: 'Simultanfordelingen $p(\text{Pclass}, \text{Sex})$. Hele tabellen summerer til 1.'
+      forklaring: 'Det er `normalize=True` (eller `"all"`).'
+    - tekst: 'Antall passasjerer for hver kombinasjon av klasse og kjønn.'
+      forklaring: 'Det er `crosstab` uten `normalize`.'
+  forklaring: |
+    Er `Pclass` og `Sex` uavhengige, skal alle radene i `p_cond` være like den marginale fordelingen `df.Sex.value_counts(normalize=True)`. Er de ulike, holder ikke antakelsen bak naiv Bayes helt.
+  husk: 'normalize="index": rader til 1 (betinget på radvariabelen).'
+
+- id: "2.4-K1"
+  del: "2.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Treningsdataene har 1800 punkter i klasse 0 og 200 i klasse 1. Du vil oversample klasse 1:
+
+    ```python
+    rng = np.random.default_rng(0)
+    idx_min = np.where(y_train == 1)[0]          # 200 indekser
+    ekstra = rng.choice(idx_min, size=1800, replace=False)
+    ```
+
+    Hva skjer?
+  alternativer:
+    - tekst: 'Linjen feiler, fordi 1800 ulike punkter ikke kan trekkes fra 200 uten tilbakelegging.'
+      riktig: true
+      forklaring: 'Oversampling dupliserer punkter og må bruke `replace=True`.'
+    - tekst: 'Du får 1800 nye minoritetspunkter som interpoleres mellom de 200 du har.'
+      forklaring: '`rng.choice` trekker bare blant indeksene du gir den. Den lager ingen nye punkter.'
+    - tekst: 'Det fungerer, men majoritetsklassen reduseres samtidig til 200 punkter.'
+      forklaring: 'Koden rører ikke majoritetsklassen. Å redusere den ville vært undersampling.'
+    - tekst: 'Det fungerer og gir et balansert datasett med 1800 punkter i hver klasse.'
+      forklaring: 'Med `replace=True` ville det fungert. Uten gir NumPy en `ValueError`.'
+  forklaring: |
+    Undersampling trekker *uten* tilbakelegging fra majoriteten (`replace=False`, `size` lik minoritetens størrelse). Oversampling trekker *med* tilbakelegging fra minoriteten, så de samme punktene gjentas. Det er også grunnen til at oversampling kan gi overtilpasning.
+  husk: 'Oversampling: replace=True. Undersampling: replace=False.'
+
+- id: "2.4-K2"
+  del: "2.4"
+  niva: middels
+  type: pastand
+  tags: [kode]
+  sporsmal: |
+    Påstand: Rekkefølgen under er god, fordi også testsettet blir balansert.
+
+    ```python
+    X_bal, y_bal = oversample(X, y)          # dupliserer minoritetspunkter
+    X_train, X_test, y_train, y_test = train_test_split(X_bal, y_bal)
+    ```
+  riktig: false
+  forklaring: |
+    Usant. Når minoritetspunktene dupliseres før splitten, havner kopier av de samme punktene både i trening og test. Modellen testes da på punkter den har sett, og testresultatet blir for godt. Testdataene skal dessuten ha den virkelige fordelingen. Split først, og balanser bare treningsdataene.
+  husk: 'Split først, balanser så bare treningsdataene.'
+
+- id: "2.6-K1"
+  del: "2.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-2]
+  sporsmal: |
+    ```python
+    scaler = StandardScaler().fit(X_train)
+    tre_a = DecisionTreeClassifier(max_depth=4, random_state=0).fit(X_train, y_train)
+    tre_b = DecisionTreeClassifier(max_depth=4, random_state=0).fit(scaler.transform(X_train), y_train)
+    ```
+
+    `tre_b` får skalerte testdata og `tre_a` uskalerte. Hvordan forventer du at prediksjonene sammenlignes?
+  alternativer:
+    - tekst: 'De blir i praksis like, fordi skaleringen bare flytter tersklene i splittene.'
+      riktig: true
+      forklaring: 'En splitt er «er feature $j$ under en terskel?». Standardisering bevarer rekkefølgen, så de samme splittene finnes med nye terskler.'
+    - tekst: '`tre_b` blir klart bedre, fordi features med stor skala ellers dominerer splittene.'
+      forklaring: 'Splittene vurderes for én feature om gangen, så skalaen påvirker ikke hvilken feature som velges.'
+    - tekst: '`tre_b` blir dårligere, fordi standardisering gir negative featureverdier.'
+      forklaring: 'Negative verdier er ikke noe problem for en terskel.'
+    - tekst: '`tre_a` kan ikke trenes, fordi beslutningstrær krever features i $[0, 1]$.'
+      forklaring: 'Trær stiller ingen krav til skalaen på featurene.'
+  forklaring: |
+    Trær er invariante for monotone transformasjoner av hver feature. Derfor er svaret på øving 2-spørsmålet «Do we need to scale the features?» nei for beslutningstrær, i motsetning til for logistisk regresjon, k-means og nevrale nett.
+  husk: 'Beslutningstrær trenger ikke skalering.'
+
+- id: "2.6-K2"
+  del: "2.6"
+  niva: middels
+  type: flervalg
+  tags: [kode, oving-2]
+  sporsmal: |
+    ```python
+    clf = DecisionTreeClassifier(max_depth=3)
+    scores = cross_val_score(clf, X_train, y_train, cv=5)
+    ```
+
+    Hvilke påstander stemmer?
+  alternativer:
+    - tekst: '`scores` har fem verdier, én per fold.'
+      riktig: true
+      forklaring: 'Én skår per fold. Rapporter gjerne `scores.mean()` og `scores.std()`.'
+    - tekst: 'Hvert punkt i `X_train` brukes til validering nøyaktig én gang.'
+      riktig: true
+      forklaring: 'Foldene er ikke-overlappende og dekker hele treningssettet.'
+    - tekst: 'Modellen trenes én gang og evalueres deretter på fem deler.'
+      forklaring: 'Den trenes fem ganger, hver gang uten den folden den evalueres på.'
+    - tekst: 'Etter kallet er `clf` trent og kan brukes direkte med `predict`.'
+      forklaring: '`cross_val_score` trener kopier av modellen. `clf` må trenes med `fit` etterpå.'
+  forklaring: |
+    5-fold kryssvalidering deler treningsdataene i fem like store deler, trener på fire og evaluerer på den femte, fem ganger. `scores.std()` sier hvor mye resultatet varierer mellom foldene. Øving 2 ba om CV-skår som snitt ± standardavvik, og så testnøyaktighet fra en modell trent på alle treningsdataene.
+  husk: 'cross_val_score trener k kopier. Den endelige modellen må trenes med fit.'

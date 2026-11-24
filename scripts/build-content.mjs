@@ -3,6 +3,7 @@
 //   content/pensum/NN-*.md      -> src/generated/pensum/kapN.json (+ indeks, begreper, søk)
 //   content/oppgaver/kapN.yaml  -> src/generated/oppgaver/kapN.json (+ indeks)
 //   content/notatquiz/*.yaml    -> src/generated/notatquiz/{notater,eksempler,prosjekter}.json
+//   content/kode/*.md           -> src/generated/kode.json (kodekortene i Kode-fanen)
 //
 // Skriptet stopper med feilkode hvis innholdet ikke er gyldig: manglende
 // seksjoner, formler som ikke lar seg sette, oppgaver som peker til ukjente
@@ -15,6 +16,10 @@ import { fileURLToPath } from "node:url";
 import MarkdownIt from "markdown-it";
 import katex from "katex";
 import * as yaml from "js-yaml";
+import hljs from "highlight.js/lib/core";
+import hljsPython from "highlight.js/lib/languages/python";
+
+hljs.registerLanguage("python", hljsPython);
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pensumDir = path.join(root, "content", "pensum");
@@ -37,7 +42,13 @@ const FIGURER_TILLATT = /^[a-z0-9-]+$/;
 const errors = [];
 const feil = (hvor, melding) => errors.push(`${hvor}: ${melding}`);
 
-const md = new MarkdownIt({ html: true, linkify: false, typographer: false });
+// Kodeblokker merket ```python får syntaksutheving allerede ved bygging (ingen JavaScript i nettleseren).
+const md = new MarkdownIt({
+  html: true,
+  linkify: false,
+  typographer: false,
+  highlight: (str, lang) => (lang === "python" ? hljs.highlight(str, { language: "python", ignoreIllegals: true }).value : ""),
+});
 let mathCount = 0;
 
 function renderTex(tex, displayMode, hvor) {
@@ -454,6 +465,91 @@ if (fs.existsSync(notatquizDir)) {
   for (const liste of Object.values(notatquiz)) liste.sort(sorter);
 }
 
+
+// ---------------------------------------------------------------- kode
+// content/kode/00-oversikt.md er innledningen. NN-*.md har ett kodekort per «## Tittel {#slug}»:
+//   *Pensum: 1.2, 3.3 · Kilder: …*
+//   ```python … ```                (kodesnutten, påkrevd)
+//   #### Hva koden gjør             (påkrevd)
+//   #### Fallgruver                 (påkrevd, punktliste)
+//   #### Fra øvingene               (valgfri, punktliste: kode og funn fra øvingene og prosjekt 4)
+const kodeDir = path.join(root, "content", "kode");
+const kode = { oversiktHtml: "", temaer: [] };
+const KODE_SEKSJONER = [
+  ["Hva koden gjør", "forklaringHtml"],
+  ["Fallgruver", "fallgruverHtml"],
+  ["Fra øvingene", "ovingerHtml"],
+];
+if (fs.existsSync(kodeDir)) {
+  const kortSlugs = new Set();
+  for (const fil of fs.readdirSync(kodeDir).filter((f) => /^\d\d-.*\.md$/.test(f)).sort()) {
+    const raw = fs.readFileSync(path.join(kodeDir, fil), "utf8").replace(/\r\n/g, "\n");
+    const [fm, body] = parseFrontmatter(raw, `kode/${fil}`);
+    if (fil.startsWith("00-")) {
+      kode.oversiktHtml = renderMarkdown(body, `kode/${fil}`);
+      continue;
+    }
+    const nr = Number(fm.kapittel);
+    if (!kapitler.some((k) => k.nr === nr)) feil(`kode/${fil}`, `ukjent kapittel «${fm.kapittel}»`);
+    if (!fm.tittel) feil(`kode/${fil}`, "mangler tittel i frontmatter");
+    const tema = { kap: nr, tittel: fm.tittel, ingressHtml: renderMarkdown(fm.ingress ?? "", `kode/${fil}`, { inline: true }), kort: [] };
+    const lines = body.split("\n");
+    const starter = [];
+    lines.forEach((l, i) => {
+      if (/^## /.test(l)) starter.push(i);
+    });
+    if (starter.length === 0) feil(`kode/${fil}`, "har ingen kodekort («## Tittel {#slug}»)");
+    starter.forEach((start, si) => {
+      const hvor = `kode/${fil}:${start + 1}`;
+      const head = lines[start].match(/^## (.+?) \{#([a-z0-9-]+)\}\s*$/);
+      if (!head) {
+        feil(hvor, `overskriften har feil format: «${lines[start]}»`);
+        return;
+      }
+      const [, tittel, slug] = head;
+      if (kortSlugs.has(slug)) feil(hvor, `slug «${slug}» finnes fra før`);
+      kortSlugs.add(slug);
+      const sub = lines.slice(start + 1, starter[si + 1] ?? lines.length);
+      const kildeIdx = sub.findIndex((l) => /^\*Pensum:/.test(l.trim()));
+      let deler = [];
+      let kildeHtml = "";
+      if (kildeIdx < 0 || kildeIdx > 3) feil(hvor, "mangler linjen «*Pensum: … · Kilder: …*» rett under overskriften");
+      else {
+        const linje = sub[kildeIdx].trim().replace(/^\*/, "").replace(/\*$/, "");
+        const m = linje.match(/^Pensum:\s*([\d., ]+?)\s*(?:·\s*(.*))?$/);
+        if (!m) feil(hvor, `kan ikke lese pensumlinjen «${linje}»`);
+        else {
+          deler = m[1].split(",").map((x) => x.trim()).filter(Boolean);
+          for (const d of deler) if (!delkapIds.has(d)) feil(hvor, `ukjent delkapittel «${d}» i pensumlinjen`);
+          kildeHtml = renderMarkdown((m[2] ?? "").replace(/^Kilder?:\s*/, ""), hvor, { inline: true });
+        }
+        sub.splice(kildeIdx, 1);
+      }
+      const secIdx = [];
+      sub.forEach((l, i) => {
+        if (/^#### /.test(l)) secIdx.push(i);
+      });
+      const kodeSrc = sub.slice(0, secIdx[0] ?? sub.length).join("\n");
+      if (!/```python\n[\s\S]+?```/.test(kodeSrc)) feil(hvor, "mangler en ```python-blokk før «#### Hva koden gjør»");
+      const kort = { slug, tittel, deler, kildeHtml, kodeHtml: renderMarkdown(kodeSrc, hvor) };
+      const navn = secIdx.map((i) => sub[i].slice(5).trim());
+      const forventet = KODE_SEKSJONER.map((s) => s[0]);
+      if (navn.join("|") !== forventet.slice(0, 2).join("|") && navn.join("|") !== forventet.join("|"))
+        feil(hvor, `seksjonene er [${navn.join(", ")}], forventet [${forventet.join(", ")}] (den siste er valgfri)`);
+      secIdx.forEach((i, k) => {
+        const felt = KODE_SEKSJONER.find((s) => s[0] === navn[k])?.[1];
+        const tekst = sub.slice(i + 1, secIdx[k + 1] ?? sub.length).join("\n");
+        if (felt) kort[felt] = renderMarkdown(tekst, `${hvor} ${navn[k]}`);
+      });
+      if (kort.fallgruverHtml && !/<li>/.test(kort.fallgruverHtml)) feil(hvor, "fallgruvene skal være en punktliste");
+      if (kort.ovingerHtml && !/<li>/.test(kort.ovingerHtml)) feil(hvor, "«Fra øvingene» skal være en punktliste");
+      tema.kort.push(kort);
+    });
+    kode.temaer.push(tema);
+  }
+  if (!kode.oversiktHtml) feil("kode", "mangler 00-oversikt.md");
+}
+
 // ---------------------------------------------------------------- skriv ut
 const pensumOut = path.join(outDir, "pensum");
 const oppgOut = path.join(outDir, "oppgaver");
@@ -480,6 +576,7 @@ fs.mkdirSync(path.join(outDir, "notatquiz"), { recursive: true });
 skriv(path.join(outDir, "notatquiz", "notater.json"), notatquiz.notater);
 skriv(path.join(outDir, "notatquiz", "eksempler.json"), notatquiz.eksempler);
 skriv(path.join(outDir, "notatquiz", "prosjekter.json"), notatquiz.prosjekter);
+skriv(path.join(outDir, "kode.json"), kode);
 
 const perType = {};
 for (const o of indeks) perType[o.type] = (perType[o.type] ?? 0) + 1;
@@ -488,7 +585,8 @@ for (const o of indeks) perNiva[o.niva] = (perNiva[o.niva] ?? 0) + 1;
 console.log(
   `Pensum: ${kapitler.length} kapitler, ${delkapIds.size} delkapitler, ${begreper.length} begreper. ` +
     `Oppgaver: ${indeks.length} (${Object.entries(perType).map(([t, n]) => `${t} ${n}`).join(", ")}; ` +
-    `${Object.entries(perNiva).map(([t, n]) => `${t} ${n}`).join(", ")}). Notatquiz: ${notatquiz.notater.length} + ${notatquiz.eksempler.length} + ${notatquiz.prosjekter.length}. Formler: ${mathCount}.`
+    `${Object.entries(perNiva).map(([t, n]) => `${t} ${n}`).join(", ")}). Notatquiz: ${notatquiz.notater.length} + ${notatquiz.eksempler.length} + ${notatquiz.prosjekter.length}. ` +
+    `Kodekort: ${kode.temaer.reduce((n, t) => n + t.kort.length, 0)} i ${kode.temaer.length} temaer. Formler: ${mathCount}.`
 );
 if (errors.length) {
   console.error(`\n${errors.length} feil i innholdet:`);

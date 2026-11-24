@@ -7,7 +7,9 @@ test.describe("eksamenstrening", () => {
     await page.goto("#/trening/okt?del=1.5");
     const kort = page.locator("article.oppgave");
     const sett = new Set<string>();
-    for (let i = 0; i < 6; i++) {
+    await expect(kort).toBeVisible();
+    const antall = await page.locator(".okt-prikk").count();
+    for (let i = 0; i < antall; i++) {
       const klasse = (await kort.getAttribute("class")) ?? "";
       const type = klasse.match(/oppgave-(enkeltvalg|flervalg|pastand|tall|tekst)/)![1];
       sett.add(type);
@@ -35,7 +37,7 @@ test.describe("eksamenstrening", () => {
       }
       await expect(kort.locator(".fasit")).toBeVisible();
       await expect(kort.locator(".husk")).toBeVisible();
-      if (i < 5) await page.getByRole("button", { name: "Neste oppgave" }).click();
+      if (i < antall - 1) await page.getByRole("button", { name: "Neste oppgave" }).click();
     }
     expect(sett.size).toBe(5);
     await page.getByRole("button", { name: /Avslutt og se oppsummering/ }).click();

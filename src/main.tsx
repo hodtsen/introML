@@ -14,6 +14,7 @@ import "./styles/pensum.css";
 import "./styles/oppgaver.css";
 import "./styles/eksamen.css";
 import "./styles/figurer.css";
+import "./styles/kode.css";
 import App from "./App";
 
 createRoot(document.getElementById("root")!).render(

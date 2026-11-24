@@ -889,3 +889,112 @@
   forklaring: |
     LIME trekker nye punkter rundt $\mathbf{x}$, lar den komplekse modellen $f$ predikere dem, vekter dem etter nærhet ($\pi_{\mathbf{x}}$) og tilpasser en enkel lineær modell $g$. $\mathcal{L}$ måler hvor godt $g$ etterligner $f$ lokalt, og $\Omega(g)$ holder $g$ enkel. Å begrense antall features er en konkret måte å holde $\Omega(g)$ lav på.
   husk: 'LIME: L = troskap mot f lokalt, Ω(g) = enkelhet (f.eks. num_features), π_x = nærhetsvekt.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "8.4-K1"
+  del: "8.4"
+  niva: middels
+  type: flervalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    ```python
+    explainer = shap.Explainer(boosting_model, X_train)
+    shap.plots.beeswarm(explainer(X_test))
+    ```
+
+    Hvilke påstander om beeswarm-plottet stemmer?
+  alternativer:
+    - tekst: 'Hvert punkt er ett testpunkt for én feature.'
+      riktig: true
+      forklaring: 'Hver rad i plottet er en feature, og hver prikk er SHAP-verdien til ett datapunkt for den featuren.'
+    - tekst: 'Fargen viser featureverdien: rødt er høyt og blått er lavt.'
+      riktig: true
+      forklaring: 'Fargen viser verdien til featuren, ikke retningen på effekten.'
+    - tekst: 'Fargen viser om SHAP-verdien er positiv eller negativ.'
+      forklaring: 'Det leser du av x-aksen. Fargen er featureverdien.'
+    - tekst: 'x-aksen er verdien til featuren.'
+      forklaring: 'x-aksen er SHAP-verdien, altså hvor mye featuren drar prediksjonen opp eller ned.'
+  forklaring: |
+    Er de røde prikkene for en feature til venstre, trekker høye verdier av featuren prediksjonen ned. Det var poenget med `Pclass` i H24 oppgave 35.
+  husk: 'Beeswarm: x = SHAP-verdi, farge = featureverdi.'
+
+- id: "8.4-K2"
+  del: "8.4"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, prosjekt-4]
+  sporsmal: |
+    I California housing er `y_train` medianverdien til husene. En student bytter bakgrunnsdata:
+
+    ```python
+    explainer = shap.Explainer(model, X_train[y_train > 3])      # bare dyre områder
+    ```
+
+    Hva endrer seg sammenlignet med `shap.Explainer(model, X_train)`?
+  alternativer:
+    - tekst: 'Baseline $\phi_0$ blir snittprediksjonen for dyre områder, så alle SHAP-verdiene endres.'
+      riktig: true
+      forklaring: 'SHAP-verdiene forklarer avviket fra $\phi_0$. Ny referanse gir nye SHAP-verdier, mens prediksjonen er den samme.'
+    - tekst: 'Ingenting, fordi SHAP-verdiene bare avhenger av modellen.'
+      forklaring: 'Bakgrunnsdataene bestemmer både $\phi_0$ og verdiene som settes inn for «manglende» features.'
+    - tekst: 'Modellen trenes på nytt på bakgrunnsdataene før forklaringen lages.'
+      forklaring: 'SHAP forklarer den ferdig trente modellen. Den endres ikke.'
+    - tekst: 'Prediksjonene til modellen blir høyere for alle testpunkter.'
+      forklaring: 'Prediksjonene er uendret. Det er fordelingen av dem mellom $\phi_0$ og featurene som endres.'
+  forklaring: |
+    I notatene settes verdiene til fraværende features inn fra et bakgrunnsdatasett, og $\phi_0 = E[f(\mathbf{x})]$ er snittprediksjonen over det. Valget av bakgrunnsdata er derfor et modelleringsvalg som påvirker forklaringene. Prosjekt 4 spurte nettopp hva baseline og bakgrunnsdata er.
+  husk: 'Bakgrunnsdata bestemmer baseline φ₀, og SHAP-verdiene måles mot den.'
+
+- id: "8.4-K3"
+  del: "8.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, regning]
+  sporsmal: |
+    ```python
+    sv = explainer(X_test.iloc[[7]])
+    print(sv.base_values[0])      # 2.07
+    print(sv.values[0])           # [ 0.85 -0.30  0.12 -0.04]
+    ```
+
+    Hva er modellens prediksjon for dette punktet?
+  alternativer:
+    - tekst: '2,70'
+      riktig: true
+      forklaring: '$2{,}07 + 0{,}85 - 0{,}30 + 0{,}12 - 0{,}04 = 2{,}70$.'
+    - tekst: '2,07'
+      forklaring: 'Det er baseline, snittprediksjonen over bakgrunnsdataene.'
+    - tekst: '3,38'
+      forklaring: 'Her er absoluttverdiene lagt til. Negative SHAP-verdier trekker prediksjonen ned.'
+    - tekst: '0,63'
+      forklaring: 'Det er bare summen av SHAP-verdiene, uten baseline.'
+  forklaring: |
+    SHAP er additiv: $f(\mathbf{x}^*) = \phi_0 + \sum_j \phi_j^*$. Waterfall- og force-plottene viser nettopp denne summen, fra $\phi_0$ til prediksjonen.
+  husk: 'Prediksjon = baseline + sum av SHAP-verdier.'
+
+- id: "8.5-K1"
+  del: "8.5"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    lime_classifier = LimeTabularExplainer(X_train, feature_names=features, mode="classification")
+    exp = lime_classifier.explain_instance(X_jack, classifier.predict, num_features=3)
+    ```
+
+    Hva er feil med andre linje?
+  alternativer:
+    - tekst: 'LIME trenger klassesannsynligheter, og `predict` gir bare klasser.'
+      riktig: true
+      forklaring: 'For klassifisering skal funksjonen være `classifier.predict_proba`, som notatene bruker.'
+    - tekst: 'LIME trenger targets for nabopunktene, og `predict` gir ingen targets.'
+      forklaring: 'Nabopunktene får labels fra modellen, ikke fra data. Det er poenget med en surrogatmodell.'
+    - tekst: '`num_features=3` er for mange, LIME tillater bare én feature i forklaringen.'
+      forklaring: '`num_features` begrenser kompleksiteten til $g$, men 3 er helt vanlig.'
+    - tekst: 'Ingenting, LIME bruker bare rekkefølgen på klassene fra `predict`.'
+      forklaring: 'Surrogatmodellen tilpasses sannsynligheten for en klasse, som må være et kontinuerlig tall.'
+  forklaring: |
+    LIME trekker punkter rundt $\mathbf{x}$, lar modellen $f$ predikere på dem, og tilpasser en enkel modell $g$ til disse prediksjonene vektet etter nærhet. For klassifisering er det sannsynlighetene som etterlignes. For regresjon brukes `regressor.predict`.
+  husk: 'LIME: predict_proba for klassifisering, predict for regresjon.'

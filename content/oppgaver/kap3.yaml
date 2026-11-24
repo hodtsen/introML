@@ -774,3 +774,175 @@
   forklaring: |
     Treningsfeilen synker alltid når modellen blir mer fleksibel. Valideringsfeilen synker først (bias går ned) og stiger så (variansen går opp). Vi velger kompleksiteten der valideringsfeilen er lavest, og rapporterer til slutt feilen på testsettet.
   husk: 'Velg kompleksitet etter laveste valideringsfeil. Begge høye: bias. Stort gap: varians.'
+
+# ---------------------------------------------------------------- kodeoppgaver (Kode-fanen)
+
+- id: "3.1-K1"
+  del: "3.1"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode, oving-1]
+  sporsmal: |
+    Modellen er `y_pred = beta0 + beta1 * x`, og tapet er $\text{MSE} = \frac{1}{2N}\sum_i (y^{(i)} - f(x^{(i)}))^2$ som i notatene. `x`, `y` og `y_pred` er arrayer med lengde $N$. Hvilken linje er $\partial L / \partial \beta_1$?
+  alternativer:
+    - tekst: '`np.mean(x * (y_pred - y))`'
+      riktig: true
+      forklaring: '$\frac{1}{N}\sum_i x^{(i)}(f(x^{(i)}) - y^{(i)})$, likning 56 i notatene.'
+    - tekst: '`np.mean(y_pred - y)`'
+      forklaring: 'Dette er $\partial L / \partial \beta_0$. Den mangler faktoren $x$ fra kjerneregelen.'
+    - tekst: '`np.mean(x * (y - y_pred))`'
+      forklaring: 'Feil fortegn. Med `beta1 -= lr * grad` går du da i retning av økende tap.'
+    - tekst: '`np.mean((y_pred - y) ** 2) / 2`'
+      forklaring: 'Dette er selve tapet, ikke den deriverte.'
+  forklaring: |
+    Faktoren $\tfrac12$ forsvinner mot potensen 2 når vi deriverer, og den indre deriverte av $\beta_0 + \beta_1 x$ med hensyn på $\beta_1$ er $x$. Formen $(y_{\text{pred}} - y)\,x$ er den samme som for logistisk regresjon med cross-entropy.
+  husk: 'Gradient for vekten = snitt av x · (y_pred − y). For biasen: snitt av (y_pred − y).'
+
+- id: "3.1-K2"
+  del: "3.1"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode, oving-1]
+  sporsmal: |
+    I øving 1 skal `LinearRegression.predict(X)` returnere «a length m array of floats». Hvilken implementasjon er riktig?
+  alternativer:
+    - tekst: '`return X @ self.weights + self.bias`'
+      riktig: true
+      forklaring: 'Lineær regresjon gir den lineære kombinasjonen direkte, ett tall per rad.'
+    - tekst: '`return 1 / (1 + np.exp(-(X @ self.weights + self.bias)))`'
+      forklaring: 'Sigmoid hører til logistisk regresjon. Den ville begrenset prediksjonene til $(0, 1)$.'
+    - tekst: '`return (X @ self.weights + self.bias > 0.5).astype(int)`'
+      forklaring: 'Gir klasser, ikke kontinuerlige verdier. Regresjon skal ikke ha noen terskel.'
+    - tekst: '`return np.mean((X @ self.weights + self.bias) ** 2)`'
+      forklaring: 'Gir ett tall, ikke ett per rad, og ligner mer på et tap enn en prediksjon.'
+  forklaring: |
+    Regresjon predikerer kontinuerlige verdier, så `predict` er bare $f(\mathbf{x}) = \mathbf{w}\mathbf{x} + b$. Det samme uttrykket brukes inne i `fit` for å regne ut gradientene.
+  husk: 'Lineær regresjon: ingen sigmoid og ingen terskel.'
+
+- id: "3.2-K1"
+  del: "3.2"
+  niva: avansert
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    poly = PolynomialFeatures(degree=2)
+    X_train_p = poly.fit_transform(X_train)
+    X_test_p = poly.fit_transform(X_test)
+    ```
+
+    Notatene sier at transformasjonen ikke skal tilpasses på testdataene. Hvilket utsagn om koden over stemmer?
+  alternativer:
+    - tekst: 'Resultatet blir det samme som med `transform`, men vanen er farlig for scalere og PCA.'
+      riktig: true
+      forklaring: '`PolynomialFeatures` lærer bare antall input-features, så den lærer ikke noe fra testdataene som endrer resultatet.'
+    - tekst: 'Testdataene får andre potenser enn treningsdataene, så antallet features blir ulikt.'
+      forklaring: 'Graden er gitt av `degree=2` og antallet features av antall kolonner, som er likt.'
+    - tekst: 'Det gir lekkasje, fordi `PolynomialFeatures` lærer snitt og varians fra testdataene.'
+      forklaring: 'Det er `StandardScaler` som lærer snitt og varians. `PolynomialFeatures` lærer ingen slike parametre.'
+    - tekst: 'Koden gir en feil, fordi `fit_transform` bare kan kalles én gang per objekt.'
+      forklaring: 'Et sklearn-objekt kan tilpasses på nytt. Det andre kallet overskriver det første.'
+  forklaring: |
+    For en transformasjon uten lærte parametre gir `fit_transform` på testdata tilfeldigvis samme resultat. Med en scaler eller PCA ville testdataene fått egne parametre og blitt transformert annerledes enn treningsdataene. Derfor er regelen i notatene at all `.fit` skjer på treningsdata.
+  husk: 'Alltid fit på trening, transform på test, også når det tilfeldigvis ikke spiller noen rolle.'
+
+- id: "3.3-K1"
+  del: "3.3"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Treningsløkka fra notatene lagrer tapet etter hver epoke:
+
+    ```python
+    for epoch in range(100):
+        model.partial_fit(X_train, y_train)
+        train_losses.append(mean_squared_error(y_train, model.predict(X_train)))
+        val_losses.append(mean_squared_error(y_val, model.predict(X_val)))
+    ```
+
+    Plottet under viser resultatet. Hva bør du gjøre?
+  figur:
+    type: linje
+    tittel: Tap per epoke
+    xlabel: Epoke
+    ylabel: MSE
+    x: [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+    serier:
+      - navn: Trening
+        y: [5.0, 3.2, 2.3, 1.8, 1.5, 1.3, 1.1, 0.95, 0.85, 0.78, 0.72]
+      - navn: Validering
+        y: [5.2, 3.5, 2.7, 2.3, 2.15, 2.2, 2.3, 2.45, 2.6, 2.75, 2.9]
+  alternativer:
+    - tekst: 'Stoppe rundt epoke 40, der valideringstapet er lavest (early stopping).'
+      riktig: true
+      forklaring: 'Etter epoke 40 øker valideringstapet mens treningstapet synker. Det er overtilpasning.'
+    - tekst: 'Trene lenger, siden treningstapet fortsatt synker etter 100 epoker.'
+      forklaring: 'Treningstapet sier ikke noe om generalisering. Lenger trening gjør overtilpasningen verre.'
+    - tekst: 'Regne ut tapet på testdataene i løkka og stoppe der det er lavest.'
+      forklaring: 'Da brukes testdataene til å velge modell, og den endelige testen er ikke lenger uavhengig.'
+    - tekst: 'Øke kompleksiteten, fordi valideringstapet øker mot slutten.'
+      forklaring: 'Økende valideringstap med fallende treningstap tyder på for *høy* kompleksitet.'
+  forklaring: |
+    Kurvene skiller lag etter rundt epoke 40: modellen fortsetter å tilpasse seg treningsdataene, men blir dårligere på usette data. Early stopping velger modellen fra epoken med lavest valideringstap. Alternativt kan modellen gjøres enklere.
+  husk: 'Treningstap ned, valideringstap opp: overtilpasning. Stopp der valideringstapet er lavest.'
+
+- id: "3.4-K1"
+  del: "3.4"
+  niva: grunnleggende
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    ```python
+    folds = np.array_split(np.random.permutation(len(X_train)), 5)
+    for i in range(5):
+        val = folds[i]
+        tren = np.concatenate([folds[j] for j in range(5) if j != i])
+        model.fit(X_train[tren], y_train[tren])
+        scores.append(model.score(X_train[val], y_train[val]))
+    ```
+
+    Hvor mange ganger brukes hvert punkt til validering, og hvor mange ganger trenes modellen?
+  alternativer:
+    - tekst: 'Hvert punkt valideres 1 gang, og modellen trenes 5 ganger.'
+      riktig: true
+      forklaring: 'Foldene er disjunkte, og løkka trener én modell per fold.'
+    - tekst: 'Hvert punkt valideres 5 ganger, og modellen trenes 1 gang.'
+      forklaring: 'Hvert punkt ligger i nøyaktig én fold og valideres bare når den folden er `val`.'
+    - tekst: 'Hvert punkt valideres 4 ganger, og modellen trenes 5 ganger.'
+      forklaring: 'Fire ganger er hvor ofte hvert punkt brukes til *trening*.'
+    - tekst: 'Hvert punkt valideres 1 gang, og modellen trenes 1 gang.'
+      forklaring: '`fit` kalles inne i løkka, altså fem ganger.'
+  forklaring: |
+    I $k$-fold kryssvalidering brukes hvert punkt til validering én gang og til trening $k - 1$ ganger. Modellen trenes $k$ ganger. Det er det `cross_val_score(model, X_train, y_train, cv=5)` gjør.
+  husk: 'k-fold: k treninger, hvert punkt validert én gang.'
+
+- id: "3.6-K1"
+  del: "3.6"
+  niva: middels
+  type: enkeltvalg
+  tags: [kode]
+  sporsmal: |
+    Data er laget med `y = np.floor(x) + støy`, der støyen har standardavvik 0,1. Du kjører:
+
+    ```python
+    reg = DecisionTreeRegressor().fit(X_train, y_train)
+    print(reg.get_depth())                                        # 12
+    print(mean_squared_error(y_train, reg.predict(X_train)))      # 0.0
+    print(mean_squared_error(y_test, reg.predict(X_test)))        # 0.031
+    ```
+
+    Hva forteller utskriften?
+  alternativer:
+    - tekst: 'Treet har tilpasset seg støyen, fordi det splitter til nesten hvert løv har ett punkt.'
+      riktig: true
+      forklaring: 'Uten `max_depth` vokser treet til løvene er rene. Treningsfeil 0 og høyere testfeil er overtilpasning.'
+    - tekst: 'Treet er for grunt til å fange opp trinnene i dataene.'
+      forklaring: 'Dybde 12 er langt mer enn nødvendig for noen få trinn. Problemet er motsatt.'
+    - tekst: 'MSE gir ikke mening her, fordi regresjonstrær predikerer klasser.'
+      forklaring: 'Et regresjonstre predikerer snittet av targetene i løvet, et kontinuerlig tall.'
+    - tekst: 'Treningsfeil 0 viser at treet har funnet den sanne funksjonen `np.floor`.'
+      forklaring: 'Den sanne funksjonen ville hatt treningsfeil rundt støyvariansen, $0{,}1^2 = 0{,}01$, ikke 0.'
+  forklaring: |
+    Med støy på 0,1 er den laveste forventede MSE rundt $0{,}01$. Treningsfeil 0 betyr at treet har lært hvert enkelt punkt, inkludert støyen. Testfeilen er høyere enn støyen. Notatene viser at sklearn uten begrensning gjerne lager et tre med dybde 12 og 85 noder på disse dataene. Begrens med `max_depth` og velg dybden med validering.
+  husk: 'Treningsfeil under støynivået er et tegn på overtilpasning.'

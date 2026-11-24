@@ -154,3 +154,30 @@ export interface OppgaveMeta {
   antallAlt: number;
   antallRiktige: number;
 }
+
+// ---------------------------------------------------------------- kode
+
+export interface KodeKort {
+  slug: string;
+  tittel: string;
+  /** Delkapitlene i pensum kortet hører til. */
+  deler: string[];
+  kildeHtml: string;
+  kodeHtml: string;
+  forklaringHtml: string;
+  fallgruverHtml: string;
+  /** Kode og funn fra øvingene og prosjekt 4 (valgfritt). */
+  ovingerHtml?: string;
+}
+
+export interface KodeTema {
+  kap: number;
+  tittel: string;
+  ingressHtml: string;
+  kort: KodeKort[];
+}
+
+export interface KodeData {
+  oversiktHtml: string;
+  temaer: KodeTema[];
+}

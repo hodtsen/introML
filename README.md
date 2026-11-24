@@ -11,8 +11,9 @@ Når branchen er merget til `main` og GitHub Pages er slått på (se [Publiserin
 | **Pensum** | 9 kapitler og 58 delkapitler. Hvert delkapittel har introduksjon, begreper, forklaring, formler, sammenhenger, vanlige misforståelser og «dette må du kunne». |
 | **Figurer** | 14 interaktive figurer og diagrammer: sigmoid, gradient descent, terskel og ROC, entropi og Gini, bias–varians, gradient boosting, aktiveringer og softmax, k-means, PCA, ε-greedy, Shapley-kalkulator, nevralt nettverk, RL-løkka og risikonivåene i AI Act. |
 | **Formelark og begrepsliste** | Alle formler samlet per kapittel, og 329 begreper med lenke til der de forklares. Søk med Ctrl+K. |
-| **Oppgavebank** | 375 oppgaver, 6–9 per delkapittel, på tre nivåer: 169 enkeltvalg, 58 flervalg, 57 påstander, 39 regneoppgaver og 52 tekstoppgaver. 24 handler om å lese eller rette Python-kode, 13 om å tolke plott eller tabeller, og 38 er knyttet til øvingene og prosjekt 4. |
+| **Oppgavebank** | 422 oppgaver, 6–11 per delkapittel, på tre nivåer: 206 enkeltvalg, 67 flervalg, 58 påstander, 39 regneoppgaver og 52 tekstoppgaver. 71 handler om å lese eller rette Python-kode, 14 om å tolke plott eller tabeller, og 54 er knyttet til øvingene og prosjekt 4. |
 | **Øving** | Per delkapittel, per kapittel, blandet (filtrer på kapittel, nivå og type), kode- og figuroppgaver samlet, og repetisjon av feil. Fasit vises først etter at du har svart. |
+| **Kode** | Egen fane med 41 kodekort for kapittel 1–8: en kort kodesnutt med syntaksutheving, hva den gjør (med formlene) og fallgruvene som typisk brukes som feilalternativer, med lenke til delkapittelet i pensum. 14 av kortene har også en kort boks «Fra øvingene» med kode og funn fra øving 1–3 og prosjekt 4. Oversikten viser hvordan kode ble testet på H24 og H25, mønstrene som går igjen og en huskeliste over funksjoner og hva de returnerer. Kodequizen samler de 71 kodeoppgavene i banken, for hele pensum eller ett kapittel. |
 | **Notatquiz** | Egen fane med tre quizer: alle 85 «Oppgave:»-ene i forelesningsnotatene (versjonen 23. november 2026), 47 spørsmål fra øving 1–3 og prosjekt 4, og de 10 eksempelspørsmålene fra notatenes siste kapittel. Alt er skrevet om med nok kontekst til å besvares alene. Kan filtreres på kapittel i notatene eller på prosjekt. Holdes utenfor oppgavebanken, eksamenssimuleringen og mestringstallene. |
 | **Eksamenssimulering** | 40 flervalgsspørsmål fra hele pensum, med klokke, Inspera-regelen (enkeltvalg kan byttes, men ikke gjøres blanke igjen; flervalg kan krysses av og på fritt) og poeng etter 2026-kunngjøringen eller som eksamen 2025. Som på H25 er omtrent hvert tiende spørsmål om kode (H25-modus har en egen kodegruppe). Faste sett A–C eller tilfeldige sett, rapport med karakteranslag, mestring per kapittel og anbefalinger. |
 | **Fremgang** | Mestringskart, historikk og eksport/import av fremgangen. Alt lagres lokalt i nettleseren. |
@@ -42,7 +43,7 @@ npm run test:e2e                  # ende-til-ende-tester mot bygget (Playwright)
 Har du Chrome installert, kan du bruke den i stedet: `CHROME_PATH=/sti/til/chrome npm run test:e2e`.
 
 - **Innholdsbygget** stopper med feilmelding hvis et delkapittel mangler en seksjon, en formel ikke lar seg sette, en oppgave peker til et ukjent delkapittel, et enkeltvalg ikke har nøyaktig ett riktig svar, et alternativ mangler forklaring, osv.
-- **Enhetstestene** dekker poengreglene for 2026 og H25 (inkludert null-grense per gruppe), karakterskalaen, trekking av eksamenssett, tolking av tallsvar, stikkordmatching og innholdskravene (58 delkapitler med sju seksjoner, minst seks oppgaver per delkapittel, gyldige figurer).
+- **Enhetstestene** dekker kodekortene (kode, forklaring og fallgruver i hvert kort, gyldige pensumlenker, korte snutter), poengreglene for 2026 og H25 (inkludert null-grense per gruppe), karakterskalaen, trekking av eksamenssett, tolking av tallsvar, stikkordmatching og innholdskravene (58 delkapitler med sju seksjoner, minst seks oppgaver per delkapittel, gyldige figurer).
 - **Ende-til-ende-testene** åpner alle 58 delkapitler, sjekker formler og figurer, søk, formelark og begrepsliste, besvarer alle fem oppgavetyper, gjennomfører eksamen med levering, gjenopptakelse etter omlasting og automatisk levering ved tidsslutt, og tester mobilvisning.
 
 Workflowen `Kontroll` kjører alt dette på pull requests.
@@ -54,12 +55,13 @@ content/
   pensum/            01-…md … 09-…md   faginnholdet, ett kapittel per fil
   oppgaver/          kap1.yaml … kap9.yaml
   notatquiz/         notater-1…4.yaml (oppgavene i notatene), prosjekter.yaml og eksempler.yaml
+  kode/              00-oversikt.md og 01-…md … 08-…md   kodekortene i Kode-fanen
 scripts/
-  build-content.mjs  markdown/YAML → src/generated/*.json, med KaTeX og validering
+  build-content.mjs  markdown/YAML → src/generated/*.json, med KaTeX, syntaksutheving og validering
 src/
   components/        layout, sidemeny, søk, mestringskart, oppgavekort
   components/oppgaver/  én komponent per oppgavetype
-  pages/             startside, pensum, formelark, begreper, trening, eksamen, fremgang
+  pages/             startside, pensum, formelark, begreper, trening, eksamen, notatquiz, kode, fremgang
   figurer/           interaktive figurer og registeret som kobler navn til komponent
   lib/               poengregler, eksamenstrekking, mestring, tall- og stikkordtolking
   store/             fremgang i localStorage
@@ -135,6 +137,30 @@ En oppgave kan ha en figur: enten `figur: navn` (en registrert figur) eller data
 ### Notatquizen
 
 Filene i `content/notatquiz/` bruker samme format som oppgavebanken, med ett ekstra påkrevd felt, `kilde`, som angir avsnittet i forelesningsnotatene (for eksempel `"1.2.5 Klassifiseringsterskel"`). Det første tallet i `kilde` bestemmer hvilket notatkapittel oppgaven filtreres under. `del` peker fortsatt på et delkapittel i portalen, slik at «Les igjen»-lenken virker. Filer som starter med `notater` havner i den første quizen, `prosjekter.yaml` i den andre og `eksempler.yaml` i den tredje. I prosjektquizen starter `kilde` med prosjektet (`Øving 1`–`Øving 3`, `Prosjekt 4 RL`, `Prosjekt 4 XAI`), som brukes til filtreringen. Id-ene (`N01`…, `P01`…, `E01`…) må ikke finnes i oppgavebanken. `tests/unit/notatquiz.test.ts` sjekker dette, at alle sju kapitlene i notatene og alle prosjektene er dekket og at alternativene ikke røper fasit gjennom lengden.
+
+### Kodekortene
+
+Kode-fanen bygges fra `content/kode/`. `00-oversikt.md` er innledningen. Hver av de andre filene er ett kapittel, med frontmatter (`kapittel`, `tittel`, `ingress`) og ett kort per overskrift:
+
+````markdown
+## Skalere med parametre fra treningsdataene {#skalering}
+
+*Pensum: 1.1, 3.2 · Kilder: notater 1.1, eksamen 2024 oppgave 4*
+
+```python
+scaler.fit(X_train)
+X_test_s = scaler.transform(X_test)
+```
+
+#### Hva koden gjør
+…
+#### Fallgruver
+- …
+#### Fra øvingene        (valgfri)
+- …
+````
+
+Byggskriptet stopper hvis et kort mangler pensumlinjen, en `python`-blokk, en av de to seksjonene eller en punktliste med fallgruver, eller hvis det peker på et delkapittel som ikke finnes. Kodeblokker merket `python` får syntaksutheving ved bygging (highlight.js), også i pensum og oppgaver. Kodequizen bruker alle oppgaver i banken med taggen `kode`, så nye kodeoppgaver skrives i `content/oppgaver/` som vanlig. Hold kodesnuttene korte (testen tillater maks 16 linjer), slik eksamen gjør.
 
 ## Publisering på GitHub Pages
 
