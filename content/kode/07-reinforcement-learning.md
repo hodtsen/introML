@@ -33,6 +33,10 @@ Antall returverdier fra `step` avhenger av miljøet. Notatene beskriver Gym-stan
 - `terminated` betyr at miljøet er ferdig (mål eller hull). `truncated` betyr at episoden ble avbrutt, for eksempel på grunn av steggrensen.
 - Reward kommer fra miljøet. Q-verdiene må agenten lære selv.
 
+#### Fra øvingene
+
+- Prosjekt 4, problem 2: plottet av steg per episode viser om treningen har konvergert. Antallet faller og flater ut nær lengden på korteste vei.
+
 ## Q-tabellen {#q-tabell}
 
 *Pensum: 7.3, 7.4 · Kilder: prosjekt 4 RL (`get_state_id`, «Why does the Q-table have 144 states?»), notater 4.5*
@@ -59,6 +63,12 @@ I tre-på-rad-eksempelet i notatene er tabellen i stedet en nøstet dictionary m
 - Formen er (antall tilstander, antall handlinger), ikke omvendt.
 - `argmax(axis=1)` gir beste handling *per tilstand*. `argmax(axis=0)` gir beste tilstand per handling, som sjelden er det du vil.
 - Med `start_random=True` eller `dead_allowed=True` endres miljøet, men ikke antall tilstander, siden tilstanden bare er posisjonen.
+
+#### Fra øvingene
+
+- Prosjekt 4: heatmaps av `q_table.max(axis=1).reshape(12, 12)` viser at verdien faller med avstanden til målet (omtrent som $\gamma^k$), og `q_table.argmax(axis=1)` gir policyen.
+- Busstoppene er en snarvei. Agenten bruker dem bare hvis den har utforsket dem, og de verdsettes høyere fordi færre steg betyr mindre diskontering.
+- `dead_allowed=True` gir reward $-1$ og avslutter episoden i vann. `start_random=True` gjør at agenten må lære gode handlinger fra flere starttilstander.
 
 ## Epsilon-greedy og epsilon decay {#epsilon-greedy}
 

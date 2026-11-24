@@ -13,7 +13,7 @@ Når branchen er merget til `main` og GitHub Pages er slått på (se [Publiserin
 | **Formelark og begrepsliste** | Alle formler samlet per kapittel, og 329 begreper med lenke til der de forklares. Søk med Ctrl+K. |
 | **Oppgavebank** | 422 oppgaver, 6–11 per delkapittel, på tre nivåer: 206 enkeltvalg, 67 flervalg, 58 påstander, 39 regneoppgaver og 52 tekstoppgaver. 71 handler om å lese eller rette Python-kode, 14 om å tolke plott eller tabeller, og 54 er knyttet til øvingene og prosjekt 4. |
 | **Øving** | Per delkapittel, per kapittel, blandet (filtrer på kapittel, nivå og type), kode- og figuroppgaver samlet, og repetisjon av feil. Fasit vises først etter at du har svart. |
-| **Kode** | Egen fane med 41 kodekort for kapittel 1–8: en kort kodesnutt med syntaksutheving, hva den gjør (med formlene) og fallgruvene som typisk brukes som feilalternativer, med lenke til delkapittelet i pensum. Oversikten viser hvordan kode ble testet på H24 og H25, mønstrene som går igjen og en huskeliste over funksjoner og hva de returnerer. Kodequizen samler de 71 kodeoppgavene i banken, for hele pensum eller ett kapittel. |
+| **Kode** | Egen fane med 41 kodekort for kapittel 1–8: en kort kodesnutt med syntaksutheving, hva den gjør (med formlene) og fallgruvene som typisk brukes som feilalternativer, med lenke til delkapittelet i pensum. 14 av kortene har også en kort boks «Fra øvingene» med kode og funn fra øving 1–3 og prosjekt 4. Oversikten viser hvordan kode ble testet på H24 og H25, mønstrene som går igjen og en huskeliste over funksjoner og hva de returnerer. Kodequizen samler de 71 kodeoppgavene i banken, for hele pensum eller ett kapittel. |
 | **Notatquiz** | Egen fane med tre quizer: alle 85 «Oppgave:»-ene i forelesningsnotatene (versjonen 23. november 2026), 47 spørsmål fra øving 1–3 og prosjekt 4, og de 10 eksempelspørsmålene fra notatenes siste kapittel. Alt er skrevet om med nok kontekst til å besvares alene. Kan filtreres på kapittel i notatene eller på prosjekt. Holdes utenfor oppgavebanken, eksamenssimuleringen og mestringstallene. |
 | **Eksamenssimulering** | 40 flervalgsspørsmål fra hele pensum, med klokke, Inspera-regelen (enkeltvalg kan byttes, men ikke gjøres blanke igjen; flervalg kan krysses av og på fritt) og poeng etter 2026-kunngjøringen eller som eksamen 2025. Som på H25 er omtrent hvert tiende spørsmål om kode (H25-modus har en egen kodegruppe). Faste sett A–C eller tilfeldige sett, rapport med karakteranslag, mestring per kapittel og anbefalinger. |
 | **Fremgang** | Mestringskart, historikk og eksport/import av fremgangen. Alt lagres lokalt i nettleseren. |
@@ -155,6 +155,8 @@ X_test_s = scaler.transform(X_test)
 #### Hva koden gjør
 …
 #### Fallgruver
+- …
+#### Fra øvingene        (valgfri)
 - …
 ````
 

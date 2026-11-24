@@ -37,6 +37,11 @@ $$
 - Kontinuerlige features som alder må deles inn i intervaller først, for eksempel med `np.histogram(data, bins=10)` (notatene 1.2.8).
 - `score_1` og `score_0` er ikke sannsynligheter før du deler på summen av dem. Det er bare forholdet som avgjør klassen.
 
+#### Fra øvingene
+
+- Øving 2, problem 2: $p(C)$ er lett å telle, men $p(\mathbf{x} \mid C)$ og $p(\mathbf{x})$ for alle featurene samtidig er simultanfordelinger med for få punkter per kombinasjon. Derfor naiv Bayes, og derfor sammenligner man bare `score_1` og `score_0`.
+- En god første analyse er å sammenligne overlevelsesraten per kategori (for eksempel `df.groupby("sex")["survived"].mean()`) med basisraten. Features som skiller seg tydelig ut, predikerer bedre enn gjetting.
+
 ## Sjekke om features er uavhengige {#crosstab}
 
 *Pensum: 2.2 · Kilder: notater 1.2.8*
@@ -111,6 +116,12 @@ plot_tree(clf)
 - Trær trenger ikke skalerte features. En splitt er en terskel på én feature, og skalering flytter bare terskelen. Det var et av spørsmålene i øving 2.
 - `cross_val_score` gjøres på treningsdataene. Testdataene brukes én gang til slutt.
 - En løvnode med punkter fra begge klassene predikerer majoritetsklassen i noden.
+
+#### Fra øvingene
+
+- Øving 2, problem 1: beslutningsgrensen til et tre består av akseparallelle rektangler. Med ubalanserte data ble plottet nesten ensfarget, fordi treet predikerte majoritetsklassen nesten overalt.
+- Lav dybde ga høy bias, stor dybde ga overtilpasning. Gini, entropi og log loss ga omtrent samme resultat, og valget gjøres med kryssvalidering, ikke testdata.
+- AdaBoost (`AdaBoostClassifier`) på samme data reduserer bias ved å trene svake modeller etter hverandre og vekte opp feilene.
 
 ## Pseudokode for å bygge et beslutningstre {#pseudokode-tre}
 

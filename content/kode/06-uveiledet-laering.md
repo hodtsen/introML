@@ -38,6 +38,11 @@ Notatene anbefaler `MiniBatchKMeans` for store datasett. Notatene skriver `keras
 - `labels_` er vilkårlige tall. Klynge 0 i én kjøring kan hete klynge 2 i neste, og det er derfor øving 3 målte nøyaktighet uavhengig av hvilket tall hver klynge fikk.
 - k-means antar omtrent runde klynger av lik størrelse og fungerer dårlig når avstanden innad i klyngene er større enn mellom dem.
 
+#### Fra øvingene
+
+- Øving 3, problem 2: Kaggle målte klyngetreffsikkerhet uavhengig av hvilket tall hver klynge fikk, ved å finne beste én-til-én-matching mellom klynger og labels (`linear_sum_assignment` på en kontingenstabell).
+- PCA og t-SNE i 2D ble brukt til å se hvor mange klynger det var, før k-means eller DBSCAN ble kjørt.
+
 ## k-means skrevet ut {#kmeans-numpy}
 
 *Pensum: 6.1 · Kilder: notater 3.1.1 (stegene 4–7)*
@@ -117,6 +122,11 @@ PCA finner nye, ortogonale akser (prinsipalkomponentene) som er egenvektorene ti
 - Variansen avhenger av skalaen. En feature målt i gram dominerer en målt i kilo, så skaler først.
 - Komponentene er ukorrelerte og fanger ulike deler av variansen. De er ikke de opprinnelige featurene.
 
+#### Fra øvingene
+
+- Øving 3, problem 2: dataene hadde 16 384 kolonner, altså $128 \times 128$ piksler fra bilder med stokket rekkefølge. Hintet i oppgaven var at rekkefølgen lå i den første raden, som ble hoppet over ved innlesing. Bilder vises med `row.reshape(128, 128)`.
+- Å stokke kolonnene likt for alle rader endrer verken avstander eller varians, så PCA og klynging fungerer uten riktig rekkefølge. Rekkefølgen trengs bare for å tolke klyngene ved å se på bildene.
+
 ## t-SNE {#tsne}
 
 *Pensum: 6.6 · Kilder: notater 3.2.2, eksamen 2024 oppgave 26 og 28, eksamen 2025 del 7 spørsmål 2*
@@ -147,6 +157,10 @@ $$
 - t-SNE bevarer nabolag, ikke globale avstander. Avstanden mellom to klynger i plottet sier lite.
 - Resultatet avhenger av `perplexity` og av tilfeldig initialisering.
 
+#### Fra øvingene
+
+- Øving 3: t-SNE i 2D skiller typisk klyngene tydeligere enn PCA, men den kan bare brukes til visualisering og til å velge $k$, ikke til å transformere nye rader.
+
 ## Anomalideteksjon med tre metoder {#anomalier}
 
 *Pensum: 6.7 · Kilder: notater 3.3, eksamen 2024 oppgave 21 og 23, eksamen 2025 del 7 spørsmål 4*
@@ -174,6 +188,10 @@ outliers_if = iso.predict(X_test) == -1
 - Mange falske positive betyr at modellen kaller mange normale punkter anomalier (H24 oppgave 21).
 - `IsolationForest.predict` gir `-1` og `1`, ikke `1` og `0`.
 - DBSCAN kan ikke tilpasses på trening og brukes på test. k-means og isolation forest kan.
+
+#### Fra øvingene
+
+- Øving 3, problem 2: radene som ikke hørte hjemme, kunne finnes med DBSCAN (`-1`), avstand til nærmeste sentroide eller isolation forest, og deretter vises som bilder for å se hva de var.
 
 ## Avstander i høye dimensjoner {#dimensjonsforbannelsen}
 

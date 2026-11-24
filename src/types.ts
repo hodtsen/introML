@@ -166,6 +166,8 @@ export interface KodeKort {
   kodeHtml: string;
   forklaringHtml: string;
   fallgruverHtml: string;
+  /** Kode og funn fra øvingene og prosjekt 4 (valgfritt). */
+  ovingerHtml?: string;
 }
 
 export interface KodeTema {

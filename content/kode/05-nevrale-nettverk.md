@@ -74,6 +74,11 @@ Output-shapen er alltid (antall datapunkter, antall noder i siste lag). Valget a
 - Sigmoid eller softmax i siste lag på en regresjonsoppgave begrenser output til $(0, 1)$, så modellen kan ikke predikere targets som $-20$ eller $40$.
 - Softmax over 10 noder krever 10 klasser. `Dense(1, activation="softmax")` gir alltid 1.
 
+#### Fra øvingene
+
+- Øving 3, problem 1: binær klassifisering med ett sigmoid-nevron og `binary_crossentropy`, regresjon med lineær output og MSE. Klassifiseringsdataene var XOR med støy, så nettet trengte skjulte lag.
+- Beslutningsgrensen fra `plot_decision_boundary` viste at god testskår ikke betyr god ekstrapolasjon: utenfor området nettet har sett data, er prediksjonene ikke til å stole på.
+
 ## Kompilere, trene og evaluere {#keras-trening}
 
 *Pensum: 5.5, 5.6 · Kilder: notater 2.5 og 2.6, øving 3*
@@ -103,6 +108,11 @@ Arbeidsflyten i notatene er `compile`, `fit`, `predict`, `evaluate` og til slutt
 - `model.predict` på en klassifiseringsmodell gir sannsynligheter. Klassen får du med `argmax` (flere klasser) eller en terskel (binær).
 - `validation_split=0.2` holder av de *siste* 20 % av treningsdataene, uten å stokke. Er dataene sortert, gir det en skjev validering.
 - Testdata skal ikke brukes som `validation_data`. Da styrer de early stopping.
+
+#### Fra øvingene
+
+- Øving 3: tapskurvene for trening og validering viser overtilpasning når gapet øker. Det endelige tapet er ikke et godt mål på modellen. Rapporter metrikken oppgaven spør etter (accuracy, RMSE) på testdata.
+- Mini-batch-trening, læringsrate-scheduling, early stopping og valg av optimizer og aktivering var teknikkene som skulle prøves. De velges med valideringsdata.
 
 ## Treningsløkke i PyTorch {#pytorch}
 

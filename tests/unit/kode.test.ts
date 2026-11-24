@@ -20,6 +20,11 @@ describe("Kode-fanen", () => {
       expect((k.fallgruverHtml.match(/<li>/g) ?? []).length, k.slug).toBeGreaterThanOrEqual(2);
     }
   });
+  it("har funn fra øvingene og prosjekt 4 på en del av kortene", () => {
+    const med = alleKort.filter((k) => k.ovingerHtml);
+    expect(med.length).toBeGreaterThanOrEqual(10);
+    for (const k of med) expect(k.ovingerHtml, k.slug).toContain("<li>");
+  });
   it("holder kodesnuttene korte", () => {
     for (const k of alleKort) {
       const linjer = (k.kodeHtml.match(/<pre><code[^>]*>([\s\S]*?)<\/code><\/pre>/)?.[1] ?? "").trim().split("\n").length;

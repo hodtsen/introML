@@ -45,6 +45,12 @@ der $\phi_0$ (`base_values`, `expected_value`) er snittprediksjonen over bakgrun
 - Valget av bakgrunnsdata endrer $\phi_0$ og dermed alle SHAP-verdiene. Å trekke inn verdier fra andre punkter antar også uavhengige features, så korrelerte features kan gi kombinasjoner modellen aldri har sett.
 - En stor koeffisient i en lineær modell betyr ikke stor betydning hvis featuren nesten ikke varierer. SHAP tar med spredningen i dataene, koeffisientene gjør ikke (prosjekt 4 XAI).
 
+#### Fra øvingene
+
+- Prosjekt 4: for den lineære modellen var koeffisientene og SHAP uenige om hvilke features som var viktigst. Koeffisientene avhenger av skalaen, mens SHAP-verdien $\beta_j (x_j - \bar{x}_j)$ tar med hvor mye featuren faktisk varierer.
+- For boosting-modellen hadde noen features (typisk breddegrad og lengdegrad) ikke-monoton sammenheng med SHAP-verdien, noe en lineær modell aldri kan få. Se med `shap.plots.scatter`.
+- «Blind for MedInc»: trekk fra featurens bidrag, $f(\mathbf{x}) - \phi_{\text{MedInc}}$. Det er ikke det samme som å trene en ny modell uten featuren.
+
 ## SHAP for nevrale nett og bilder {#shap-deep}
 
 *Pensum: 8.4 · Kilder: notater 5.2.3, prosjekt 4 XAI problem 2 (MNIST og `encrypted_image`)*

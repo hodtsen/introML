@@ -472,11 +472,13 @@ if (fs.existsSync(notatquizDir)) {
 //   ```python … ```                (kodesnutten, påkrevd)
 //   #### Hva koden gjør             (påkrevd)
 //   #### Fallgruver                 (påkrevd, punktliste)
+//   #### Fra øvingene               (valgfri, punktliste: kode og funn fra øvingene og prosjekt 4)
 const kodeDir = path.join(root, "content", "kode");
 const kode = { oversiktHtml: "", temaer: [] };
 const KODE_SEKSJONER = [
   ["Hva koden gjør", "forklaringHtml"],
   ["Fallgruver", "fallgruverHtml"],
+  ["Fra øvingene", "ovingerHtml"],
 ];
 if (fs.existsSync(kodeDir)) {
   const kortSlugs = new Set();
@@ -531,14 +533,16 @@ if (fs.existsSync(kodeDir)) {
       if (!/```python\n[\s\S]+?```/.test(kodeSrc)) feil(hvor, "mangler en ```python-blokk før «#### Hva koden gjør»");
       const kort = { slug, tittel, deler, kildeHtml, kodeHtml: renderMarkdown(kodeSrc, hvor) };
       const navn = secIdx.map((i) => sub[i].slice(5).trim());
-      if (navn.join("|") !== KODE_SEKSJONER.map((s) => s[0]).join("|"))
-        feil(hvor, `seksjonene er [${navn.join(", ")}], forventet [${KODE_SEKSJONER.map((s) => s[0]).join(", ")}]`);
+      const forventet = KODE_SEKSJONER.map((s) => s[0]);
+      if (navn.join("|") !== forventet.slice(0, 2).join("|") && navn.join("|") !== forventet.join("|"))
+        feil(hvor, `seksjonene er [${navn.join(", ")}], forventet [${forventet.join(", ")}] (den siste er valgfri)`);
       secIdx.forEach((i, k) => {
         const felt = KODE_SEKSJONER.find((s) => s[0] === navn[k])?.[1];
         const tekst = sub.slice(i + 1, secIdx[k + 1] ?? sub.length).join("\n");
         if (felt) kort[felt] = renderMarkdown(tekst, `${hvor} ${navn[k]}`);
       });
       if (kort.fallgruverHtml && !/<li>/.test(kort.fallgruverHtml)) feil(hvor, "fallgruvene skal være en punktliste");
+      if (kort.ovingerHtml && !/<li>/.test(kort.ovingerHtml)) feil(hvor, "«Fra øvingene» skal være en punktliste");
       tema.kort.push(kort);
     });
     kode.temaer.push(tema);

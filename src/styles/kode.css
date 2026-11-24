@@ -149,6 +149,24 @@ button.brikke-lenke {
   margin-top: 0.35rem;
 }
 
+.kodekort-ovinger {
+  background: var(--accent-soft);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--r-md);
+  padding: 0.8rem 1rem;
+}
+.kodekort-ovinger h4 {
+  color: var(--accent);
+}
+.kodekort-ovinger ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+.kodekort-ovinger li + li {
+  margin-top: 0.35rem;
+}
+
 .kode-bla {
   display: flex;
   justify-content: space-between;

@@ -225,6 +225,12 @@ function Kodekort({ kort }: { kort: KodeKort }) {
         <h4>Fallgruver</h4>
         <Html className="prosa" html={kort.fallgruverHtml} />
       </section>
+      {kort.ovingerHtml && (
+        <section className="kodekort-del kodekort-ovinger">
+          <h4>Fra øvingene</h4>
+          <Html className="prosa" html={kort.ovingerHtml} />
+        </section>
+      )}
     </article>
   );
 }

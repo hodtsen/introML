@@ -114,6 +114,10 @@ Siden $\sigma(0) = 0{,}5$ og sigmoid er voksende, er `y_pred > 0.5` det samme so
 - Notatenes `fit` skriver `np.matmul(self.weights, x.transpose())`. Det gir det samme som `np.matmul(x, self.weights)`, bare skrevet med vektoren først.
 - `np.exp(z)` uten minus gir $1/(1 + e^{z}) = 1 - \sigma(z)$, altså sannsynligheten for feil klasse.
 
+#### Fra øvingene
+
+- Øving 1, klassifiseringsdataene: punktene ligger i et XOR-mønster, så logistisk regresjon på $(x_0, x_1)$ alene klarer seg ikke bedre enn gjetting. En produktfeature gjør dataene lineært separerbare: `X = np.column_stack([X, X[:, 0] * X[:, 1]])`.
+
 ## Binær og vektet cross-entropy i NumPy {#cross-entropy}
 
 *Pensum: 1.3, 2.4 · Kilder: notater 1.2.1, eksamen 2024 oppgave 9, 10 og 11*
@@ -180,6 +184,11 @@ $$
 - Glemmer du å dele på `len(y)`, blir steget proporsjonalt med antall datapunkter, og læringsraten må endres hver gang datasettet endrer størrelse.
 - Nullinitialisering er greit her fordi tapet er konvekst. I nevrale nett initialiseres vektene tilfeldig.
 
+#### Fra øvingene
+
+- Øving 1, regresjonsdataene: med features på svært ulik skala blir gradientene skjeve, og gradient descent går tregt eller divergerer. Skaler først.
+- Øving 1, `loss_history`: et tap som øker fra iterasjon til iterasjon, tyder på for høy læringsrate (eller fortegnsfeil). Plott alltid tapet.
+
 ## Confusion matrix og metrikker for hånd {#metrikker}
 
 *Pensum: 1.5 · Kilder: notater 1.2.4 (tabell 4), øving 2 problem 1 («implement the metrics presented in the lectures»), eksamen 2024 oppgave 5 og 7*
@@ -212,6 +221,10 @@ En nyttig huskeregel: recall og FPR deler på det som *faktisk* er positivt elle
 - FPR deler på alle faktiske negative ($FP + TN$), ikke på $FP + TP$.
 - Høy accuracy betyr lite med ubalanserte klasser: en modell som alltid sier «frisk», får 99 % accuracy når 1 % er syke.
 - Hva som er viktigst, avhenger av kostnaden ved feil: mange falske negative er alvorlig ved sykdom (høy recall), mange falske positive er dyrt ved utrykning (høy presisjon), som i H24 oppgave 7.
+
+#### Fra øvingene
+
+- Øving 2, problem 1: treningsdataene var ubalanserte, så accuracy alene var misvisende. Oppgaven ba om TPR og FPR, og klassene måtte balanseres før trening.
 
 ## Terskel, predict_proba og ROC {#terskel-roc}
 
